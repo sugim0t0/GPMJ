@@ -7,6 +7,7 @@ Modification History:
 Date           Version   Description
 ===========================================================
 28 Mar. 2017   0.1       Creation
+20 Apr. 2017   0.2       Add get_required_13orphans()
 -----------------------------------------------------------
 '''
 
@@ -180,7 +181,7 @@ class Hand():
     def get_required_13orphans(self):
         required = [[], [], [], [], []]
         b_missed = False
-        if not(len(self.pure_tiles) == 13):
+        if len(self.exposed) > 0:
             return None
         self.sort_tiles()
         # Simples (Dots, Bamboo, Characters)
@@ -190,7 +191,8 @@ class Hand():
             for tile in self.pure_tiles[suit]:
                 if tile.number > 1 and tile.number < 9:
                     return None
-                required[suit].remove(tile.number)
+                if tile.number in required[suit]:
+                    required[suit].remove(tile.number)
             if len(required[suit]) > 0:
                 if b_missed or len(required[suit]) > 1:
                     return None
@@ -199,7 +201,8 @@ class Hand():
         for wind in range(Winds.NUM_OF_WINDS):
             required[Suits.WINDS].append(wind)
         for tile in self.pure_tiles[Suits.WINDS]:
-            required[Suits.WINDS].remove(tile.number)
+            if tile.number in required[Suits.WINDS]:
+                required[Suits.WINDS].remove(tile.number)
         if len(required[Suits.WINDS]) > 0:
             if b_missed or len(required[Suits.WINDS]) > 1:
                 return None
@@ -208,7 +211,8 @@ class Hand():
         for dragon in range(Dragons.NUM_OF_DRAGONS):
             required[Suits.DRAGONS].append(dragon)
         for tile in self.pure_tiles[Suits.DRAGONS]:
-            required[Suits.DRAGONS].remove(tile.number)
+            if tile.number in required[Suits.DRAGONS]:
+                required[Suits.DRAGONS].remove(tile.number)
         if len(required[Suits.DRAGONS]) > 0:
             if b_missed or len(required[Suits.DRAGONS]) > 1:
                 return None
