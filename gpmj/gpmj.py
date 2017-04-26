@@ -8,13 +8,14 @@ Date           Version   Description
 ===========================================================
 28 Mar. 2017   0.1       Creation
 20 Apr. 2017   0.2       Add get_required_13orphans()
+26 Apr. 2017   0.3       Add get_required_7differentpairs()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.1"
-__date__ = "28 Mar. 2017"
+__version__ = "0.3"
+__date__ = "26 Apr. 2017"
 __author__ = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -227,4 +228,30 @@ class Hand():
                 required[Suits.DRAGONS].append(dragon)
         return required
 
+    def get_required_7differentpairs(self):
+        required = [[], [], [], [], []]
+        b_missed = False
+        if len(self.exposed) > 0:
+            return None
+        self.sort_tiles()
+        for suit in range(Suits.NUM_OF_SUITS):
+            prev_pair_number = -1
+            prev_number = -1
+            for tile in self.pure_tiles[suit]:
+                if prev_number < 0:
+                    prev_number = tile.number
+                elif prev_number == tile.number:
+                    prev_pair_number = tile.number
+                    prev_number = -1
+                elif b_missed:
+                    return None
+                else:
+                    b_missed = True
+                    required[suit].append(prev_number)
+            if prev_number > 0:
+                if b_missed:
+                    return None
+                b_missed = True
+                required[suit].append(prev_number)
+        return required
 
