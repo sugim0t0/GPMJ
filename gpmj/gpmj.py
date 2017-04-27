@@ -15,8 +15,8 @@ Date           Version   Description
 from enum import Enum, IntEnum
 
 __version__ = "0.3"
-__date__ = "26 Apr. 2017"
-__author__ = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
+__date__    = "26 Apr. 2017"
+__author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
 
@@ -239,6 +239,8 @@ class Hand():
             prev_number = -1
             for tile in self.pure_tiles[suit]:
                 if prev_number < 0:
+                    if prev_pair_number == tile.number:
+                        return None
                     prev_number = tile.number
                 elif prev_number == tile.number:
                     prev_pair_number = tile.number
