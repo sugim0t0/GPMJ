@@ -52,6 +52,42 @@ class TestGpmj(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_7differentpairs_None(self):
+        # [D1][D1][D1][D1][C9][C9][Es][St][St][Nt][Nt][Gr][Gr]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][4])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][7])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][15])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][13])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][7])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][0])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][5])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][32])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][35])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][2])
+        self.required = self.hand.get_required_7differentpairs()
+        self.assertEqual(self.required, None)
+
+    def test_7differentpairs_wait_Es(self):
+        # [D1][D1][B1][B1][C9][C9][Es][St][St][Nt][Nt][Gr][Gr]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][4])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][7])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][15])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][13])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][7])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][0])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.WINDS][5])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][32])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][35])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][2])
+        self.required = self.hand.get_required_7differentpairs()
+        self.assertEqual(self.required, [[],[],[],[0],[]])
+
     def test_13orphans_None(self):
         # [D1][B1][C1][C9][Es][Es][St][Ws][Nt][Wh][Wh][Gr][Rd]
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][2])

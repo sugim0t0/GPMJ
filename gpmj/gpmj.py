@@ -250,6 +250,7 @@ class Hand():
                 else:
                     b_missed = True
                     required[suit].append(prev_number)
+                    prev_number = tile.number
             if prev_number > 0:
                 if b_missed:
                     return None
