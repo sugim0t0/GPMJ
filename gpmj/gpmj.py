@@ -9,13 +9,14 @@ Date           Version   Description
 28 Mar. 2017   0.1       Creation
 20 Apr. 2017   0.2       Add get_required_13orphans()
 26 Apr. 2017   0.3       Add get_required_7differentpairs()
+04 Jul. 2017   0.4       Add get_required_basicwinninghand()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.3"
-__date__    = "26 Apr. 2017"
+__version__ = "0.4"
+__date__    = "04 Jul. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -93,6 +94,28 @@ class Tile():
         self.print_char += ']'
 
 
+class Eye():
+
+    def __init__(self):
+        self.tiles = []
+
+    def reset(self):
+        self.tiles = []
+
+    def add_tile(self, tile):
+        if len(self.tiles) == 0:
+            self.tiles.append(tile)
+        elif len(self.tiles) == 1:
+            if self.tiles[0].suit == tile.suit and \
+               self.tiles[0].number == tile.number:
+                self.tiles.append(tile)
+            else:
+                return False
+        else:
+            return False
+        return True
+
+
 class Meld():
 
     def __init__(self):
@@ -138,16 +161,14 @@ class Meld():
                 self.tiles.append(tile)
             else:
                 return False
-        elif len(self.tiles) == 3:
-            if self.b_sequential:
-                return False
-            if self.tiles[0].number == tile.number:
-                self.tiles.append(tile)
-            else:
-                return False
         else:
             return False
         return True
+
+    def remove_tile(self, tile):
+        self.tiles.remove(tile)
+        if len(self.tiles) == 1:
+            self.b_sequential = False
 
 
 class Hand():
@@ -178,6 +199,140 @@ class Hand():
             for tile in self.pure_tiles[suit]:
                 print(tile.print_char, end="")
         print("")
+
+    def update_required(self, required, melds, eye):
+        if len(eye.tiles) == 1:
+            required[eye.tiles[0].suit].append(eye.tiles[0].number)
+        else:
+            for meld in melds:
+                if len(meld.tiles) == 2:
+                    if meld.tiles[1].number == meld.tiles[0].number:
+                        required[meld.tiles[0].suit].append(meld.tiles[0].number)
+                        required[eye.tiles[0].suit].append(eye.tiles[0].number)
+                    elif meld.tiles[1].number - meld.tiles[0].number == 2:
+                        required[meld.tiles[0].suit].append(meld.tiles[0].number+1)
+                    elif meld.tiles[0].number == 1:
+                        required[meld.tiles[0].suit].append(3)
+                    elif meld.tiles[1].number == 9:
+                        required[meld.tiles[0].suit].append(7)
+                    else:
+                        required[meld.tiles[0].suit].append(meld.tiles[0].number-1)
+                        required[meld.tiles[0].suit].append(meld.tiles[1].number+1)
+                    break
+        return
+
+    def judge_suit_melds(self, suit, tile_index, melds):
+        # Recursive function
+        for meld in melds:
+            if meld.add_tile(self.pure_tiles[suit][tile_index]):
+                if (tile_index+1) < len(self.pure_tiles[suit]):
+                    if self.judge_suit_melds(suit, tile_index+1, melds):
+                        return True
+                    else:
+                        meld.remove_tile(self.pure_tiles[suit][tile_index])
+                else:
+                    return True
+        return False
+
+    def judge_suit_melds_and_eye(self, suit, melds, eye, required):
+        b_ready = False
+        x = 0
+        while x < len(self.pure_tiles[suit]):
+            if (x+1) < len(self.pure_tiles[suit]) and \
+               self.pure_tiles[suit][x].number == self.pure_tiles[suit][x+1].number:
+                eye.add_tile(self.pure_tiles[suit].pop(x+1))
+            eye.add_tile(self.pure_tiles[suit].pop(x))
+            if self.judge_suit_melds(suit, 0, melds):
+                # Update required
+                self.update_required(required, melds, eye)
+                b_ready = True
+            # Move tiles in eye into self.pure_tiles[suit]
+            while len(eye.tiles) > 0:
+                self.pure_tiles[suit].insert(x, eye.tiles.pop())
+                x += 1
+            # Reset melds
+            for meld in melds:
+                meld.reset()
+            while x < len(self.pure_tiles[suit]):
+                if self.pure_tiles[suit][x-1].number == self.pure_tiles[suit][x].number:
+                    x += 1
+                else:
+                    break
+        return b_ready
+
+    def get_required_basicwinninghand(self):
+        required = [[], [], [], [], []]
+        suit_remained_one = -1
+        suit_remained_two_1st = -1
+        suit_remained_two_2nd = -1
+        for suit in range(Suits.NUM_OF_SUITS):
+            if len(self.pure_tiles[suit]) % 3 == 1:
+                if (suit_remained_one >= 0) or (suit_remained_two_1st >= 0):
+                    return None
+                suit_remained_one = suit
+            if len(self.pure_tiles[suit]) % 3 == 2:
+                if (suit_remained_one >= 0) or (suit_remained_two_2nd >= 0):
+                    return None
+                if suit_remained_two_1st >= 0:
+                    suit_remained_two_2nd = suit
+                else:
+                    suit_remained_two_1st = suit
+        self.sort_tiles()
+        # Judge all completed suits
+        for suit in range(Suits.NUM_OF_SUITS):
+            if suit == suit_remained_one or \
+               suit == suit_remained_two_1st or \
+               suit == suit_remained_two_2nd:
+                continue
+            num_of_meld = len(self.pure_tiles[suit]) // 3
+            if num_of_meld == 0:
+                continue
+            melds = []
+            for x in range(num_of_meld):
+                melds.append(Meld())
+            if not self.judge_suit_melds(suit, 0, melds):
+                return None
+        eye = Eye()
+        # Judge suit remained one
+        if suit_remained_one >= 0:
+            num_of_meld = len(self.pure_tiles[suit_remained_one]) // 3
+            if num_of_meld == 0:
+                required[suit_remained_one].append(self.pure_tiles[suit][0].number)
+                return required
+            melds = []
+            for x in range(num_of_meld):
+                melds.append(Meld())
+            if self.judge_suit_melds_and_eye(suit_remained_one, melds, eye, required):
+                return required
+            else:
+                return None
+        # Judge suits remained two
+        num_of_meld_1st = len(self.pure_tiles[suit_remained_two_1st]) // 3
+        num_of_meld_2nd = len(self.pure_tiles[suit_remained_two_2nd]) // 3
+        melds_1st = []
+        melds_2nd = []
+        for x in range(num_of_meld_1st):
+            melds_1st.append(Meld())
+        for x in range(num_of_meld_2nd):
+            melds_2nd.append(Meld())
+        if self.judge_suit_melds_and_eye(suit_remained_two_1st, melds_1st, eye, required):
+            melds_2nd.append(Meld())
+            if self.judge_suit_melds(suit_remained_two_2nd, 0, melds_2nd):
+                self.update_required(required, melds_2nd, eye)
+                return required
+        eye.reset()
+        melds_1st = []
+        melds_2nd = []
+        for x in range(num_of_meld_1st):
+            melds_1st.append(Meld())
+        for x in range(num_of_meld_2nd):
+            melds_2nd.append(Meld())
+        if self.judge_suit_melds_and_eye(suit_remained_two_2nd, melds_2nd, eye, required):
+            melds_1st.append(Meld())
+            if self.judge_suit_melds(suit_remained_two_1st, 0, melds_1st):
+                self.update_required(required, melds_1st, eye)
+                return required
+        return None
 
     def get_required_13orphans(self):
         required = [[], [], [], [], []]
