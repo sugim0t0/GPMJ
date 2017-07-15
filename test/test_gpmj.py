@@ -68,7 +68,7 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][14])
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][15])
         self.required = self.hand.get_required_basicwinninghand()
-        self.assertEqual(self.required, [[],[],[4],[],[0]])
+        self.assertEqual(self.required, [set(),set(),{4},set(),{0}])
 
     def test_basicwinninghand_wait_double_C3C6(self):
         # [D4][D4][D5][D5][D6][D6][B1][B2][B3][C4][C5][Wh][Wh]
@@ -86,7 +86,7 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][15])
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][16])
         self.required = self.hand.get_required_basicwinninghand()
-        self.assertEqual(self.required, [[],[],[3,6],[],[]])
+        self.assertEqual(self.required, [set(),set(),{3,6},set(),set()])
 
     def test_basicwinninghand_wait_single_eye_D2(self):
         # [D2][D4][D4][D5][D5][D6][D6][B1][B2][B3][Wh][Wh][Wh]
@@ -104,7 +104,7 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][22])
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][23])
         self.required = self.hand.get_required_basicwinninghand()
-        self.assertEqual(self.required, [[2],[],[],[],[]])
+        self.assertEqual(self.required, [{2},set(),set(),set(),set()])
 
     def test_7differentpairs_None(self):
         # [D1][D1][D1][D1][C9][C9][Es][St][St][Nt][Nt][Gr][Gr]
@@ -140,7 +140,7 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][2])
         self.required = self.hand.get_required_7differentpairs()
-        self.assertEqual(self.required, [[],[],[],[0],[]])
+        self.assertEqual(self.required, [set(),set(),set(),{0},set()])
 
     def test_13orphans_None(self):
         # [D1][B1][C1][C9][Es][Es][St][Ws][Nt][Wh][Wh][Gr][Rd]
@@ -176,7 +176,7 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][35])
         self.required = self.hand.get_required_13orphans()
-        self.assertEqual(self.required, [[],[9],[],[],[]])
+        self.assertEqual(self.required, [set(),{9},set(),set(),set()])
 
     def test_13orphans_wait_all13orphans(self):
         # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Wh][Gr][Rd]
@@ -194,7 +194,7 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][35])
         self.required = self.hand.get_required_13orphans()
-        self.assertEqual(self.required, [[1,9],[1,9],[1,9],[0,1,2,3],[0,1,2]])
+        self.assertEqual(self.required, [{1,9},{1,9},{1,9},{0,1,2,3},{0,1,2}])
 
 if __name__ == '__main__':
     unittest.main()

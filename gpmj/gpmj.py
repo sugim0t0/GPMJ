@@ -176,7 +176,7 @@ class Hand():
     def __init__(self):
         self.pure_tiles = [[], [], [], [], []]
         self.exposed = []
-        self.required = [[], [], [], [], []]
+        self.required = [set(), set(), set(), set(), set()]
 
     def append_tile(self, tile):
         self.pure_tiles[tile.suit].append(tile)
@@ -202,22 +202,21 @@ class Hand():
 
     def update_required(self, required, melds, eye):
         if len(eye.tiles) == 1:
-            required[eye.tiles[0].suit].append(eye.tiles[0].number)
+            required[eye.tiles[0].suit] = required[eye.tiles[0].suit] | {eye.tiles[0].number}
         else:
             for meld in melds:
                 if len(meld.tiles) == 2:
                     if meld.tiles[1].number == meld.tiles[0].number:
-                        required[meld.tiles[0].suit].append(meld.tiles[0].number)
-                        required[eye.tiles[0].suit].append(eye.tiles[0].number)
+                        required[meld.tiles[0].suit] = required[meld.tiles[0].suit] | {meld.tiles[0].number}
+                        required[eye.tiles[0].suit] = required[eye.tiles[0].suit] | {eye.tiles[0].number}
                     elif meld.tiles[1].number - meld.tiles[0].number == 2:
-                        required[meld.tiles[0].suit].append(meld.tiles[0].number+1)
+                        required[meld.tiles[0].suit] = required[meld.tiles[0].suit] | {meld.tiles[0].number+1}
                     elif meld.tiles[0].number == 1:
-                        required[meld.tiles[0].suit].append(3)
+                        required[meld.tiles[0].suit] = required[meld.tiles[0].suit] | {3}
                     elif meld.tiles[1].number == 9:
-                        required[meld.tiles[0].suit].append(7)
+                        required[meld.tiles[0].suit] = required[meld.tiles[0].suit] | {7}
                     else:
-                        required[meld.tiles[0].suit].append(meld.tiles[0].number-1)
-                        required[meld.tiles[0].suit].append(meld.tiles[1].number+1)
+                        required[meld.tiles[0].suit] = required[meld.tiles[0].suit] | {meld.tiles[0].number-1, meld.tiles[1].number+1}
                     break
         return
 
@@ -317,7 +316,7 @@ class Hand():
         return b_ready
 
     def get_required_basicwinninghand(self):
-        required = [[], [], [], [], []]
+        required = [set(), set(), set(), set(), set()]
         suit_remained_one = -1
         suit_remained_two_1st = -1
         suit_remained_two_2nd = -1
@@ -360,56 +359,54 @@ class Hand():
         return required
 
     def get_required_13orphans(self):
-        required = [[], [], [], [], []]
+        required = [set(), set(), set(), set(), set()]
         b_missed = False
         if len(self.exposed) > 0:
             return None
         self.sort_tiles()
         # Simples (Dots, Bamboo, Characters)
         for suit in range(Suits.NUM_OF_SIMPLES):
-            required[suit].append(1)
-            required[suit].append(9)
+            required[suit] = required[suit] | {1, 9}
             for tile in self.pure_tiles[suit]:
                 if tile.number > 1 and tile.number < 9:
                     return None
                 if tile.number in required[suit]:
-                    required[suit].remove(tile.number)
+                    required[suit] = required[suit] - {tile.number}
             if len(required[suit]) > 0:
                 if b_missed or len(required[suit]) > 1:
                     return None
                 b_missed = True
         # Winds
         for wind in range(Winds.NUM_OF_WINDS):
-            required[Suits.WINDS].append(wind)
+            required[Suits.WINDS] = required[Suits.WINDS] | {wind}
         for tile in self.pure_tiles[Suits.WINDS]:
             if tile.number in required[Suits.WINDS]:
-                required[Suits.WINDS].remove(tile.number)
+                required[Suits.WINDS] = required[Suits.WINDS] - {tile.number}
         if len(required[Suits.WINDS]) > 0:
             if b_missed or len(required[Suits.WINDS]) > 1:
                 return None
             b_missed = True
         # Dragons
         for dragon in range(Dragons.NUM_OF_DRAGONS):
-            required[Suits.DRAGONS].append(dragon)
+            required[Suits.DRAGONS] = required[Suits.DRAGONS] | {dragon}
         for tile in self.pure_tiles[Suits.DRAGONS]:
             if tile.number in required[Suits.DRAGONS]:
-                required[Suits.DRAGONS].remove(tile.number)
+                required[Suits.DRAGONS] = required[Suits.DRAGONS] - {tile.number}
         if len(required[Suits.DRAGONS]) > 0:
             if b_missed or len(required[Suits.DRAGONS]) > 1:
                 return None
             b_missed = True
         if not b_missed:
             for suit in range(Suits.NUM_OF_SIMPLES):
-                required[suit].append(1)
-                required[suit].append(9)
+                required[suit] = required[suit] | {1, 9}
             for wind in range(Winds.NUM_OF_WINDS):
-                required[Suits.WINDS].append(wind)
+                required[Suits.WINDS] = required[Suits.WINDS] | {wind}
             for dragon in range(Dragons.NUM_OF_DRAGONS):
-                required[Suits.DRAGONS].append(dragon)
+                required[Suits.DRAGONS] = required[Suits.DRAGONS] | {dragon}
         return required
 
     def get_required_7differentpairs(self):
-        required = [[], [], [], [], []]
+        required = [set(), set(), set(), set(), set()]
         b_missed = False
         if len(self.exposed) > 0:
             return None
@@ -429,12 +426,12 @@ class Hand():
                     return None
                 else:
                     b_missed = True
-                    required[suit].append(prev_number)
+                    required[suit] = required[suit] | {prev_number}
                     prev_number = tile.number
             if prev_number > 0:
                 if b_missed:
                     return None
                 b_missed = True
-                required[suit].append(prev_number)
+                required[suit] = required[suit] | {prev_number}
         return required
 
