@@ -273,11 +273,10 @@ class Hand():
                 if (tile_index+1) < len(self.pure_tiles[suit]):
                     if self.judge_suit_melds(suit, tile_index+1, fixed_eye, melds, required):
                         b_ready = True
-                    else:
-                        meld.remove_tile(self.pure_tiles[suit][tile_index])
                 else:
                     self.update_required(required, melds, fixed_eye)
                     b_ready = True
+                meld.remove_tile(self.pure_tiles[suit][tile_index])
         return b_ready
 
     def judge_suits_remained_2tiles(self, suit_1st, suit_2nd, required):

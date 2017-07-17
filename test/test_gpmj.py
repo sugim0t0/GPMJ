@@ -52,6 +52,60 @@ class TestGpmj(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_basicwinninghand_wait_triple_D1D4D7Wh(self):
+        # [D2][D3][D4][D5][D6][D7][D7][D7][B3][B4][B5][Wh][Wh]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][16])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][7])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][15])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][23])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][24])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][25])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][26])
+        self.required = self.hand.get_required_basicwinninghand()
+        self.assertEqual(self.required, [{1,4,7},set(),set(),set(),{0}])
+
+    def test_basicwinninghand_wait_triple_D1D4D7(self):
+        # [D2][D3][D4][D5][D6][C8][C8][C8][B3][B4][B5][Wh][Wh]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][16])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][7])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][15])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][23])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][28])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][29])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][30])
+        self.required = self.hand.get_required_basicwinninghand()
+        self.assertEqual(self.required, [{1,4,7},set(),set(),set(),set()])
+
+    def test_basicwinninghand_wait_triple_D4D7Wh(self):
+        # [D4][D4][D5][D5][D6][D6][D7][D7][B3][B4][B5][Wh][Wh]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][16])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][14])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][15])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][17])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][22])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][23])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][24])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][25])
+        self.required = self.hand.get_required_basicwinninghand()
+        self.assertEqual(self.required, [{4,7},set(),set(),set(),{0}])
+
     def test_basicwinninghand_wait_double_eyes_C4Wh(self):
         # [D4][D4][D5][D5][D6][D6][B1][B2][B3][C4][C4][Wh][Wh]
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][2])
