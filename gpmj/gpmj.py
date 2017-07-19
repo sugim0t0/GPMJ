@@ -220,6 +220,25 @@ class Hand():
                     break
         return
 
+    def remove_required_all_used(self, required):
+        num_of_required = 0
+        for suit in range(Suits.NUM_OF_SUITS):
+            for number in required[suit]:
+                num_of_used = 0
+                for tile in self.pure_tiles[suit]:
+                    if tile.number == number:
+                        num_of_used += 1
+                for meld in self.exposed:
+                    for tile in meld:
+                        if tile.number == number:
+                            num_of_used += 1
+                if num_of_used == 4:
+                    required[suit] = required[suit] - {number}
+            num_of_required += len(required[suit])
+        if num_of_required == 0:
+            required = None
+        return
+
     def judge_suit_completed_melds(self, suit, tile_index, melds):
         # Recursive function
         for meld in melds:
@@ -247,9 +266,7 @@ class Hand():
                 eye.add_tile(self.pure_tiles[suit].pop(x+1))
             eye.add_tile(self.pure_tiles[suit].pop(x))
             if len(self.pure_tiles[suit]) == 0 or \
-               self.judge_suit_completed_melds(suit, 0, melds):
-                # Update required
-                self.update_required(required, melds, eye)
+               self.judge_suit_melds(suit, 0, eye, melds, required):
                 b_ready = True
             # Move tiles in eye into self.pure_tiles[suit]
             while len(eye.tiles) > 0:
@@ -348,13 +365,14 @@ class Hand():
                 return None
         # Judge suit remained one
         if suit_remained_one >= 0:
-            if self.judge_suit_melds_and_eye(suit_remained_one, required):
-                return required
-            else:
+            if not self.judge_suit_melds_and_eye(suit_remained_one, required):
                 return None
-        # Judge suits remained two
-        self.judge_suits_remained_2tiles(suit_remained_two_1st, suit_remained_two_2nd, required)
-        self.judge_suits_remained_2tiles(suit_remained_two_2nd, suit_remained_two_1st, required)
+        else:
+            # Judge suits remained two
+            self.judge_suits_remained_2tiles(suit_remained_two_1st, suit_remained_two_2nd, required)
+            self.judge_suits_remained_2tiles(suit_remained_two_2nd, suit_remained_two_1st, required)
+        # Remove required used all tiles in self hand
+        self.remove_required_all_used(required)
         return required
 
     def get_required_13orphans(self):
