@@ -10,13 +10,14 @@ Date           Version   Description
 20 Apr. 2017   0.2       Add get_required_13orphans()
 26 Apr. 2017   0.3       Add get_required_7differentpairs()
 04 Jul. 2017   0.4       Add get_required_basicwinninghand()
+02 Sep. 2017   0.5       Add get_melds_chow_able()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.4"
-__date__    = "04 Jul. 2017"
+__version__ = "0.5"
+__date__    = "02 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -169,6 +170,14 @@ class Meld():
         self.tiles.remove(tile)
         if len(self.tiles) == 1:
             self.b_sequential = False
+
+    def make_kong(self, tile):
+        if len(self.tiles) == 3 and \
+           self.b_sequential == False and \
+           self.tiles[0].number == tile.number:
+            self.tiles.append(tile)
+            return True
+        return False
 
 
 class Hand():
@@ -451,4 +460,41 @@ class Hand():
                 b_missed = True
                 required[suit] = required[suit] | {prev_number}
         return required
+
+    def get_melds_chow_able(self, discarded_tile):
+        melds = []
+        if discarded_tile.suit == Suits.WINDS or discarded_tile.suit == Suits.DRAGONS:
+            return None
+        tile_m2 = None
+        tile_m1 = None
+        tile_p1 = None
+        tile_p2 = None
+        for tile in self.pure_tiles[discarded_tile.suit]:
+            if tile.number == (discarded_tile.number - 2):
+                tile_m2 = tile
+            elif tile.number == (discarded_tile.number - 1):
+                tile_m1 = tile
+            elif tile.number == (discarded_tile.number + 1):
+                tile_p1 = tile
+            elif tile.number == (discarded_tile.number + 2):
+                tile_p2 = tile
+        if not tile_m2 == None and not tile_m1 == None:
+            meld = Meld()
+            meld.add_tile(tile_m2)
+            meld.add_tile(tile_m1)
+            meld.add_tile(discarded_tile)
+            melds.append(meld)
+        if not tile_m1 == None and not tile_p1 == None:
+            meld = Meld()
+            meld.add_tile(tile_m1)
+            meld.add_tile(discarded_tile)
+            meld.add_tile(tile_p1)
+            melds.append(meld)
+        if not tile_p1 == None and not tile_p2 == None:
+            meld = Meld()
+            meld.add_tile(discarded_tile)
+            meld.add_tile(tile_p1)
+            meld.add_tile(tile_p2)
+            melds.append(meld)
+        return melds
 
