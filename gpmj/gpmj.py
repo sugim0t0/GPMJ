@@ -11,13 +11,14 @@ Date           Version   Description
 26 Apr. 2017   0.3       Add get_required_7differentpairs()
 04 Jul. 2017   0.4       Add get_required_basicwinninghand()
 02 Sep. 2017   0.5       Add get_melds_chow_able()
+06 Sep. 2017   0.6       Add get_melds_pong_able()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.5"
-__date__    = "02 Sep. 2017"
+__version__ = "0.6"
+__date__    = "06 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -79,10 +80,9 @@ class Dragons(IntEnum):
 
 class Tile():
 
-    def __init__(self, suit, number, b_red):
+    def __init__(self, suit, number):
         self.suit = suit
         self.number = number
-        self.b_red = b_red
         # Print characters
         self.print_char = '['
         if suit == Suits.WINDS:
@@ -464,7 +464,7 @@ class Hand():
     def get_melds_chow_able(self, discarded_tile):
         melds = []
         if discarded_tile.suit == Suits.WINDS or discarded_tile.suit == Suits.DRAGONS:
-            return None
+            return melds
         tile_m2 = None
         tile_m1 = None
         tile_p1 = None
@@ -496,5 +496,17 @@ class Hand():
             meld.add_tile(tile_p1)
             meld.add_tile(tile_p2)
             melds.append(meld)
+        return melds
+
+    def get_melds_pong_able(self, discarded_tile):
+        melds = []
+        meld = Meld()
+        for tile in self.pure_tiles[discarded_tile.suit]:
+            if tile.number == discarded_tile.number:
+                meld.add_tile(tile)
+                if len(meld.tiles) == 2:
+                    meld.add_tile(discarded_tile)
+                    melds.append(meld)
+                    break
         return melds
 

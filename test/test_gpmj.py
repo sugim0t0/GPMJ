@@ -12,15 +12,15 @@ class TestGpmj(unittest.TestCase):
     for suit in range(gpmj.gpmj.Suits.NUM_OF_SIMPLES):
         for number in range(1, 10):
             for i in range(4):
-                all_tiles[suit].append(gpmj.gpmj.Tile(suit, number, False))
+                all_tiles[suit].append(gpmj.gpmj.Tile(suit, number))
     # Winds
     for number in range(gpmj.gpmj.Winds.NUM_OF_WINDS):
         for i in range(4):
-            all_tiles[gpmj.gpmj.Suits.WINDS].append(gpmj.gpmj.Tile(gpmj.gpmj.Suits.WINDS, number, False))
+            all_tiles[gpmj.gpmj.Suits.WINDS].append(gpmj.gpmj.Tile(gpmj.gpmj.Suits.WINDS, number))
     # Dragons
     for number in range(gpmj.gpmj.Dragons.NUM_OF_DRAGONS):
         for i in range(4):
-            all_tiles[gpmj.gpmj.Suits.DRAGONS].append(gpmj.gpmj.Tile(gpmj.gpmj.Suits.DRAGONS, number, False))
+            all_tiles[gpmj.gpmj.Suits.DRAGONS].append(gpmj.gpmj.Tile(gpmj.gpmj.Suits.DRAGONS, number))
 
 # Simplified chart:
 # Simples >
@@ -51,6 +51,64 @@ class TestGpmj(unittest.TestCase):
     def tearDown(self):
         self.hand = None
         self.required = None
+
+    def test_melds_pong_able_0(self):
+        # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B9][B9][B9]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][1])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][4])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][19])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][20])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][27])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][28])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][33])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][34])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][35])
+        melds = self.hand.get_melds_pong_able(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][29])
+        self.assertEqual(melds, [])
+
+    def test_melds_pong_able_1(self):
+        # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B8][B9][B9]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][1])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][4])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][19])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][20])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][27])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][28])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][30])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][34])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][35])
+        melds = self.hand.get_melds_pong_able(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][29])
+        self.assertEqual(len(melds), 1)
+        self.assertEqual(melds[0].tiles[0].suit, gpmj.gpmj.Suits.BAMBOO)
+        self.assertEqual(melds[0].tiles[0].number, 8)
+        self.assertEqual(melds[0].tiles[1].number, 8)
+        self.assertEqual(melds[0].tiles[2].number, 8)
+
+    def test_melds_chow_able_0(self):
+        # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B9][B9][B9]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][1])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][4])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][19])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][20])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][27])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][28])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][33])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][34])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][35])
+        melds = self.hand.get_melds_chow_able(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][0])
+        self.assertEqual(melds, [])
 
     def test_melds_chow_able_3(self):
         # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B9][B9][B9]
