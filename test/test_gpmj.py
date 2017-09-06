@@ -52,6 +52,46 @@ class TestGpmj(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_meld_kong_able_0(self):
+        # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B8][B9][B9]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][1])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][4])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][19])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][20])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][27])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][28])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][30])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][34])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][35])
+        meld = self.hand.get_meld_kong_able(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][29])
+        self.assertEqual(meld, None)
+
+    def test_meld_kong_able_1(self):
+        # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B8][B9][B9]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][1])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][4])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][19])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][20])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][27])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][28])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][30])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][34])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][35])
+        meld = self.hand.get_meld_kong_able(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][0])
+        self.assertEqual(meld.tiles[0].suit, gpmj.gpmj.Suits.BAMBOO)
+        self.assertEqual(meld.tiles[0].number, 1)
+        self.assertEqual(meld.tiles[1].number, 1)
+        self.assertEqual(meld.tiles[2].number, 1)
+        self.assertEqual(meld.tiles[3].number, 1)
+
     def test_melds_pong_able_0(self):
         # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B9][B9][B9]
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][1])

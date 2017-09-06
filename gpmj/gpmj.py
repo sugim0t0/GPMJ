@@ -12,12 +12,13 @@ Date           Version   Description
 04 Jul. 2017   0.4       Add get_required_basicwinninghand()
 02 Sep. 2017   0.5       Add get_melds_chow_able()
 06 Sep. 2017   0.6       Add get_melds_pong_able()
+06 Sep. 2017   0.7       Add get_meld_kong_able()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.6"
+__version__ = "0.7"
 __date__    = "06 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
@@ -509,4 +510,14 @@ class Hand():
                     melds.append(meld)
                     break
         return melds
+
+    def get_meld_kong_able(self, discarded_tile):
+        meld = Meld()
+        for tile in self.pure_tiles[discarded_tile.suit]:
+            if tile.number == discarded_tile.number:
+                meld.add_tile(tile)
+                if len(meld.tiles) == 3:
+                    meld.make_kong(discarded_tile)
+                    return meld
+        return None
 
