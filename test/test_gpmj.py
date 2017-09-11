@@ -52,6 +52,52 @@ class TestGpmj(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_expose_meld_0(self):
+        # [D4][D4][D5][D5][D6][D6][B1][B2][B3][C4][C5][Wh][Wh]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][7])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][14])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][15])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][17])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][22])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][23])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][15])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][16])
+        meld = gpmj.gpmj.Meld()
+        meld.tiles.append(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][14])
+        meld.tiles.append(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][16])
+        discarded_tile = self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][20]
+        meld.tiles.append(discarded_tile)
+        result = self.hand.expose_meld(meld, discarded_tile)
+        self.assertEqual(result, False)
+
+    def test_expose_meld_1(self):
+        # [D4][D4][D5][D5][D6][D6][B1][B2][B3][C4][C5][Wh][Wh]
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][2])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][7])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][14])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][15])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][17])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][22])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.DOTS][23])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][15])
+        self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][16])
+        meld = gpmj.gpmj.Meld()
+        meld.tiles.append(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][15])
+        meld.tiles.append(self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][16])
+        discarded_tile = self.all_tiles[gpmj.gpmj.Suits.CHARACTERS][20]
+        meld.tiles.append(discarded_tile)
+        result = self.hand.expose_meld(meld, discarded_tile)
+        self.assertEqual(result, True)
+
     def test_meld_kong_able_0(self):
         # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B8][B9][B9]
         self.hand.append_tile(self.all_tiles[gpmj.gpmj.Suits.BAMBOO][1])

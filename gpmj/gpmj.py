@@ -13,13 +13,14 @@ Date           Version   Description
 02 Sep. 2017   0.5       Add get_melds_chow_able()
 06 Sep. 2017   0.6       Add get_melds_pong_able()
 06 Sep. 2017   0.7       Add get_meld_kong_able()
+11 Sep. 2017   0.8       Add expose_meld()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.7"
-__date__    = "06 Sep. 2017"
+__version__ = "0.8"
+__date__    = "11 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -520,4 +521,13 @@ class Hand():
                     meld.make_kong(discarded_tile)
                     return meld
         return None
+
+    def expose_meld(self, meld, discarded_tile):
+        for tile in meld.tiles:
+            if tile in self.pure_tiles[meld.tiles[0].suit]:
+                self.pure_tiles[meld.tiles[0].suit].remove(tile)
+            elif not tile == discarded_tile:
+                return False
+        self.exposed.append(meld)
+        return True
 
