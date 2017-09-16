@@ -14,13 +14,14 @@ Date           Version   Description
 06 Sep. 2017   0.6       Add get_melds_pong_able()
 06 Sep. 2017   0.7       Add get_meld_kong_able()
 11 Sep. 2017   0.8       Add expose_meld()
+16 Sep. 2017   0.9       Add judge_implemented_hand() @NoPointsHandJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.8"
-__date__    = "11 Sep. 2017"
+__version__ = "0.9"
+__date__    = "16 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -80,6 +81,97 @@ class Dragons(IntEnum):
             return "Rd"
 
 
+class WinningHand(IntEnum):
+
+    # Flags of winning hands
+    # 1 value
+  # READY_HAND = 
+  # SELF_PICK =
+  # ONE_SHOT =
+  # LAST_TILE_FROM_THE_WALL =
+  # LAST_DISCARD = 
+  # DEAD_WALL_DRAW =
+  # ROBBING_A_QUAD = 
+    NO_POINTS_HAND                 = 0x00000001
+    ONE_SET_OF_IDENTICAL_SEQUENCES = 0x00000002
+    ALL_SIMPLES                    = 0x00000004
+  # HONOR_TILE =
+    # 2 value (Closed), 1 value (Open)
+    THREE_COLOR_STRAIGHT           = 0x00000008
+    STRAIGHT                       = 0x00000010
+    TERMINAL_OR_HONOR_IN_EACH_SET  = 0x00000020
+    # 2 value
+    SEVEN_PAIRS                    = 0x00000040
+  # DOUBLE_READY =
+    ALL_TRIPLET_HAND               = 0x00000080
+    THREE_CLOSED_TRIPLETS          = 0x00000100
+    THREE_COLOR_TRIPLETS           = 0x00000200
+    THREE_KONGS                    = 0x00000400
+    ALL_TERMINALS_AND_HONORS       = 0x00000800
+    LITTLE_THREE_DRAGONS           = 0x00001000
+    # 3 value (Closed), 2 value (Open)
+    TERMINAL_IN_EACH_SET           = 0x00002000
+    HALF_FLUSH                     = 0x00004000
+    # 3 value
+    TWO_SET_OF_IDENTICAL_SEQUENCES = 0x00008000
+    # 6 value (Closed), 5 value (Open)
+    FLUSH                          = 0x00010000
+    # LIMIT HANDS
+    THIRTEEN_ORPHANS               = 0x00020000
+    FOUR_CONCEALED_TRIPLETS        = 0x00040000
+    BIG_THREE_DRAGONS              = 0x00080000
+    LITTLE_FOUR_WINDS              = 0x00100000
+    BIG_FOUR_WINDS                 = 0x00200000
+    ALL_HONORS                     = 0x00400000
+    ALL_TERMINALS                  = 0x00800000
+    ALL_GREEN                      = 0x01000000
+    NINE_GATES                     = 0x02000000
+    FOUR_KONGS                     = 0x04000000
+  # HEAVENLY_HAND =
+  # HAND_OF_EARTH =
+  # HAND_OF_MAN =
+
+
+class HandJudge():
+
+    def __init__(self):
+        self.flag = 0x00000000
+        self.closed_value = 0
+        self.open_value = 0
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not len(eye.tiles) == 2 or not len(melds) == 4:
+            return False
+        for meld in melds:
+            if not (len(meld.tiles) == 3 or len(meld.tiles) == 4):
+                return False
+        return True 
+
+
+class NoPointsHandJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.NO_POINTS_HAND
+        self.closed_value = 1
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        for meld in melds:
+            if meld.b_exposed or not meld.b_sequential:
+                return False
+            if last_tile in meld.tiles and last_tile == meld.tiles[1]:
+                return False
+        if eye.tiles[0].suit == Suits.DRAGONS or \
+           eye.tiles[0].suit == players_wind or \
+           eye.tiles[0].suit == prevailing_wind:
+            return False
+        return True
+
+
 class Tile():
 
     def __init__(self, suit, number):
@@ -124,6 +216,7 @@ class Meld():
     def __init__(self):
         self.tiles = []
         self.b_sequential = False
+        self.b_exposed = False
 
     def reset(self):
         self.tiles = []
@@ -528,6 +621,10 @@ class Hand():
                 self.pure_tiles[meld.tiles[0].suit].remove(tile)
             elif not tile == discarded_tile:
                 return False
+        meld.b_exposed = True
         self.exposed.append(meld)
         return True
+
+  #  def judge_winninghand(self, last_tile, b_discarded):
+  #      winninghand = 0x0
 
