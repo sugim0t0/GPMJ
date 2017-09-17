@@ -15,13 +15,14 @@ Date           Version   Description
 06 Sep. 2017   0.7       Add get_meld_kong_able()
 11 Sep. 2017   0.8       Add expose_meld()
 16 Sep. 2017   0.9       Add judge_implemented_hand() @NoPointsHandJudge
+17 Sep. 2017   0.10      Add judge_implemented_hand() @OneSetOfIdenticalSequencesJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.9"
-__date__    = "16 Sep. 2017"
+__version__ = "0.10"
+__date__    = "17 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -170,6 +171,30 @@ class NoPointsHandJudge(HandJudge):
            eye.tiles[0].suit == prevailing_wind:
             return False
         return True
+
+
+class OneSetOfIdenticalSequencesJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.ONE_SET_OF_IDENTICAL_SEQUENCES
+        self.closed_value = 1
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        for i in range(len(melds)-1):
+            if melds[i].b_sequential:
+                for j in range(i+1, len(melds)):
+                    if melds[j].b_sequential and melds[j].tiles[0].suit == melds[j].tiles[0].suit:
+                        for k in range(3):
+                            if not melds[i].tiles[k].number == melds[j].tiles[k].number:
+                                break
+                        else:
+                            return True
+        return False
+
 
 
 class Tile():
