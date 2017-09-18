@@ -16,13 +16,15 @@ Date           Version   Description
 11 Sep. 2017   0.8       Add expose_meld()
 16 Sep. 2017   0.9       Add judge_implemented_hand() @NoPointsHandJudge
 17 Sep. 2017   0.10      Add judge_implemented_hand() @OneSetOfIdenticalSequencesJudge
+18 Sep. 2017   0.11      Add judge_implemented_hand() @ThreeColorStraightJudge
+                                                      @AllSimplesJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.10"
-__date__    = "17 Sep. 2017"
+__version__ = "0.11"
+__date__    = "18 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -164,11 +166,16 @@ class NoPointsHandJudge(HandJudge):
         for meld in melds:
             if meld.b_exposed or not meld.b_sequential:
                 return False
-            if last_tile in meld.tiles and last_tile == meld.tiles[1]:
-                return False
-        if eye.tiles[0].suit == Suits.DRAGONS or \
-           eye.tiles[0].suit == players_wind or \
-           eye.tiles[0].suit == prevailing_wind:
+            if last_tile in meld.tiles:
+                if last_tile == meld.tiles[1] or \
+                   (last_tile == meld.tiles[0] and last_tile.number == 7) or \
+                   (last_tile == meld.tiles[2] and last_tile.number == 3):
+                    return False
+        if eye.tiles[0].suit == Suits.DRAGONS:
+            return False
+        if eye.tiles[0].suit == Suits.WINDS and \
+           (eye.tiles[0].number == players_wind or \
+            eye.tiles[0].number == prevailing_wind):
             return False
         return True
 
@@ -184,6 +191,9 @@ class OneSetOfIdenticalSequencesJudge(HandJudge):
         if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
                                               players_wind, prevailing_wind):
             return False
+        for meld in melds:
+            if meld.b_exposed:
+                return False
         for i in range(len(melds)-1):
             if melds[i].b_sequential:
                 for j in range(i+1, len(melds)):
@@ -195,6 +205,52 @@ class OneSetOfIdenticalSequencesJudge(HandJudge):
                             return True
         return False
 
+
+class AllSimplesJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.ALL_SIMPLES
+        self.closed_value = 1
+        self.open_value = 1
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        for meld in melds:
+            if meld.tiles[0].suit == Suits.WINDS or meld.tiles[0].suit == Suits.DRAGONS:
+                return False
+            for tile in meld.tiles:
+                if tile.number == 1 or tile.number == 9:
+                    return False
+        if eye.tiles[0].suit == Suits.WINDS or \
+           eye.tiles[0].suit == Suits.DRAGONS or \
+           eye.tiles[0].number == 1 or \
+           eye.tiles[0].number == 9:
+            return False
+        return True
+
+
+class ThreeColorStraightJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.THREE_COLOR_STRAIGHT
+        self.closed_value = 2
+        self.open_value = 1
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        all_seqs = [set(), set(), set()]
+        for meld in melds:
+            if meld.b_sequential:
+                all_seqs[meld.tiles[0].suit] = all_seqs[meld.tiles[0].suit] | {meld.tiles[0].number}
+        if len(all_seqs[0] & all_seqs[1] & all_seqs[2]):
+            return True
+        return False
 
 
 class Tile():
