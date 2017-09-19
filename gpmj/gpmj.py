@@ -18,13 +18,14 @@ Date           Version   Description
 17 Sep. 2017   0.10      Add judge_implemented_hand() @OneSetOfIdenticalSequencesJudge
 18 Sep. 2017   0.11      Add judge_implemented_hand() @ThreeColorStraightJudge
                                                       @AllSimplesJudge
+19 Sep. 2017   0.12      Add judge_implemented_hand() @StraightJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.11"
-__date__    = "18 Sep. 2017"
+__version__ = "0.12"
+__date__    = "19 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -250,6 +251,29 @@ class ThreeColorStraightJudge(HandJudge):
                 all_seqs[meld.tiles[0].suit] = all_seqs[meld.tiles[0].suit] | {meld.tiles[0].number}
         if len(all_seqs[0] & all_seqs[1] & all_seqs[2]):
             return True
+        return False
+
+
+class StraightJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.STRAIGHT
+        self.closed_value = 2
+        self.open_value = 1
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        all_seqs = [set(), set(), set()]
+        for meld in melds:
+            if meld.b_sequential:
+                all_seqs[meld.tiles[0].suit] = all_seqs[meld.tiles[0].suit] | {meld.tiles[0].number}
+        for seqs in all_seqs:
+            if len(seqs) >= 3:
+                if len({1, 4, 7} & seqs) == 3:
+                    return True
         return False
 
 
