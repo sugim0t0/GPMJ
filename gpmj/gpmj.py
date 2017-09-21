@@ -19,13 +19,14 @@ Date           Version   Description
 18 Sep. 2017   0.11      Add judge_implemented_hand() @ThreeColorStraightJudge
                                                       @AllSimplesJudge
 19 Sep. 2017   0.12      Add judge_implemented_hand() @StraightJudge
+21 Sep. 2017   0.13      Add judge_implemented_hand() @TerminalOrHonorInEachSetJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.12"
-__date__    = "19 Sep. 2017"
+__version__ = "0.13"
+__date__    = "21 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -275,6 +276,42 @@ class StraightJudge(HandJudge):
                 if len({1, 4, 7} & seqs) == 3:
                     return True
         return False
+
+
+class TerminalOrHonorInEachSetJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.TERMINAL_OR_HONOR_IN_EACH_SET
+        self.closed_value = 2
+        self.open_value = 1
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        b_sequential = False
+        b_honor = False
+        for meld in melds:
+            if meld.b_sequential:
+                if meld.tiles[0].number == 1 or meld.tiles[2].number == 9:
+                    b_sequential = True
+                else:
+                    return False
+            elif meld.tiles[0].suit == Suits.WINDS or \
+                 meld.tiles[0].suit == Suits.DRAGONS:
+                b_honor = True
+            elif not (meld.tiles[0].number == 1 or meld.tiles[0].number == 9):
+                return False
+        if eye.tiles[0].suit == Suits.WINDS or \
+           eye.tiles[0].suit == Suits.DRAGONS:
+            b_honor = True
+        elif not (eye.tiles[0].number == 1 or eye.tiles[0].number == 9):
+            return False
+        if b_sequential and b_honor:
+            return True
+        else:
+            return False
 
 
 class Tile():
