@@ -28,13 +28,16 @@ Date           Version   Description
                                                       @LittleThreeDragonsJudge
                                                       @TerminalInEachSetJudge
                                                       @HalfFlushJudge
+25 Sep. 2017   0.16      Add judge_implemented_hand() @TwoSetOfIdenticalSequencesJudge
+                                                      @FlushJudge
+                                                      @FourConcealedTripletsJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.15"
-__date__    = "23 Sep. 2017"
+__version__ = "0.16"
+__date__    = "25 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -504,32 +507,85 @@ class HalfFlushJudge(HandJudge):
         return True
 
 
-# class TwoSetOfIdenticalSequencesJudge(HandJudge):
-# 
-#     def __init__(self):
-#         self.flag = WinningHand.TWO_SET_OF_IDENTICAL_SEQUENCES
-#         self.closed_value = 3
-# 
-#     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
-#                                players_wind, prevailing_wind):
-#         if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-#                                               players_wind, prevailing_wind):
-#             return False
-#         for meld in melds:
-#             if meld.b_exposed:
-#                 return False
-#         tile_of_first_set = None
-#         for i in range(len(melds)-1):
-#             if melds[i].b_sequential:
-#                 for j in range(i+1, len(melds)):
-#                     if melds[j].b_sequential and melds[j].tiles[0].suit == melds[j].tiles[0].suit:
-#                         for k in range(3):
-#                             if not melds[i].tiles[k].number == melds[j].tiles[k].number:
-#                                 break
-#                         else:
-#                             return True
-#         else:
-#             return False
+class TwoSetOfIdenticalSequencesJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.TWO_SET_OF_IDENTICAL_SEQUENCES
+        self.closed_value = 3
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        for meld in melds:
+            if meld.b_exposed:
+                return False
+        tile_of_first_set = None
+        for i in range(len(melds)-1):
+            if not tile_of_first_set == None and \
+               melds[i].tiles[0].suit == tile_of_first_set.suit and \
+               melds[i].tiles[0].number == tile_of_first_set.number:
+                continue
+            if melds[i].b_sequential:
+                for j in range(i+1, len(melds)):
+                    if melds[j].b_sequential and melds[j].tiles[0].suit == melds[j].tiles[0].suit:
+                        for k in range(3):
+                            if not melds[i].tiles[k].number == melds[j].tiles[k].number:
+                                break
+                        else:
+                            if tile_of_first_set == None:
+                                tile_of_first_set = melds[i].tiles[0]
+                            else:
+                                return True
+        else:
+            return False
+
+
+class FlushJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.FLUSH
+        self.closed_value = 6
+        self.open_value = 5
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        simple_suit = melds[0].tiles[0].suit
+        for meld in melds:
+            if meld.tiles[0].suit == Suits.WINDS or \
+               meld.tiles[0].suit == Suits.DRAGONS:
+                return False
+            if not meld.tiles[0].suit == simple_suit:
+                return False
+        if eye.tiles[0].suit == Suits.WINDS or \
+           eye.tiles[0].suit == Suits.DRAGONS:
+            return False
+        if not eye.tiles[0].suit == simple_suit:
+            return False
+        return True
+
+
+class FourConcealedTripletsJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.FOUR_CONCEALED_TRIPLETS
+        self.closed_value = 13
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        for meld in melds:
+            if meld.b_sequential or meld.b_exposed or \
+               (last_tile in meld.tiles and b_discarded):
+                return False
+        else:
+            return True
 
 
 class Tile():
