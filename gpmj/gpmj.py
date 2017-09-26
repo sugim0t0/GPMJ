@@ -31,13 +31,19 @@ Date           Version   Description
 25 Sep. 2017   0.16      Add judge_implemented_hand() @TwoSetOfIdenticalSequencesJudge
                                                       @FlushJudge
                                                       @FourConcealedTripletsJudge
+26 Sep. 2017   0.17      Add judge_implemented_hand() @BigThreeDragonsJudge
+                                                      @LittleFourWindsJudge
+                                                      @BigFourWindsJudge
+                                                      @AllHonorsJudge
+                                                      @AllTerminalsJudge
+                                                      @AllGreenJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.16"
-__date__    = "25 Sep. 2017"
+__version__ = "0.17"
+__date__    = "26 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -587,6 +593,165 @@ class FourConcealedTripletsJudge(HandJudge):
         else:
             return True
 
+
+class BigThreeDragonsJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.BIG_THREE_DRAGONS
+        self.closed_value = 13
+        self.open_value = 13
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        num_of_dragons = 0
+        for meld in melds:
+            if meld.tiles[0].suit == Suits.DRAGONS:
+                num_of_dragons += 1
+        if num_of_dragons < 3:
+            return False
+        else:
+            return True
+
+
+class LittleFourWindsJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.LITTLE_FOUR_WINDS
+        self.closed_value = 13
+        self.open_value = 13
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        num_of_winds = 0
+        for meld in melds:
+            if meld.tiles[0].suit == Suits.WINDS:
+                num_of_winds += 1
+        if num_of_winds == 3 and eye.tiles[0].suit == Suits.WINDS:
+            return True
+        else:
+            return False
+
+
+class BigFourWindsJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.BIG_FOUR_WINDS
+        self.closed_value = 13
+        self.open_value = 13
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        num_of_winds = 0
+        for meld in melds:
+            if meld.tiles[0].suit == Suits.WINDS:
+                num_of_winds += 1
+        if num_of_winds < 4:
+            return False
+        else:
+            return True
+
+
+class AllHonorsJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.ALL_HONORS
+        self.closed_value = 13
+        self.open_value = 13
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        for meld in melds:
+            if not meld.tiles[0].suit == Suits.WINDS and \
+               not meld.tiles[0].suit == Suits.DRAGONS:
+                return False
+        if not eye.tiles[0].suit == Suits.WINDS and \
+           not eye.tiles[0].suit == Suits.DRAGONS:
+            return False
+        else:
+            return True
+
+
+class AllTerminalsJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.ALL_TERMINALS
+        self.closed_value = 13
+        self.open_value = 13
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        for meld in melds:
+            if meld.tiles[0].suit == Suits.WINDS or \
+               meld.tiles[0].suit == Suits.DRAGONS or \
+               meld.b_sequential or \
+               (not meld.tiles[0].number == 1 and \
+                not meld.tiles[0].number == 9):
+                return False
+        if eye.tiles[0].suit == Suits.WINDS or \
+           eye.tiles[0].suit == Suits.DRAGONS or \
+           (not eye.tiles[0].number == 1 and \
+            not eye.tiles[0].number == 9):
+            return False
+        else:
+            return True
+
+
+class AllGreenJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.ALL_GREEN
+        self.closed_value = 13
+        self.open_value = 13
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        for meld in melds:
+            if meld.tiles[0].suit == Suits.DRAGONS:
+                if not meld.tiles[0].number == Dragons.GREEN:
+                    return False
+            elif meld.tiles[0].suit == Suits.BAMBOO:
+                for tile in meld.tiles:
+                    if not tile.number == 2 and \
+                       not tile.number == 3 and \
+                       not tile.number == 4 and \
+                       not tile.number == 6 and \
+                       not tile.number == 8:
+                        return False
+            else:
+                return False
+        if eye.tiles[0].suit == Suits.DRAGONS and \
+           not eye.tiles[0].number == Dragons.GREEN:
+            return False
+        elif eye.tiles[0].suit == Suits.BAMBOO:
+            if not eye.tiles[0].number == 2 and \
+               not eye.tiles[0].number == 3 and \
+               not eye.tiles[0].number == 4 and \
+               not eye.tiles[0].number == 6 and \
+               not eye.tiles[0].number == 8:
+                return False
+        else:
+            return False
+        return True
+# NINE_GATES       
+# FOUR_KONGS       
 
 class Tile():
 
