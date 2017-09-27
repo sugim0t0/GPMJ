@@ -37,13 +37,15 @@ Date           Version   Description
                                                       @AllHonorsJudge
                                                       @AllTerminalsJudge
                                                       @AllGreenJudge
+27 Sep. 2017   0.18      Add judge_implemented_hand() @NineGatesJudge
+                                                      @FourKongsJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.17"
-__date__    = "26 Sep. 2017"
+__version__ = "0.18"
+__date__    = "27 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -750,8 +752,62 @@ class AllGreenJudge(HandJudge):
         else:
             return False
         return True
-# NINE_GATES       
-# FOUR_KONGS       
+
+
+class NineGatesJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.NINE_GATES
+        self.closed_value = 13
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        simple_suit = melds[0].tiles[0].suit
+        number_counters = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        for meld in melds:
+            if meld.tiles[0].suit == Suits.WINDS or \
+               meld.tiles[0].suit == Suits.DRAGONS or \
+               not meld.tiles[0].suit == simple_suit:
+                return False
+            for tile in meld.tiles:
+                number_counters[tile.number-1] += 1
+        if eye.tiles[0].suit == Suits.WINDS or \
+           eye.tiles[0].suit == Suits.DRAGONS or \
+           not eye.tiles[0].suit == simple_suit:
+            return False
+        number_counters[eye.tiles[0].number-1] += 2
+        for i in range(9):
+            if (i == 0 or i == 8) and \
+               number_counters[i] < 3:
+                return False
+            elif number_counters[i] < 1:
+                return False
+        else:
+            return True
+
+
+class FourKongsJudge(HandJudge):
+
+    def __init__(self):
+        self.flag = WinningHand.FOUR_KONGS
+        self.closed_value = 13
+        self.open_value = 13
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
+                                              players_wind, prevailing_wind):
+            return False
+        for meld in melds:
+            if meld.b_sequential or \
+               not (len(meld.tiles) == 4):
+                return False
+        else:
+            return True
+
 
 class Tile():
 
