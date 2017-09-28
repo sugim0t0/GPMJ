@@ -39,13 +39,19 @@ Date           Version   Description
                                                       @AllGreenJudge
 27 Sep. 2017   0.18      Add judge_implemented_hand() @NineGatesJudge
                                                       @FourKongsJudge
+28 Sep. 2017   0.19      Add judge_implemented_7pairs_hand()
+                                                      @AllSimplesJudge
+                                                      @AllTerminalsAndHonorsJudge
+                                                      @HalfFlushJudge
+                                                      @FlushJudge
+                                                      @AllHonorsJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.18"
-__date__    = "27 Sep. 2017"
+__version__ = "0.19"
+__date__    = "28 Sep. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -164,6 +170,7 @@ class HandJudge():
         self.flag = 0x00000000
         self.closed_value = 0
         self.open_value = 0
+        self.b_combinable_7pairs = True
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -174,12 +181,27 @@ class HandJudge():
                 return False
         return True 
 
+    def judge_implemented_7pairs_hand(self, eyes):
+        if (not self.b_combinable_7pairs) or (not len(eyes) == 7):
+            return False
+        for eye in eyes:
+            if not len(eye.tiles) == 2:
+                return False
+        for i in range(len(eyes)-1):
+            for j in range(i+1, len(eyes)):
+                if eyes[i].tiles[0].suit == eyes[j].tiles[0].suit and \
+                   eyes[i].tiles[0].number == eyes[j].tiles[0].number:
+                    return False
+        return True
+
 
 class NoPointsHandJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.NO_POINTS_HAND
         self.closed_value = 1
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -206,8 +228,10 @@ class NoPointsHandJudge(HandJudge):
 class OneSetOfIdenticalSequencesJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.ONE_SET_OF_IDENTICAL_SEQUENCES
         self.closed_value = 1
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -233,6 +257,7 @@ class OneSetOfIdenticalSequencesJudge(HandJudge):
 class AllSimplesJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.ALL_SIMPLES
         self.closed_value = 1
         self.open_value = 1
@@ -255,13 +280,26 @@ class AllSimplesJudge(HandJudge):
             return False
         return True
 
+    def judge_implemented_7pairs_hand(self, eyes):
+        if not super().judge_implemented_7pairs_hand(eyes):
+            return False
+        for eye in eyes:
+            if eye.tiles[0].suit == Suits.WINDS or \
+               eye.tiles[0].suit == Suits.DRAGONS or \
+               eye.tiles[0].number == 1 or \
+               eye.tiles[0].number == 9:
+                return False
+        return True
+
 
 class ThreeColorStraightJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.THREE_COLOR_STRAIGHT
         self.closed_value = 2
         self.open_value = 1
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -280,9 +318,11 @@ class ThreeColorStraightJudge(HandJudge):
 class StraightJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.STRAIGHT
         self.closed_value = 2
         self.open_value = 1
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -303,9 +343,11 @@ class StraightJudge(HandJudge):
 class TerminalOrHonorInEachSetJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.TERMINAL_OR_HONOR_IN_EACH_SET
         self.closed_value = 2
         self.open_value = 1
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -327,9 +369,11 @@ class TerminalOrHonorInEachSetJudge(HandJudge):
 class AllTripletHandJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.ALL_TRIPLET_HAND
         self.closed_value = 2
         self.open_value = 2 
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -346,9 +390,11 @@ class AllTripletHandJudge(HandJudge):
 class ThreeClosedTripletsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.THREE_CLOSED_TRIPLETS
         self.closed_value = 2
         self.open_value = 2 
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -371,9 +417,11 @@ class ThreeClosedTripletsJudge(HandJudge):
 class ThreeColorTripletsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.THREE_COLOR_TRIPLETS
         self.closed_value = 2
         self.open_value = 2 
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -392,9 +440,11 @@ class ThreeColorTripletsJudge(HandJudge):
 class ThreeKongsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.THREE_KONGS
         self.closed_value = 2
         self.open_value = 2 
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -416,6 +466,7 @@ class ThreeKongsJudge(HandJudge):
 class AllTerminalsAndHonorsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.ALL_TERMINALS_AND_HONORS
         self.closed_value = 2
         self.open_value = 2 
@@ -437,13 +488,26 @@ class AllTerminalsAndHonorsJudge(HandJudge):
             return False
         return True
 
+    def judge_implemented_7pairs_hand(self, eyes):
+        if not super().judge_implemented_7pairs_hand(eyes):
+            return False
+        for eye in eyes:
+            if not eye.tiles[0].suit == Suits.WINDS and \
+               not eye.tiles[0].suit == Suits.DRAGONS and \
+               not eye.tiles[0].number == 1 and \
+               not eye.tiles[0].number == 9:
+                return False
+        return True
+
 
 class LittleThreeDragonsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.LITTLE_THREE_DRAGONS
         self.closed_value = 2
         self.open_value = 2 
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -465,9 +529,11 @@ class LittleThreeDragonsJudge(HandJudge):
 class TerminalInEachSetJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.TERMINAL_IN_EACH_SET
         self.closed_value = 3
         self.open_value = 2 
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -489,6 +555,7 @@ class TerminalInEachSetJudge(HandJudge):
 class HalfFlushJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.HALF_FLUSH
         self.closed_value = 3
         self.open_value = 2 
@@ -500,26 +567,42 @@ class HalfFlushJudge(HandJudge):
             return False
         first_simple_suit = Suits.INVALID
         for meld in melds:
-            if not (meld.tiles[0].suit == Suits.WINDS or \
-                    meld.tiles[0].suit == Suits.DRAGONS) and \
+            if not meld.tiles[0].suit == Suits.WINDS and \
+               not meld.tiles[0].suit == Suits.DRAGONS and \
                not meld.tiles[0].suit == first_simple_suit:
                 if first_simple_suit == Suits.INVALID:
                     first_simple_suit = meld.tiles[0].suit
                 else:
                     return False
-        if not (eye.tiles[0].suit == Suits.WINDS or \
-                eye.tiles[0].suit == Suits.DRAGONS) and \
+        if not eye.tiles[0].suit == Suits.WINDS and \
+           not eye.tiles[0].suit == Suits.DRAGONS and \
            not eye.tiles[0].suit == first_simple_suit and \
            not first_simple_suit == Suits.INVALID:
             return False
+        return True
+
+    def judge_implemented_7pairs_hand(self, eyes):
+        if not super().judge_implemented_7pairs_hand(eyes):
+            return False
+        first_simple_suit = Suits.INVALID
+        for eye in eyes:
+            if not eye.tiles[0].suit == Suits.WINDS and \
+               not eye.tiles[0].suit == Suits.DRAGONS and \
+               not eye.tiles[0].suit == first_simple_suit:
+                if first_simple_suit == Suits.INVALID:
+                    first_simple_suit = eye.tiles[0].suit
+                else:
+                    return False
         return True
 
 
 class TwoSetOfIdenticalSequencesJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.TWO_SET_OF_IDENTICAL_SEQUENCES
         self.closed_value = 3
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -553,6 +636,7 @@ class TwoSetOfIdenticalSequencesJudge(HandJudge):
 class FlushJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.FLUSH
         self.closed_value = 6
         self.open_value = 5
@@ -576,12 +660,26 @@ class FlushJudge(HandJudge):
             return False
         return True
 
+    def judge_implemented_7pairs_hand(self, eyes):
+        if not super().judge_implemented_7pairs_hand(eyes):
+            return False
+        simple_suit = eyes[0].tiles[0].suit
+        for eye in eyes:
+            if eye.tiles[0].suit == Suits.WINDS or \
+               eye.tiles[0].suit == Suits.DRAGONS:
+                return False
+            if not eye.tiles[0].suit == simple_suit:
+                return False
+        return True
+
 
 class FourConcealedTripletsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.FOUR_CONCEALED_TRIPLETS
         self.closed_value = 13
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -599,9 +697,11 @@ class FourConcealedTripletsJudge(HandJudge):
 class BigThreeDragonsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.BIG_THREE_DRAGONS
         self.closed_value = 13
         self.open_value = 13
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -621,9 +721,11 @@ class BigThreeDragonsJudge(HandJudge):
 class LittleFourWindsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.LITTLE_FOUR_WINDS
         self.closed_value = 13
         self.open_value = 13
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -643,9 +745,11 @@ class LittleFourWindsJudge(HandJudge):
 class BigFourWindsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.BIG_FOUR_WINDS
         self.closed_value = 13
         self.open_value = 13
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -665,6 +769,7 @@ class BigFourWindsJudge(HandJudge):
 class AllHonorsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.ALL_HONORS
         self.closed_value = 13
         self.open_value = 13
@@ -684,13 +789,24 @@ class AllHonorsJudge(HandJudge):
         else:
             return True
 
+    def judge_implemented_7pairs_hand(self, eyes):
+        if not super().judge_implemented_7pairs_hand(eyes):
+            return False
+        for eye in eyes:
+            if not eye.tiles[0].suit == Suits.WINDS and \
+               not eye.tiles[0].suit == Suits.DRAGONS:
+                return False
+        return True
+
 
 class AllTerminalsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.ALL_TERMINALS
         self.closed_value = 13
         self.open_value = 13
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -716,9 +832,11 @@ class AllTerminalsJudge(HandJudge):
 class AllGreenJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.ALL_GREEN
         self.closed_value = 13
         self.open_value = 13
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -757,8 +875,10 @@ class AllGreenJudge(HandJudge):
 class NineGatesJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.NINE_GATES
         self.closed_value = 13
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -792,9 +912,11 @@ class NineGatesJudge(HandJudge):
 class FourKongsJudge(HandJudge):
 
     def __init__(self):
+        super().__init__()
         self.flag = WinningHand.FOUR_KONGS
         self.closed_value = 13
         self.open_value = 13
+        self.b_combinable_7pairs = False
 
     def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
@@ -1163,7 +1285,7 @@ class Hand():
                 required[Suits.DRAGONS] = required[Suits.DRAGONS] | {dragon}
         return required
 
-    def get_required_7differentpairs(self):
+    def get_required_7pairs(self):
         required = [set(), set(), set(), set(), set()]
         b_missed = False
         if len(self.exposed) > 0:
