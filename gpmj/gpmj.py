@@ -45,13 +45,17 @@ Date           Version   Description
                                                       @HalfFlushJudge
                                                       @FlushJudge
                                                       @AllHonorsJudge
+01 Oct. 2017   0.20      Add judge_implemented_7pairs_hand()
+                                                      @SevenPairsJudge
+                         Add judge_implemented_13orphans_hand()
+                                                      @ThirteenOrphansJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.19"
-__date__    = "28 Sep. 2017"
+__version__ = "0.20"
+__date__    = "01 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -364,6 +368,26 @@ class TerminalOrHonorInEachSetJudge(HandJudge):
            not (eye.tiles[0].number == 1 or eye.tiles[0].number == 9):
             return False
         return True
+
+
+class SevenPairsJudge(HandJudge):
+
+    def __init__(self):
+        super().__init__()
+        self.flag = WinningHand.SEVEN_PAIRS
+        self.closed_value = 2
+        self.open_value = 2
+        self.b_combinable_7pairs = True
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        return False
+
+    def judge_implemented_7pairs_hand(self, eyes):
+        if super().judge_implemented_7pairs_hand(eyes):
+            return True
+        else:
+            return False
 
 
 class AllTripletHandJudge(HandJudge):
@@ -888,7 +912,8 @@ class NineGatesJudge(HandJudge):
         simple_suit = melds[0].tiles[0].suit
         number_counters = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         for meld in melds:
-            if meld.tiles[0].suit == Suits.WINDS or \
+            if meld.b_exposed or \
+               meld.tiles[0].suit == Suits.WINDS or \
                meld.tiles[0].suit == Suits.DRAGONS or \
                not meld.tiles[0].suit == simple_suit:
                 return False
@@ -929,6 +954,52 @@ class FourKongsJudge(HandJudge):
                 return False
         else:
             return True
+
+
+class ThirteenOrphansJudge(HandJudge):
+
+    def __init__(self):
+        super().__init__()
+        self.flag = WinningHand.THIRTEEN_ORPHANS
+        self.closed_value = 13
+        self.open_value = 13
+        self.b_combinable_7pairs = False
+
+    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+                               players_wind, prevailing_wind):
+        return False
+
+    def judge_implemented_13orphans_hand(self, pure_tiles):
+        # Simples
+        for suit in range(Suits.NUM_OF_SIMPLES):
+            b_1_exist = False
+            b_9_exist = False
+            for tile in pure_tiles[suit]:
+                if tile.number == 1:
+                    b_1_exist = True
+                elif tile.number == 9:
+                    b_9_exist = True
+                else:
+                    return False
+            if not b_1_exist or not b_9_exist:
+                return False
+        # Winds
+        b_winds_exist = [False for i in range(Winds.NUM_OF_WINDS)]
+        for tile in pure_tiles[Suits.WINDS]:
+            b_winds_exist[tile.number] = True
+        else:
+            for wind in range(Winds.NUM_OF_WINDS):
+                if not b_winds_exist[wind]:
+                    return False
+        # Dragons
+        b_dragons_exist = [False for i in range(Dragons.NUM_OF_DRAGONS)]
+        for tile in pure_tiles[Suits.DRAGONS]:
+            b_dragons_exist[tile.number] = True
+        else:
+            for dragon in range(Dragons.NUM_OF_DRAGONS):
+                if not b_dragons_exist[dragon]:
+                    return False
+        return True
 
 
 class Tile():
