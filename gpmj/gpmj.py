@@ -49,13 +49,14 @@ Date           Version   Description
                                                       @SevenPairsJudge
                          Add judge_implemented_13orphans_hand()
                                                       @ThirteenOrphansJudge
+04 Oct. 2017   0.21      Add HandJudgeChain class (but unittest is not done yet)
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.20"
-__date__    = "01 Oct. 2017"
+__version__ = "0.21"
+__date__    = "04 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -168,6 +169,44 @@ class WinningHand(IntEnum):
   # HAND_OF_MAN =
 
 
+class HandJudgeChain():
+
+    def __init__(self, hand_judge, next_chain_true, next_chain_false):
+        self.hand_judge = hand_judge
+        self.next_chain_true = next_chain_true
+        self.next_chain_false = next_chain_false
+
+    def judge_chain_basic(self, melds, eye, last_tile, b_discarded, \
+                          players_wind, prevailing_wind, hand_flag):
+        if self.hand_judge.judge_implemented_hand(melds, eye, last_tile, \
+                          b_discarded, players_wind, prevailing_wind):
+            hand_flag = hand_flag | self.hand_judge.flag
+            if self.next_chain_true == None:
+                return hand_flag
+            else:
+                return self.next_chain_true.judge_chain_basic(melds, eye, last_tile, \
+                          b_discarded, players_wind, prevailing_wind, hand_flag)
+        else:
+            if self.next_chain_false == None:
+                return hand_flag
+            else:
+                return self.next_chain_false.judge_chain_basic(melds, eye, last_tile, \
+                          b_discarded, players_wind, prevailing_wind, hand_flag)
+
+    def judge_chain_7pairs(self, eyes, hand_flag):
+        if self.hand_judge.judge_implemented_7pairs_hand(eyes):
+            hand_flag = hand_flag | self.hand_judge.flag
+            if self.next_chain_true == None:
+                return hand_flag
+            else:
+                return self.next_chain_true.judge_chain_7pairs(eyes, hand_flag)
+        else:
+            if self.next_chain_false == None:
+                return hand_flag
+            else:
+                return self.next_chain_false.judge_chain_7pairs(eyes, hand_flag)
+
+
 class HandJudge():
 
     def __init__(self):
@@ -245,17 +284,23 @@ class OneSetOfIdenticalSequencesJudge(HandJudge):
         for meld in melds:
             if meld.b_exposed:
                 return False
+        meld2_of_first_set = -1
         for i in range(len(melds)-1):
+            if i == meld2_of_first_set:
+                continue
             if melds[i].b_sequential:
                 for j in range(i+1, len(melds)):
-                    if melds[j].b_sequential and melds[j].tiles[0].suit == melds[j].tiles[0].suit:
-                        for k in range(3):
-                            if not melds[i].tiles[k].number == melds[j].tiles[k].number:
-                                break
+                    if j == meld2_of_first_set:
+                        continue
+                    if melds[j].b_sequential and \
+                       melds[i].tiles[0].suit == melds[j].tiles[0].suit and \
+                       melds[i].tiles[0].number == melds[j].tiles[0].number:
+                        if meld2_of_first_set < 0:
+                            meld2_of_first_set = j
                         else:
-                            return True
+                            return False # Second set is existed
         else:
-            return False
+            return True
 
 
 class AllSimplesJudge(HandJudge):
@@ -358,14 +403,24 @@ class TerminalOrHonorInEachSetJudge(HandJudge):
         if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
                                               players_wind, prevailing_wind):
             return False
+        b_sequential = False
+        b_honored = False
         for meld in melds:
-            if not (meld.tiles[0].suit == Suits.WINDS or \
-                    meld.tiles[0].suit == Suits.DRAGONS) and \
-               not (meld.tiles[0].number == 1 or meld.tiles[2].number == 9):
+            if meld.tiles[0].suit == Suits.WINDS or \
+               meld.tiles[0].suit == Suits.DRAGONS:
+                b_honored = True
+            elif not meld.tiles[0].number == 1 and not meld.tiles[2].number == 9:
                 return False
-        if not (eye.tiles[0].suit == Suits.WINDS or \
-                eye.tiles[0].suit == Suits.DRAGONS) and \
-           not (eye.tiles[0].number == 1 or eye.tiles[0].number == 9):
+            elif meld.b_sequential:
+                b_sequential = True
+        if not b_sequential:
+            return False
+        if eye.tiles[0].suit == Suits.WINDS or \
+           eye.tiles[0].suit == Suits.DRAGONS:
+            b_honored = True
+        elif not eye.tiles[0].number == 1 and not eye.tiles[0].number == 9:
+            return False
+        if not b_honored:
             return False
         return True
 
@@ -564,11 +619,16 @@ class TerminalInEachSetJudge(HandJudge):
         if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
                                               players_wind, prevailing_wind):
             return False
+        b_sequential = False
         for meld in melds:
             if meld.tiles[0].suit == Suits.WINDS or \
                meld.tiles[0].suit == Suits.DRAGONS or \
                not (meld.tiles[0].number == 1 or meld.tiles[2].number == 9):
                 return False
+            elif meld.b_sequential:
+                b_sequential = True
+        if not b_sequential:
+            return False
         if eye.tiles[0].suit == Suits.WINDS or \
            eye.tiles[0].suit == Suits.DRAGONS or \
            not (eye.tiles[0].number == 1 or eye.tiles[0].number == 9):
@@ -590,34 +650,45 @@ class HalfFlushJudge(HandJudge):
                                               players_wind, prevailing_wind):
             return False
         first_simple_suit = Suits.INVALID
+        b_honored = False
         for meld in melds:
-            if not meld.tiles[0].suit == Suits.WINDS and \
-               not meld.tiles[0].suit == Suits.DRAGONS and \
-               not meld.tiles[0].suit == first_simple_suit:
+            if meld.tiles[0].suit == Suits.WINDS or \
+               meld.tiles[0].suit == Suits.DRAGONS:
+                b_honored = True
+            elif not meld.tiles[0].suit == first_simple_suit:
                 if first_simple_suit == Suits.INVALID:
                     first_simple_suit = meld.tiles[0].suit
                 else:
                     return False
-        if not eye.tiles[0].suit == Suits.WINDS and \
-           not eye.tiles[0].suit == Suits.DRAGONS and \
-           not eye.tiles[0].suit == first_simple_suit and \
-           not first_simple_suit == Suits.INVALID:
+        if eye.tiles[0].suit == Suits.WINDS or \
+           eye.tiles[0].suit == Suits.DRAGONS:
+            b_honored = True
+        elif not eye.tiles[0].suit == first_simple_suit and \
+             not first_simple_suit == Suits.INVALID:
             return False
-        return True
+        if b_honored:
+            return True
+        else:
+            return False
 
     def judge_implemented_7pairs_hand(self, eyes):
         if not super().judge_implemented_7pairs_hand(eyes):
             return False
         first_simple_suit = Suits.INVALID
+        b_honored = False
         for eye in eyes:
-            if not eye.tiles[0].suit == Suits.WINDS and \
-               not eye.tiles[0].suit == Suits.DRAGONS and \
-               not eye.tiles[0].suit == first_simple_suit:
+            if eye.tiles[0].suit == Suits.WINDS or \
+               eye.tiles[0].suit == Suits.DRAGONS:
+                b_honored = True
+            elif not eye.tiles[0].suit == first_simple_suit:
                 if first_simple_suit == Suits.INVALID:
                     first_simple_suit = eye.tiles[0].suit
                 else:
                     return False
-        return True
+        if b_honored:
+            return True
+        else:
+            return False
 
 
 class TwoSetOfIdenticalSequencesJudge(HandJudge):
@@ -636,23 +707,21 @@ class TwoSetOfIdenticalSequencesJudge(HandJudge):
         for meld in melds:
             if meld.b_exposed:
                 return False
-        tile_of_first_set = None
+        meld2_of_first_set = -1
         for i in range(len(melds)-1):
-            if not tile_of_first_set == None and \
-               melds[i].tiles[0].suit == tile_of_first_set.suit and \
-               melds[i].tiles[0].number == tile_of_first_set.number:
+            if i == meld2_of_first_set:
                 continue
             if melds[i].b_sequential:
                 for j in range(i+1, len(melds)):
-                    if melds[j].b_sequential and melds[j].tiles[0].suit == melds[j].tiles[0].suit:
-                        for k in range(3):
-                            if not melds[i].tiles[k].number == melds[j].tiles[k].number:
-                                break
+                    if j == meld2_of_first_set:
+                        continue
+                    if melds[j].b_sequential and \
+                       melds[i].tiles[0].suit == melds[j].tiles[0].suit and \
+                       melds[i].tiles[0].number == melds[j].tiles[0].number:
+                        if meld2_of_first_set < 0:
+                            meld2_of_first_set = j
                         else:
-                            if tile_of_first_set == None:
-                                tile_of_first_set = melds[i].tiles[0]
-                            else:
-                                return True
+                            return True
         else:
             return False
 

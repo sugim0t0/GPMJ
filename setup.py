@@ -7,3 +7,6 @@ setup(
     package_dir={'gpmj': './gpmj'},
     )
 
+# python setup.py install
+# python setup.py install --user
+
