@@ -50,13 +50,14 @@ Date           Version   Description
                          Add judge_implemented_13orphans_hand()
                                                       @ThirteenOrphansJudge
 04 Oct. 2017   0.21      Add HandJudgeChain class (but unittest is not done yet)
+10 Oct. 2017   0.22      Fix bug of OneSetOfIdenticalSequencesJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.21"
-__date__    = "04 Oct. 2017"
+__version__ = "0.22"
+__date__    = "10 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -171,8 +172,12 @@ class WinningHand(IntEnum):
 
 class HandJudgeChain():
 
-    def __init__(self, hand_judge, next_chain_true, next_chain_false):
+    def __init__(self, hand_judge):
         self.hand_judge = hand_judge
+        self.next_chain_true = None
+        self.next_chain_false = None
+
+    def connect_chain(self, next_chain_true, next_chain_false):
         self.next_chain_true = next_chain_true
         self.next_chain_false = next_chain_false
 
@@ -251,10 +256,12 @@ class NoPointsHandJudge(HandJudge):
         if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
                                               players_wind, prevailing_wind):
             return False
+        if last_tile in eye.tiles:
+            return False
         for meld in melds:
             if meld.b_exposed or not meld.b_sequential:
                 return False
-            if last_tile in meld.tiles:
+            elif last_tile in meld.tiles:
                 if last_tile == meld.tiles[1] or \
                    (last_tile == meld.tiles[0] and last_tile.number == 7) or \
                    (last_tile == meld.tiles[2] and last_tile.number == 3):
@@ -299,6 +306,8 @@ class OneSetOfIdenticalSequencesJudge(HandJudge):
                             meld2_of_first_set = j
                         else:
                             return False # Second set is existed
+        if meld2_of_first_set < 0:
+            return False
         else:
             return True
 
