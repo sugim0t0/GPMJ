@@ -14,50 +14,48 @@ Date           Version   Description
 06 Sep. 2017   0.6       Add get_melds_pong_able()
 06 Sep. 2017   0.7       Add get_meld_kong_able()
 11 Sep. 2017   0.8       Add expose_meld()
-16 Sep. 2017   0.9       Add judge_implemented_hand() @NoPointsHandJudge
-17 Sep. 2017   0.10      Add judge_implemented_hand() @OneSetOfIdenticalSequencesJudge
-18 Sep. 2017   0.11      Add judge_implemented_hand() @ThreeColorStraightJudge
-                                                      @AllSimplesJudge
-19 Sep. 2017   0.12      Add judge_implemented_hand() @StraightJudge
-21 Sep. 2017   0.13      Add judge_implemented_hand() @TerminalOrHonorInEachSetJudge
-22 Sep. 2017   0.14      Add judge_implemented_hand() @AllTripletHandJudge
-23 Sep. 2017   0.15      Add judge_implemented_hand() @ThreeClosedTripletsJudge
-                                                      @ThreeColorTripletsJudge
-                                                      @ThreeKongsJudge
-                                                      @AllTerminalsAndHonorsJudge
-                                                      @LittleThreeDragonsJudge
-                                                      @TerminalInEachSetJudge
-                                                      @HalfFlushJudge
-25 Sep. 2017   0.16      Add judge_implemented_hand() @TwoSetOfIdenticalSequencesJudge
-                                                      @FlushJudge
-                                                      @FourConcealedTripletsJudge
-26 Sep. 2017   0.17      Add judge_implemented_hand() @BigThreeDragonsJudge
-                                                      @LittleFourWindsJudge
-                                                      @BigFourWindsJudge
-                                                      @AllHonorsJudge
-                                                      @AllTerminalsJudge
-                                                      @AllGreenJudge
-27 Sep. 2017   0.18      Add judge_implemented_hand() @NineGatesJudge
-                                                      @FourKongsJudge
-28 Sep. 2017   0.19      Add judge_implemented_7pairs_hand()
-                                                      @AllSimplesJudge
-                                                      @AllTerminalsAndHonorsJudge
-                                                      @HalfFlushJudge
-                                                      @FlushJudge
-                                                      @AllHonorsJudge
-01 Oct. 2017   0.20      Add judge_implemented_7pairs_hand()
-                                                      @SevenPairsJudge
-                         Add judge_implemented_13orphans_hand()
-                                                      @ThirteenOrphansJudge
+16 Sep. 2017   0.9       Add judge_basic_hand()     @NoPointsHandJudge
+17 Sep. 2017   0.10      Add judge_basic_hand()     @OneSetOfIdenticalSequencesJudge
+18 Sep. 2017   0.11      Add judge_basic_hand()     @ThreeColorStraightJudge
+                                                    @AllSimplesJudge
+19 Sep. 2017   0.12      Add judge_basic_hand()     @StraightJudge
+21 Sep. 2017   0.13      Add judge_basic_hand()     @TerminalOrHonorInEachSetJudge
+22 Sep. 2017   0.14      Add judge_basic_hand()     @AllTripletHandJudge
+23 Sep. 2017   0.15      Add judge_basic_hand()     @ThreeClosedTripletsJudge
+                                                    @ThreeColorTripletsJudge
+                                                    @ThreeKongsJudge
+                                                    @AllTerminalsAndHonorsJudge
+                                                    @LittleThreeDragonsJudge
+                                                    @TerminalInEachSetJudge
+                                                    @HalfFlushJudge
+25 Sep. 2017   0.16      Add judge_basic_hand()     @TwoSetOfIdenticalSequencesJudge
+                                                    @FlushJudge
+                                                    @FourConcealedTripletsJudge
+26 Sep. 2017   0.17      Add judge_basic_hand()     @BigThreeDragonsJudge
+                                                    @LittleFourWindsJudge
+                                                    @BigFourWindsJudge
+                                                    @AllHonorsJudge
+                                                    @AllTerminalsJudge
+                                                    @AllGreenJudge
+27 Sep. 2017   0.18      Add judge_basic_hand()     @NineGatesJudge
+                                                    @FourKongsJudge
+28 Sep. 2017   0.19      Add judge_7pairs_hand()    @AllSimplesJudge
+                                                    @AllTerminalsAndHonorsJudge
+                                                    @HalfFlushJudge
+                                                    @FlushJudge
+                                                    @AllHonorsJudge
+01 Oct. 2017   0.20      Add judge_7pairs_hand()    @SevenPairsJudge
+                         Add judge_13orphans_hand() @ThirteenOrphansJudge
 04 Oct. 2017   0.21      Add HandJudgeChain class (but unittest is not done yet)
 10 Oct. 2017   0.22      Fix bug of OneSetOfIdenticalSequencesJudge
+12 Oct. 2017   0.23      Add declare_kong() and change some small specs..
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.22"
-__date__    = "10 Oct. 2017"
+__version__ = "0.23"
+__date__    = "12 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -183,7 +181,7 @@ class HandJudgeChain():
 
     def judge_chain_basic(self, melds, eye, last_tile, b_discarded, \
                           players_wind, prevailing_wind, hand_flag):
-        if self.hand_judge.judge_implemented_hand(melds, eye, last_tile, \
+        if self.hand_judge.judge_basic_hand(melds, eye, last_tile, \
                           b_discarded, players_wind, prevailing_wind):
             hand_flag = hand_flag | self.hand_judge.flag
             if self.next_chain_true == None:
@@ -199,7 +197,7 @@ class HandJudgeChain():
                           b_discarded, players_wind, prevailing_wind, hand_flag)
 
     def judge_chain_7pairs(self, eyes, hand_flag):
-        if self.hand_judge.judge_implemented_7pairs_hand(eyes):
+        if self.hand_judge.judge_7pairs_hand(eyes):
             hand_flag = hand_flag | self.hand_judge.flag
             if self.next_chain_true == None:
                 return hand_flag
@@ -218,9 +216,8 @@ class HandJudge():
         self.flag = 0x00000000
         self.closed_value = 0
         self.open_value = 0
-        self.b_combinable_7pairs = True
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
         if not len(eye.tiles) == 2 or not len(melds) == 4:
             return False
@@ -229,8 +226,8 @@ class HandJudge():
                 return False
         return True 
 
-    def judge_implemented_7pairs_hand(self, eyes):
-        if (not self.b_combinable_7pairs) or (not len(eyes) == 7):
+    def judge_7pairs_hand(self, eyes):
+        if not len(eyes) == 7:
             return False
         for eye in eyes:
             if not len(eye.tiles) == 2:
@@ -249,17 +246,13 @@ class NoPointsHandJudge(HandJudge):
         super().__init__()
         self.flag = WinningHand.NO_POINTS_HAND
         self.closed_value = 1
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         if last_tile in eye.tiles:
             return False
         for meld in melds:
-            if meld.b_exposed or not meld.b_sequential:
+            if meld.b_stolen or not meld.b_sequential:
                 return False
             elif last_tile in meld.tiles:
                 if last_tile == meld.tiles[1] or \
@@ -274,6 +267,9 @@ class NoPointsHandJudge(HandJudge):
             return False
         return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class OneSetOfIdenticalSequencesJudge(HandJudge):
 
@@ -281,15 +277,11 @@ class OneSetOfIdenticalSequencesJudge(HandJudge):
         super().__init__()
         self.flag = WinningHand.ONE_SET_OF_IDENTICAL_SEQUENCES
         self.closed_value = 1
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
-            if meld.b_exposed:
+            if meld.b_stolen:
                 return False
         meld2_of_first_set = -1
         for i in range(len(melds)-1):
@@ -311,6 +303,9 @@ class OneSetOfIdenticalSequencesJudge(HandJudge):
         else:
             return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class AllSimplesJudge(HandJudge):
 
@@ -320,11 +315,8 @@ class AllSimplesJudge(HandJudge):
         self.closed_value = 1
         self.open_value = 1
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
             if meld.tiles[0].suit == Suits.WINDS or meld.tiles[0].suit == Suits.DRAGONS:
                 return False
@@ -338,9 +330,7 @@ class AllSimplesJudge(HandJudge):
             return False
         return True
 
-    def judge_implemented_7pairs_hand(self, eyes):
-        if not super().judge_implemented_7pairs_hand(eyes):
-            return False
+    def judge_7pairs_hand(self, eyes):
         for eye in eyes:
             if eye.tiles[0].suit == Suits.WINDS or \
                eye.tiles[0].suit == Suits.DRAGONS or \
@@ -357,19 +347,18 @@ class ThreeColorStraightJudge(HandJudge):
         self.flag = WinningHand.THREE_COLOR_STRAIGHT
         self.closed_value = 2
         self.open_value = 1
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         all_seqs = [set(), set(), set()]
         for meld in melds:
             if meld.b_sequential:
                 all_seqs[meld.tiles[0].suit] = all_seqs[meld.tiles[0].suit] | {meld.tiles[0].number}
         if len(all_seqs[0] & all_seqs[1] & all_seqs[2]):
             return True
+        return False
+
+    def judge_7pairs_hand(self, eyes):
         return False
 
 
@@ -380,13 +369,9 @@ class StraightJudge(HandJudge):
         self.flag = WinningHand.STRAIGHT
         self.closed_value = 2
         self.open_value = 1
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         all_seqs = [set(), set(), set()]
         for meld in melds:
             if meld.b_sequential:
@@ -397,6 +382,9 @@ class StraightJudge(HandJudge):
                     return True
         return False
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class TerminalOrHonorInEachSetJudge(HandJudge):
 
@@ -405,13 +393,9 @@ class TerminalOrHonorInEachSetJudge(HandJudge):
         self.flag = WinningHand.TERMINAL_OR_HONOR_IN_EACH_SET
         self.closed_value = 2
         self.open_value = 1
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         b_sequential = False
         b_honored = False
         for meld in melds:
@@ -433,6 +417,9 @@ class TerminalOrHonorInEachSetJudge(HandJudge):
             return False
         return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class SevenPairsJudge(HandJudge):
 
@@ -441,17 +428,13 @@ class SevenPairsJudge(HandJudge):
         self.flag = WinningHand.SEVEN_PAIRS
         self.closed_value = 2
         self.open_value = 2
-        self.b_combinable_7pairs = True
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
         return False
 
-    def judge_implemented_7pairs_hand(self, eyes):
-        if super().judge_implemented_7pairs_hand(eyes):
-            return True
-        else:
-            return False
+    def judge_7pairs_hand(self, eyes):
+        return super().judge_7pairs_hand(eyes)
 
 
 class AllTripletHandJudge(HandJudge):
@@ -461,18 +444,17 @@ class AllTripletHandJudge(HandJudge):
         self.flag = WinningHand.ALL_TRIPLET_HAND
         self.closed_value = 2
         self.open_value = 2 
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
             if meld.b_sequential:
                 return False
         else:
             return True
+
+    def judge_7pairs_hand(self, eyes):
+        return False
 
 
 class ThreeClosedTripletsJudge(HandJudge):
@@ -482,17 +464,13 @@ class ThreeClosedTripletsJudge(HandJudge):
         self.flag = WinningHand.THREE_CLOSED_TRIPLETS
         self.closed_value = 2
         self.open_value = 2 
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         b_not_closed_triplet = False
         for meld in melds:
             if meld.b_sequential or \
-               meld.b_exposed or \
+               meld.b_stolen or \
                (last_tile in meld.tiles and b_discarded):
                 if b_not_closed_triplet:
                     return False
@@ -500,6 +478,9 @@ class ThreeClosedTripletsJudge(HandJudge):
                     b_not_closed_triplet = True
         else:
             return True
+
+    def judge_7pairs_hand(self, eyes):
+        return False
 
 
 class ThreeColorTripletsJudge(HandJudge):
@@ -509,19 +490,18 @@ class ThreeColorTripletsJudge(HandJudge):
         self.flag = WinningHand.THREE_COLOR_TRIPLETS
         self.closed_value = 2
         self.open_value = 2 
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         all_triplets = [set(), set(), set()]
         for meld in melds:
             if not meld.b_sequential:
                 all_triplets[meld.tiles[0].suit] = all_triplets[meld.tiles[0].suit] | {meld.tiles[0].number}
         if len(all_triplets[0] & all_triplets[1] & all_triplets[2]):
             return True
+        return False
+
+    def judge_7pairs_hand(self, eyes):
         return False
 
 
@@ -532,13 +512,9 @@ class ThreeKongsJudge(HandJudge):
         self.flag = WinningHand.THREE_KONGS
         self.closed_value = 2
         self.open_value = 2 
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         b_not_kong = False
         for meld in melds:
             if meld.b_sequential or \
@@ -550,6 +526,9 @@ class ThreeKongsJudge(HandJudge):
         else:
             return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class AllTerminalsAndHonorsJudge(HandJudge):
 
@@ -559,11 +538,8 @@ class AllTerminalsAndHonorsJudge(HandJudge):
         self.closed_value = 2
         self.open_value = 2 
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
             if meld.b_sequential or \
                (not (meld.tiles[0].suit == Suits.WINDS or \
@@ -576,9 +552,7 @@ class AllTerminalsAndHonorsJudge(HandJudge):
             return False
         return True
 
-    def judge_implemented_7pairs_hand(self, eyes):
-        if not super().judge_implemented_7pairs_hand(eyes):
-            return False
+    def judge_7pairs_hand(self, eyes):
         for eye in eyes:
             if not eye.tiles[0].suit == Suits.WINDS and \
                not eye.tiles[0].suit == Suits.DRAGONS and \
@@ -595,13 +569,9 @@ class LittleThreeDragonsJudge(HandJudge):
         self.flag = WinningHand.LITTLE_THREE_DRAGONS
         self.closed_value = 2
         self.open_value = 2 
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         num_of_dragons = 0
         for meld in melds:
             if meld.tiles[0].suit == Suits.DRAGONS:
@@ -613,6 +583,9 @@ class LittleThreeDragonsJudge(HandJudge):
         else:
             return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class TerminalInEachSetJudge(HandJudge):
 
@@ -621,13 +594,9 @@ class TerminalInEachSetJudge(HandJudge):
         self.flag = WinningHand.TERMINAL_IN_EACH_SET
         self.closed_value = 3
         self.open_value = 2 
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         b_sequential = False
         for meld in melds:
             if meld.tiles[0].suit == Suits.WINDS or \
@@ -644,6 +613,9 @@ class TerminalInEachSetJudge(HandJudge):
             return False
         return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class HalfFlushJudge(HandJudge):
 
@@ -653,11 +625,8 @@ class HalfFlushJudge(HandJudge):
         self.closed_value = 3
         self.open_value = 2 
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         first_simple_suit = Suits.INVALID
         b_honored = False
         for meld in melds:
@@ -680,9 +649,7 @@ class HalfFlushJudge(HandJudge):
         else:
             return False
 
-    def judge_implemented_7pairs_hand(self, eyes):
-        if not super().judge_implemented_7pairs_hand(eyes):
-            return False
+    def judge_7pairs_hand(self, eyes):
         first_simple_suit = Suits.INVALID
         b_honored = False
         for eye in eyes:
@@ -706,15 +673,11 @@ class TwoSetOfIdenticalSequencesJudge(HandJudge):
         super().__init__()
         self.flag = WinningHand.TWO_SET_OF_IDENTICAL_SEQUENCES
         self.closed_value = 3
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
-            if meld.b_exposed:
+            if meld.b_stolen:
                 return False
         meld2_of_first_set = -1
         for i in range(len(melds)-1):
@@ -734,6 +697,9 @@ class TwoSetOfIdenticalSequencesJudge(HandJudge):
         else:
             return False
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class FlushJudge(HandJudge):
 
@@ -743,11 +709,8 @@ class FlushJudge(HandJudge):
         self.closed_value = 6
         self.open_value = 5
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         simple_suit = melds[0].tiles[0].suit
         for meld in melds:
             if meld.tiles[0].suit == Suits.WINDS or \
@@ -762,9 +725,7 @@ class FlushJudge(HandJudge):
             return False
         return True
 
-    def judge_implemented_7pairs_hand(self, eyes):
-        if not super().judge_implemented_7pairs_hand(eyes):
-            return False
+    def judge_7pairs_hand(self, eyes):
         simple_suit = eyes[0].tiles[0].suit
         for eye in eyes:
             if eye.tiles[0].suit == Suits.WINDS or \
@@ -781,19 +742,18 @@ class FourConcealedTripletsJudge(HandJudge):
         super().__init__()
         self.flag = WinningHand.FOUR_CONCEALED_TRIPLETS
         self.closed_value = 13
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
-            if meld.b_sequential or meld.b_exposed or \
+            if meld.b_sequential or meld.b_stolen or \
                (last_tile in meld.tiles and b_discarded):
                 return False
         else:
             return True
+
+    def judge_7pairs_hand(self, eyes):
+        return False
 
 
 class BigThreeDragonsJudge(HandJudge):
@@ -803,13 +763,9 @@ class BigThreeDragonsJudge(HandJudge):
         self.flag = WinningHand.BIG_THREE_DRAGONS
         self.closed_value = 13
         self.open_value = 13
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         num_of_dragons = 0
         for meld in melds:
             if meld.tiles[0].suit == Suits.DRAGONS:
@@ -819,6 +775,9 @@ class BigThreeDragonsJudge(HandJudge):
         else:
             return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class LittleFourWindsJudge(HandJudge):
 
@@ -827,13 +786,9 @@ class LittleFourWindsJudge(HandJudge):
         self.flag = WinningHand.LITTLE_FOUR_WINDS
         self.closed_value = 13
         self.open_value = 13
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         num_of_winds = 0
         for meld in melds:
             if meld.tiles[0].suit == Suits.WINDS:
@@ -843,6 +798,9 @@ class LittleFourWindsJudge(HandJudge):
         else:
             return False
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class BigFourWindsJudge(HandJudge):
 
@@ -851,13 +809,9 @@ class BigFourWindsJudge(HandJudge):
         self.flag = WinningHand.BIG_FOUR_WINDS
         self.closed_value = 13
         self.open_value = 13
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         num_of_winds = 0
         for meld in melds:
             if meld.tiles[0].suit == Suits.WINDS:
@@ -866,6 +820,9 @@ class BigFourWindsJudge(HandJudge):
             return False
         else:
             return True
+
+    def judge_7pairs_hand(self, eyes):
+        return False
 
 
 class AllHonorsJudge(HandJudge):
@@ -876,11 +833,8 @@ class AllHonorsJudge(HandJudge):
         self.closed_value = 13
         self.open_value = 13
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
             if not meld.tiles[0].suit == Suits.WINDS and \
                not meld.tiles[0].suit == Suits.DRAGONS:
@@ -891,9 +845,7 @@ class AllHonorsJudge(HandJudge):
         else:
             return True
 
-    def judge_implemented_7pairs_hand(self, eyes):
-        if not super().judge_implemented_7pairs_hand(eyes):
-            return False
+    def judge_7pairs_hand(self, eyes):
         for eye in eyes:
             if not eye.tiles[0].suit == Suits.WINDS and \
                not eye.tiles[0].suit == Suits.DRAGONS:
@@ -908,13 +860,9 @@ class AllTerminalsJudge(HandJudge):
         self.flag = WinningHand.ALL_TERMINALS
         self.closed_value = 13
         self.open_value = 13
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
             if meld.tiles[0].suit == Suits.WINDS or \
                meld.tiles[0].suit == Suits.DRAGONS or \
@@ -930,6 +878,9 @@ class AllTerminalsJudge(HandJudge):
         else:
             return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class AllGreenJudge(HandJudge):
 
@@ -938,13 +889,9 @@ class AllGreenJudge(HandJudge):
         self.flag = WinningHand.ALL_GREEN
         self.closed_value = 13
         self.open_value = 13
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
             if meld.tiles[0].suit == Suits.DRAGONS:
                 if not meld.tiles[0].number == Dragons.GREEN:
@@ -973,6 +920,9 @@ class AllGreenJudge(HandJudge):
             return False
         return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class NineGatesJudge(HandJudge):
 
@@ -980,17 +930,13 @@ class NineGatesJudge(HandJudge):
         super().__init__()
         self.flag = WinningHand.NINE_GATES
         self.closed_value = 13
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         simple_suit = melds[0].tiles[0].suit
         number_counters = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         for meld in melds:
-            if meld.b_exposed or \
+            if meld.b_stolen or \
                meld.tiles[0].suit == Suits.WINDS or \
                meld.tiles[0].suit == Suits.DRAGONS or \
                not meld.tiles[0].suit == simple_suit:
@@ -1011,6 +957,9 @@ class NineGatesJudge(HandJudge):
         else:
             return True
 
+    def judge_7pairs_hand(self, eyes):
+        return False
+
 
 class FourKongsJudge(HandJudge):
 
@@ -1019,19 +968,18 @@ class FourKongsJudge(HandJudge):
         self.flag = WinningHand.FOUR_KONGS
         self.closed_value = 13
         self.open_value = 13
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
-        if not super().judge_implemented_hand(melds, eye, last_tile, b_discarded, \
-                                              players_wind, prevailing_wind):
-            return False
         for meld in melds:
             if meld.b_sequential or \
                not (len(meld.tiles) == 4):
                 return False
         else:
             return True
+
+    def judge_7pairs_hand(self, eyes):
+        return False
 
 
 class ThirteenOrphansJudge(HandJudge):
@@ -1041,13 +989,15 @@ class ThirteenOrphansJudge(HandJudge):
         self.flag = WinningHand.THIRTEEN_ORPHANS
         self.closed_value = 13
         self.open_value = 13
-        self.b_combinable_7pairs = False
 
-    def judge_implemented_hand(self, melds, eye, last_tile, b_discarded, \
+    def judge_basic_hand(self, melds, eye, last_tile, b_discarded, \
                                players_wind, prevailing_wind):
         return False
 
-    def judge_implemented_13orphans_hand(self, pure_tiles):
+    def judge_7pairs_hand(self, eyes):
+        return False
+
+    def judge_13orphans_hand(self, pure_tiles):
         # Simples
         for suit in range(Suits.NUM_OF_SIMPLES):
             b_1_exist = False
@@ -1124,7 +1074,7 @@ class Meld():
     def __init__(self):
         self.tiles = []
         self.b_sequential = False
-        self.b_exposed = False
+        self.b_stolen = False
 
     def reset(self):
         self.tiles = []
@@ -1523,13 +1473,21 @@ class Hand():
                     return meld
         return None
 
-    def expose_meld(self, meld, discarded_tile):
+    def steal_tile(self, meld, discarded_tile):
         for tile in meld.tiles:
             if tile in self.pure_tiles[meld.tiles[0].suit]:
                 self.pure_tiles[meld.tiles[0].suit].remove(tile)
             elif not tile == discarded_tile:
                 return False
-        meld.b_exposed = True
+        meld.b_stolen = True
+        self.exposed.append(meld)
+        return True
+
+    def declare_kong(self, meld):
+        if not len(meld.tiles) == 4:
+            return False
+        for tile in meld.tiles:
+            self.pure_tiles[meld.tiles[0].suit].remove(tile)
         self.exposed.append(meld)
         return True
 
