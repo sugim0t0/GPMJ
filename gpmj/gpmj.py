@@ -49,13 +49,14 @@ Date           Version   Description
 04 Oct. 2017   0.21      Add HandJudgeChain class (but unittest is not done yet)
 10 Oct. 2017   0.22      Fix bug of OneSetOfIdenticalSequencesJudge
 12 Oct. 2017   0.23      Add declare_kong() and change some small specs..
+13 Oct. 2017   0.24      Fix bug of ThreeColorStraightJudge and ThreeColorTripletsJudge
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.23"
-__date__    = "12 Oct. 2017"
+__version__ = "0.24"
+__date__    = "13 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -352,7 +353,7 @@ class ThreeColorStraightJudge(HandJudge):
                                players_wind, prevailing_wind):
         all_seqs = [set(), set(), set()]
         for meld in melds:
-            if meld.b_sequential:
+            if meld.b_sequential and meld.tiles[0].suit < Suits.NUM_OF_SIMPLES:
                 all_seqs[meld.tiles[0].suit] = all_seqs[meld.tiles[0].suit] | {meld.tiles[0].number}
         if len(all_seqs[0] & all_seqs[1] & all_seqs[2]):
             return True
@@ -495,7 +496,7 @@ class ThreeColorTripletsJudge(HandJudge):
                                players_wind, prevailing_wind):
         all_triplets = [set(), set(), set()]
         for meld in melds:
-            if not meld.b_sequential:
+            if not meld.b_sequential and meld.tiles[0].suit < Suits.NUM_OF_SIMPLES:
                 all_triplets[meld.tiles[0].suit] = all_triplets[meld.tiles[0].suit] | {meld.tiles[0].number}
         if len(all_triplets[0] & all_triplets[1] & all_triplets[2]):
             return True
