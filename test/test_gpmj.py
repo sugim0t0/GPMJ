@@ -27,6 +27,22 @@ class TestGpmj(unittest.TestCase):
     basic_hand_j = gpmj.gpmj.HandJudge()
     basic_hand_jc = gpmj.gpmj.HandJudgeChain(basic_hand_j)
     basic_limit_hand_jc = gpmj.gpmj.HandJudgeChain(basic_hand_j)
+    # ValuedDragon(s)
+    white_dragon_j = gpmj.gpmj.ValuedDragon(gpmj.gpmj.HandFlag.WHITE_DRAGON, \
+                                            gpmj.gpmj.Dragons.WHITE)
+    white_dragon_jc = gpmj.gpmj.HandJudgeChain(white_dragon_j)
+    green_dragon_j = gpmj.gpmj.ValuedDragon(gpmj.gpmj.HandFlag.GREEN_DRAGON, \
+                                            gpmj.gpmj.Dragons.GREEN)
+    green_dragon_jc = gpmj.gpmj.HandJudgeChain(green_dragon_j)
+    red_dragon_j = gpmj.gpmj.ValuedDragon(gpmj.gpmj.HandFlag.RED_DRAGON, \
+                                          gpmj.gpmj.Dragons.RED)
+    red_dragon_jc = gpmj.gpmj.HandJudgeChain(red_dragon_j)
+    # SeatWind
+    seat_wind_j = gpmj.gpmj.SeatWind()
+    seat_wind_jc = gpmj.gpmj.HandJudgeChain(seat_wind_j)
+    # RoundWind
+    round_wind_j = gpmj.gpmj.RoundWind()
+    round_wind_jc = gpmj.gpmj.HandJudgeChain(round_wind_j)
     # NoPointsHand
     no_points_hand_j = gpmj.gpmj.NoPointsHandJudge()
     no_points_hand_jc = gpmj.gpmj.HandJudgeChain(no_points_hand_j)
@@ -128,7 +144,12 @@ class TestGpmj(unittest.TestCase):
 
     # connect basic hand judge chains
     basic_hand_jc.connect_chain(all_simples_jc, None)
-    all_simples_jc.connect_chain(no_points_hand_jc, terminal_in_each_set_jc)
+    all_simples_jc.connect_chain(no_points_hand_jc, white_dragon_jc)
+    white_dragon_jc.connect_chain(green_dragon_jc, green_dragon_jc)
+    green_dragon_jc.connect_chain(red_dragon_jc, red_dragon_jc)
+    red_dragon_jc.connect_chain(seat_wind_jc, seat_wind_jc)
+    seat_wind_jc.connect_chain(round_wind_jc, round_wind_jc)
+    round_wind_jc.connect_chain(little_three_dragons_jc, terminal_in_each_set_jc)
     terminal_in_each_set_jc.connect_chain(no_points_hand_jc, little_three_dragons_jc)
     little_three_dragons_jc.connect_chain(half_flush_jc, half_flush_jc)
     half_flush_jc.connect_chain(terminal_or_honor_in_each_set_jc, terminal_or_honor_in_each_set_jc)
@@ -785,6 +806,8 @@ class TestGpmj(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][9])
         expected = (gpmj.gpmj.HandFlag.ALL_TERMINALS_AND_HONORS | \
                     gpmj.gpmj.HandFlag.LITTLE_THREE_DRAGONS | \
+                    gpmj.gpmj.HandFlag.WHITE_DRAGON | \
+                    gpmj.gpmj.HandFlag.GREEN_DRAGON | \
                     gpmj.gpmj.HandFlag.HALF_FLUSH | \
                     gpmj.gpmj.HandFlag.ALL_TRIPLET_HAND | \
                     gpmj.gpmj.HandFlag.THREE_CLOSED_TRIPLETS)

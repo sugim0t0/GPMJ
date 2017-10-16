@@ -51,13 +51,14 @@ Date           Version   Description
 12 Oct. 2017   0.23      Add declare_kong() and change some small specs..
 13 Oct. 2017   0.24      Fix bug of ThreeColorStraightJudge and ThreeColorTripletsJudge
 15 Oct. 2017   0.25      Add WinHand class
-16 Oct. 2017   0.26      Rename judge_basic_hand() to judge_hand() and remove judge_7pairs_hand()
+16 oct. 2017   0.26      rename judge_basic_hand() to judge_hand() and remove judge_7pairs_hand()
+16 oct. 2017   0.27      Add ValuedDragon and SeatWind and RoundWind classes
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.26"
+__version__ = "0.27"
 __date__    = "16 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
@@ -223,6 +224,55 @@ class HandJudge():
             if not (len(meld.tiles) == 3 or len(meld.tiles) == 4):
                 return False
         return True 
+
+
+class ValuedDragon(HandJudge):
+
+    def __init__(self, flag, number):
+        super().__init__()
+        self.flag = flag
+        self.closed_value = 1
+        self.open_value = 1
+        self.number = number
+
+    def judge_hand(self, win_hand):
+        for meld in win_hand.melds:
+            if meld.tiles[0].suit == Suits.DRAGONS and \
+               meld.tiles[0].number == self.number:
+                return True
+        return False
+
+
+class SeatWind(HandJudge):
+
+    def __init__(self):
+        super().__init__()
+        self.flag = HandFlag.SEAT_WIND
+        self.closed_value = 1
+        self.open_value = 1
+
+    def judge_hand(self, win_hand):
+        for meld in win_hand.melds:
+            if meld.tiles[0].suit == Suits.WINDS and \
+               meld.tiles[0].number == win_hand.seat_wind:
+                return True
+        return False
+
+
+class RoundWind(HandJudge):
+
+    def __init__(self):
+        super().__init__()
+        self.flag = HandFlag.ROUND_WIND
+        self.closed_value = 1
+        self.open_value = 1
+
+    def judge_hand(self, win_hand):
+        for meld in win_hand.melds:
+            if meld.tiles[0].suit == Suits.WINDS and \
+               meld.tiles[0].number == win_hand.round_wind:
+                return True
+        return False
 
 
 class NoPointsHandJudge(HandJudge):
