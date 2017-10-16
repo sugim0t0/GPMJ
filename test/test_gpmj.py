@@ -228,7 +228,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        self.seven_pairs_limit_7p_jc.judge_chain_7pairs(win_hand)
+        self.seven_pairs_limit_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_7PairsHandJudgeChain_0(self):
@@ -273,7 +273,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        self.seven_pairs_7p_jc.judge_chain_7pairs(win_hand)
+        self.seven_pairs_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_7PairsHandJudgeChain_1(self):
@@ -318,7 +318,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        self.seven_pairs_7p_jc.judge_chain_7pairs(win_hand)
+        self.seven_pairs_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_7PairsHandJudgeChain_2(self):
@@ -364,7 +364,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        self.seven_pairs_7p_jc.judge_chain_7pairs(win_hand)
+        self.seven_pairs_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_LimitHandJudgeChain_0(self):
@@ -401,7 +401,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_limit_hand_jc.judge_chain_basic(win_hand)
+        self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_LimitHandJudgeChain_1(self):
@@ -440,7 +440,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_limit_hand_jc.judge_chain_basic(win_hand)
+        self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_LimitHandJudgeChain_2(self):
@@ -477,7 +477,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_limit_hand_jc.judge_chain_basic(win_hand)
+        self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_LimitHandJudgeChain_3(self):
@@ -521,7 +521,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_limit_hand_jc.judge_chain_basic(win_hand)
+        self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_LimitHandJudgeChain_4(self):
@@ -559,7 +559,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_limit_hand_jc.judge_chain_basic(win_hand)
+        self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_LimitHandJudgeChain_5(self):
@@ -597,7 +597,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_limit_hand_jc.judge_chain_basic(win_hand)
+        self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_HandJudgeChain_0(self):
@@ -636,7 +636,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_hand_jc.judge_chain_basic(win_hand)
+        self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_HandJudgeChain_1(self):
@@ -675,7 +675,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_hand_jc.judge_chain_basic(win_hand)
+        self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_HandJudgeChain_2(self):
@@ -713,7 +713,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_hand_jc.judge_chain_basic(win_hand)
+        self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_HandJudgeChain_3(self):
@@ -752,7 +752,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_hand_jc.judge_chain_basic(win_hand)
+        self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_HandJudgeChain_4(self):
@@ -773,6 +773,7 @@ class TestGpmj(unittest.TestCase):
         meld3.add_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][0])
         meld3.add_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][1])
         meld3.add_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][2])
+        meld3.b_stolen = True
         melds.append(meld3)
         meld4 = gpmj.gpmj.Meld()
         meld4.add_tile(self.all_tiles[gpmj.gpmj.Suits.DRAGONS][4])
@@ -787,13 +788,13 @@ class TestGpmj(unittest.TestCase):
                     gpmj.gpmj.HandFlag.HALF_FLUSH | \
                     gpmj.gpmj.HandFlag.ALL_TRIPLET_HAND | \
                     gpmj.gpmj.HandFlag.THREE_CLOSED_TRIPLETS)
-        win_hand = gpmj.gpmj.WinHand(last_tile, True, gpmj.gpmj.Winds.EAST, gpmj.gpmj.Winds.EAST)
+        win_hand = gpmj.gpmj.WinHand(last_tile, False, gpmj.gpmj.Winds.EAST, gpmj.gpmj.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_hand_jc.judge_chain_basic(win_hand)
+        self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_HandJudgeChain_5(self):
@@ -835,7 +836,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        self.basic_hand_jc.judge_chain_basic(win_hand)
+        self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
 
     def test_ThirteenOrphansJudge_13orphans_0(self):
@@ -919,7 +920,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_SevenPairsJudge_7pairs_1(self):
@@ -963,7 +964,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllHonorsJudge_7pairs_0(self):
@@ -1007,7 +1008,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllHonorsJudge_7pairs_1(self):
@@ -1051,7 +1052,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_FlushJudge_7pairs_0(self):
@@ -1095,7 +1096,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_FlushJudge_7pairs_1(self):
@@ -1139,7 +1140,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_HalfFlushJudge_7pairs_0(self):
@@ -1183,7 +1184,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_HalfFlushJudge_7pairs_1(self):
@@ -1227,7 +1228,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllTerminalsAndHonorsJudge_7pairs_0(self):
@@ -1271,7 +1272,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllTerminalsAndHonorsJudge_7pairs_1(self):
@@ -1315,7 +1316,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllSimplesJudge_7pairs_0(self):
@@ -1359,7 +1360,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllSimplesJudge_7pairs_1(self):
@@ -1403,7 +1404,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye5)
         win_hand.append_eye(eye6)
         win_hand.append_eye(eye7)
-        result = judge.judge_7pairs_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_NineGatesJudge_0(self):
@@ -1440,7 +1441,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_NineGatesJudge_1(self):
@@ -1477,7 +1478,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_FourKongsJudge_0(self):
@@ -1518,7 +1519,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_FourKongsJudge_1(self):
@@ -1559,7 +1560,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_FourKongsJudge_2(self):
@@ -1601,7 +1602,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllGreenJudge_0(self):
@@ -1639,7 +1640,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllGreenJudge_1(self):
@@ -1677,7 +1678,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllGreenJudge_2(self):
@@ -1715,7 +1716,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllTerminalsJudge_0(self):
@@ -1753,7 +1754,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllTerminalsJudge_1(self):
@@ -1790,7 +1791,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllTerminalsJudge_2(self):
@@ -1828,7 +1829,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllHonorsJudge_0(self):
@@ -1866,7 +1867,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllHonorsJudge_1(self):
@@ -1904,7 +1905,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_BigFourWindsJudge_0(self):
@@ -1942,7 +1943,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_BigFourWindsJudge_1(self):
@@ -1980,7 +1981,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_LittleFourWindsJudge_0(self):
@@ -2018,7 +2019,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_LittleFourWindsJudge_1(self):
@@ -2056,7 +2057,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_BigThreeDragonsJudge_0(self):
@@ -2094,7 +2095,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_BigThreeDragonsJudge_1(self):
@@ -2132,7 +2133,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_FourConcealedTripletsJudge_0(self):
@@ -2169,7 +2170,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_FourConcealedTripletsJudge_1(self):
@@ -2207,7 +2208,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_FourConcealedTripletsJudge_2(self):
@@ -2244,7 +2245,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_FourConcealedTripletsJudge_3(self):
@@ -2281,7 +2282,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_FlushJudge_0(self):
@@ -2318,7 +2319,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_FlushJudge_1(self):
@@ -2355,7 +2356,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_TwoSetOfIdenticalSequencesJudge_0(self):
@@ -2393,7 +2394,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_TwoSetOfIdenticalSequencesJudge_1(self):
@@ -2430,7 +2431,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_TwoSetOfIdenticalSequencesJudge_2(self):
@@ -2467,7 +2468,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_HalfFlushJudge_0(self):
@@ -2504,7 +2505,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_HalfFlushJudge_1(self):
@@ -2541,7 +2542,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_TerminalInEachSetJudge_0(self):
@@ -2578,7 +2579,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_TerminalInEachSetJudge_1(self):
@@ -2615,7 +2616,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_LittleThreeDragonsJudge_0(self):
@@ -2653,7 +2654,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_LittleThreeDragonsJudge_1(self):
@@ -2691,7 +2692,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllTerminalsAndHonorsJudge_0(self):
@@ -2729,7 +2730,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllTerminalsAndHonorsJudge_1(self):
@@ -2767,7 +2768,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_ThreeKongsJudge_0(self):
@@ -2807,7 +2808,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_ThreeKongsJudge_1(self):
@@ -2848,7 +2849,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_ThreeColorTripletsJudge_0(self):
@@ -2886,7 +2887,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_ThreeColorTripletsJudge_1(self):
@@ -2924,7 +2925,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_ThreeClosedTripletsJudge_0(self):
@@ -2961,7 +2962,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_ThreeClosedTripletsJudge_1(self):
@@ -2999,7 +3000,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_ThreeClosedTripletsJudge_2(self):
@@ -3036,7 +3037,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllTripletHandJudge_0(self):
@@ -3074,7 +3075,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllTripletHandJudge_1(self):
@@ -3112,7 +3113,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_TerminalOrHonorInEachSetJudge_0(self):
@@ -3149,7 +3150,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_TerminalOrHonorInEachSetJudge_1(self):
@@ -3186,7 +3187,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_TerminalOrHonorInEachSetJudge_2(self):
@@ -3223,7 +3224,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_StraightJudge_0(self):
@@ -3260,7 +3261,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_StraightJudge_1(self):
@@ -3297,7 +3298,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_ThreeColorStraightJudge_0(self):
@@ -3334,7 +3335,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_ThreeColorStraightJudge_1(self):
@@ -3371,7 +3372,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_AllSimplesJudge_0(self):
@@ -3408,7 +3409,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_AllSimplesJudge_1(self):
@@ -3445,7 +3446,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
     
     def test_OneSetOfIdenticalSequencesJudge_0(self):
@@ -3482,7 +3483,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_OneSetOfIdenticalSequencesJudge_1(self):
@@ -3519,7 +3520,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_OneSetOfIdenticalSequencesJudge_2(self):
@@ -3556,7 +3557,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_NoPointsHandJudge_0(self):
@@ -3593,7 +3594,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_NoPointsHandJudge_1(self):
@@ -3630,7 +3631,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
     def test_NoPointsHandJudge_2(self):
@@ -3667,7 +3668,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_NoPointsHandJudge_3(self):
@@ -3704,7 +3705,7 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
         win_hand.append_eye(eye)
-        result = judge.judge_basic_hand(win_hand)
+        result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
     def test_expose_meld_0(self):
