@@ -28,20 +28,20 @@ class TestGpmj(unittest.TestCase):
     basic_hand_jc = gpmj.gpmj.HandJudgeChain(basic_hand_j)
     basic_limit_hand_jc = gpmj.gpmj.HandJudgeChain(basic_hand_j)
     # ValuedDragon(s)
-    white_dragon_j = gpmj.gpmj.ValuedDragon(gpmj.gpmj.HandFlag.WHITE_DRAGON, \
-                                            gpmj.gpmj.Dragons.WHITE)
+    white_dragon_j = gpmj.gpmj.ValuedDragonJudge(gpmj.gpmj.HandFlag.WHITE_DRAGON, \
+                                                 gpmj.gpmj.Dragons.WHITE)
     white_dragon_jc = gpmj.gpmj.HandJudgeChain(white_dragon_j)
-    green_dragon_j = gpmj.gpmj.ValuedDragon(gpmj.gpmj.HandFlag.GREEN_DRAGON, \
-                                            gpmj.gpmj.Dragons.GREEN)
+    green_dragon_j = gpmj.gpmj.ValuedDragonJudge(gpmj.gpmj.HandFlag.GREEN_DRAGON, \
+                                                 gpmj.gpmj.Dragons.GREEN)
     green_dragon_jc = gpmj.gpmj.HandJudgeChain(green_dragon_j)
-    red_dragon_j = gpmj.gpmj.ValuedDragon(gpmj.gpmj.HandFlag.RED_DRAGON, \
-                                          gpmj.gpmj.Dragons.RED)
+    red_dragon_j = gpmj.gpmj.ValuedDragonJudge(gpmj.gpmj.HandFlag.RED_DRAGON, \
+                                               gpmj.gpmj.Dragons.RED)
     red_dragon_jc = gpmj.gpmj.HandJudgeChain(red_dragon_j)
     # SeatWind
-    seat_wind_j = gpmj.gpmj.SeatWind()
+    seat_wind_j = gpmj.gpmj.SeatWindJudge()
     seat_wind_jc = gpmj.gpmj.HandJudgeChain(seat_wind_j)
     # RoundWind
-    round_wind_j = gpmj.gpmj.RoundWind()
+    round_wind_j = gpmj.gpmj.RoundWindJudge()
     round_wind_jc = gpmj.gpmj.HandJudgeChain(round_wind_j)
     # NoPointsHand
     no_points_hand_j = gpmj.gpmj.NoPointsHandJudge()
@@ -251,6 +251,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye7)
         self.seven_pairs_limit_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 25)
+        self.assertEqual(win_hand.hand_value, 15)
 
     def test_7PairsHandJudgeChain_0(self):
         # [B2][B2][B4][B4][B5][B5][B6][B6][C2][C2][C4][C4][C5] + [C5]
@@ -296,6 +299,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye7)
         self.seven_pairs_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 25)
+        self.assertEqual(win_hand.hand_value, 3)
 
     def test_7PairsHandJudgeChain_1(self):
         # [B1][B1][B2][B2][B4][B4][B5][B5][B6][B6][B7][B7][B9] + [B9]
@@ -341,6 +347,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye7)
         self.seven_pairs_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 25)
+        self.assertEqual(win_hand.hand_value, 8)
 
     def test_7PairsHandJudgeChain_2(self):
         # [B1][B1][B9][B9][Es][Es][St][St][Ws][Ws][Nt][Nt][Wh] + [Wh]
@@ -387,6 +396,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye7)
         self.seven_pairs_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 25)
+        self.assertEqual(win_hand.hand_value, 7)
 
     def test_LimitHandJudgeChain_0(self):
         # [C1][C1][C1][C2][C3][C4][C4][C5][C6][C7][C8][C9][C9] + [C9]
@@ -424,6 +436,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 30)
+        self.assertEqual(win_hand.hand_value, 13)
 
     def test_LimitHandJudgeChain_1(self):
         # [Wh][Wh][Wh][Gr][Gr][Gr][Rd][Rd][Rd][Es][Es][St][St] + [St]
@@ -463,6 +478,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 60)
+        self.assertEqual(win_hand.hand_value, 39)
 
     def test_LimitHandJudgeChain_2(self):
         # [Es][Es][Es][St][St][St][Ws][Ws][Ws][Nt][Nt][B2][B3] + [B4]
@@ -500,6 +518,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 50)
+        self.assertEqual(win_hand.hand_value, 13)
 
     def test_LimitHandJudgeChain_3(self):
         # [Es][Es][Es][Es][St][St][St][St][Ws][Ws][Ws][Ws][Nt][Nt][Nt][Nt][Rd] + [Rd]
@@ -544,6 +565,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 160)
+        self.assertEqual(win_hand.hand_value, 52)
 
     def test_LimitHandJudgeChain_4(self):
         # [B2][B2][B3][B3][B4][B4][B6][B6][B8][B8][B8][Gr][Gr] + [Gr]
@@ -582,6 +606,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 40)
+        self.assertEqual(win_hand.hand_value, 13)
 
     def test_LimitHandJudgeChain_5(self):
         # [B1][B1][B9][B9][B9][D1][D1][D1][D9][D9][D9][C1][C1] + [C1]
@@ -620,6 +647,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_limit_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 60)
+        self.assertEqual(win_hand.hand_value, 26)
 
     def test_HandJudgeChain_0(self):
         # [D4][D4][D5][D5][D6][D6][B2][B3][B4][C4][C5][C6][C6] + [C6]
@@ -659,6 +689,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 20)
+        self.assertEqual(win_hand.hand_value, 3)
 
     def test_HandJudgeChain_1(self):
         # [B1][B2][B3][D1][D2][D3][D7][D8][D9][C2][C3][C9][C9] + [C1]
@@ -698,6 +731,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 20)
+        self.assertEqual(win_hand.hand_value, 6)
 
     def test_HandJudgeChain_2(self):
         # [B1][B1][B2][B2][B3][B3][D7][D7][D8][D8][D9][D9][Ws] + [Ws]
@@ -736,6 +772,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 30)
+        self.assertEqual(win_hand.hand_value, 5)
 
     def test_HandJudgeChain_3(self):
         # [B1][B1][B2][B2][B3][B3][B3][B3][B4][B5][B6][B7][B9] + [B8]
@@ -775,6 +814,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 30)
+        self.assertEqual(win_hand.hand_value, 9)
 
     def test_HandJudgeChain_4(self):
         # [B1][B1][B1][B9][B9][B9][Wh][Wh][Wh][Gr][Gr][Rd][Rd] + [Gr]
@@ -819,6 +861,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 60)
+        self.assertEqual(win_hand.hand_value, 12)
 
     def test_HandJudgeChain_5(self):
         # [B6][B6][B6][B6][B7][B8][B9][D6][D6][D6][D6][C6][C6][C6][C6][Rd] + [Rd]
@@ -861,6 +906,9 @@ class TestGpmj(unittest.TestCase):
         win_hand.append_eye(eye)
         self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 70)
+        self.assertEqual(win_hand.hand_value, 4)
 
     def test_ThirteenOrphansJudge_13orphans_0(self):
         # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Nt][Gr][Rd] + [Es]
