@@ -207,6 +207,20 @@ class TestGpmj(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_calc_score_dealer_v1_p30_pick(self):
+        win_hand = gpmjcore.WinHand(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.hand_value = 1
+        win_hand.hand_point = 30
+        pay_non_dealer, _ = win_hand.calc_score()
+        self.assertEqual(pay_non_dealer, 500)
+
+    def test_calc_score_dealer_v2_p30_steal(self):
+        win_hand = gpmjcore.WinHand(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.hand_value = 2
+        win_hand.hand_point = 30
+        pay_non_dealer, _ = win_hand.calc_score()
+        self.assertEqual(pay_non_dealer, 2900)
+
     def test_Limit7PairsHandJudgeChain_0(self):
         # [Es][Es][St][St][Ws][Ws][Nt][Nt][Wh][Gr][Gr][Rd][Rd] + [Wh]
         eyes = []

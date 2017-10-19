@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 ''' GPMJ (General Purpose (Japanese) Mah-Jong library)
+    gpmjcore module
 
 Modification History:
 ===========================================================
@@ -54,13 +55,14 @@ Date           Version   Description
 16 Oct. 2017   0.26      rename judge_basic_hand() to judge_hand() and remove judge_7pairs_hand()
 16 Oct. 2017   0.27      Add ValuedDragonJudge and SeatWindJudge and RoundWindJudge classes
 18 Oct. 2017   0.28      Add calc_points()
+19 Oct. 2017   0.29      Add calc_score()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.28"
-__date__    = "18 Oct. 2017"
+__version__ = "0.29"
+__date__    = "19 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1027,6 +1029,45 @@ class WinHand():
             return True
         else:
             return False
+
+    def calc_score(self):
+        score = 0
+        if self.hand_value >= 13:
+            score = 32000 * (self.hand_value // 13)
+        elif self.hand_value >= 11:
+            score = 24000
+        elif self.hand_value >= 8:
+            score = 16000
+        elif self.hand_value >= 6:
+            score = 12000
+        elif self.hand_value >= 5:
+            score = 8000
+        else:
+            score = self.hand_point * 4 * (2 ** (self.hand_value + 2))
+            if score > 8000:
+                score = 8000
+        if self.seat_wind == Winds.EAST:
+            score = (score // 2) * 3
+        if self.b_discarded:
+            if (score % 100) > 0:
+                score += 100 - (score % 100)
+            return (score, 0)
+        else:
+            payment_dealer = 0
+            payment_non_dealer = 0
+            if self.seat_wind == Winds.EAST:
+                payment_non_dealer = score // 3
+                if (payment_non_dealer % 100) > 0:
+                    payment_non_dealer += 100 - (payment_non_dealer % 100)
+                return (payment_non_dealer, 0)
+            else:
+                payment_dealer = score // 2
+                if (payment_dealer % 100) > 0:
+                    payment_dealer += 100 - (payment_dealer % 100)
+                payment_non_dealer = score // 4
+                if (payment_non_dealer % 100) > 0:
+                    payment_non_dealer += 100 - (payment_non_dealer % 100)
+                return (payment_non_dealer, payment_non_dealer)
 
 
 class Tile():
