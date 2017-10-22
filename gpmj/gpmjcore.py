@@ -10,7 +10,7 @@ Date           Version   Description
 28 Mar. 2017   0.1       Creation
 20 Apr. 2017   0.2       Add get_required_13orphans()
 26 Apr. 2017   0.3       Add get_required_7differentpairs()
-04 Jul. 2017   0.4       Add get_required_basicwinninghand()
+04 Jul. 2017   0.4       Add get_required_basic()
 02 Sep. 2017   0.5       Add get_melds_chow_able()
 06 Sep. 2017   0.6       Add get_melds_pong_able()
 06 Sep. 2017   0.7       Add get_meld_kong_able()
@@ -56,13 +56,14 @@ Date           Version   Description
 16 Oct. 2017   0.27      Add ValuedDragonJudge and SeatWindJudge and RoundWindJudge classes
 18 Oct. 2017   0.28      Add calc_points()
 19 Oct. 2017   0.29      Add calc_score()
+23 Oct. 2017   0.30      Add MeldEyeTreeNode class
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.29"
-__date__    = "19 Oct. 2017"
+__version__ = "0.30"
+__date__    = "23 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1031,6 +1032,9 @@ class WinHand():
             return False
 
     def calc_score(self):
+        '''
+        calc_score() MUST be called after calc_points()
+        '''
         score = 0
         if self.hand_value >= 13:
             score = 32000 * (self.hand_value // 13)
@@ -1108,6 +1112,9 @@ class Eye():
             return False
         return True
 
+    def pop_tile(self):
+        return self.tiles.pop(0)
+
 
 class Meld():
 
@@ -1163,6 +1170,12 @@ class Meld():
         self.tiles.remove(tile)
         if len(self.tiles) == 1:
             self.b_sequential = False
+
+    def pop_tile(self, index):
+        ret_tile = self.tiles.pop(index)
+        if len(self.tiles) == 1:
+            self.b_sequential = False
+        return ret_tile
 
     def make_kong(self, tile):
         if len(self.tiles) == 3 and \
@@ -1333,7 +1346,7 @@ class Hand():
             x += 1
         return b_ready
 
-    def get_required_basicwinninghand(self):
+    def get_required_basic(self):
         required = [set(), set(), set(), set(), set()]
         suit_remained_one = -1
         suit_remained_two_1st = -1
@@ -1454,6 +1467,55 @@ class Hand():
                 required[suit] = required[suit] | {prev_number}
         return required
 
+    def get_winhands_basic(self, last_tile, b_discarded, seat_wind, round_wind):
+        self.append_tile(last_tile)
+        self.sort_tiles()
+        tree_root = None
+        # build exposed melds tree
+        exposed_leaf = None
+        if len(self.exposed) > 0:
+            prev_node = None
+            for meld in self.exposed:
+                this_node = MeldEyeTreeNode()
+                this_node.meld = meld
+                if tree_root == None:
+                    tree_root = this_node
+                if not prev_node == None:
+                    prev_node.append_next_node(this_node)
+                prev_node = this_node
+            else:
+                exposed_leaf = this_node
+        # build pure melds and eye tree
+        pure_meld_eye_root = self.build_meld_eye_tree(None, None, last_tile)
+        if tree_root == None:
+            tree_root = pure_meld_eye_root
+        else:
+            exposed_leaf.append_next_node(pure_meld_eye_root)
+        win_hands = []
+        tree_root.list_winhands(last_tile, b_discarded, seat_wind, round_wind, win_hands)
+        if len(win_hands) == 0:
+            return None
+        return win_hands
+
+    def get_winhand_7pairs(self, last_tile, b_discarded, seat_wind, round_wind):
+        if len(self.exposed) > 0:
+            return None
+        eyes = []
+        for x in range(7):
+            eyes.append(Eye())
+        self.append_tile(last_tile)
+        self.sort_tiles()
+        tile_index = 0
+        for suit in range(Suits.NUM_OF_SUITS):
+            for tile in self.pure_tiles[suit]:
+                if not eyes[(tile_index // 2)].add_tile(tile):
+                    return None
+                tile_index += 1
+        win_hand = WinHand(last_tile, b_discarded, seat_wind, round_wind)
+        for eye in eyes:
+            win_hand.append_eye(eye)
+        return win_hand
+
     def get_melds_chow_able(self, discarded_tile):
         melds = []
         if discarded_tile.suit == Suits.WINDS or discarded_tile.suit == Suits.DRAGONS:
@@ -1531,4 +1593,98 @@ class Hand():
         self.exposed.append(meld)
         return True
 
+    def build_meld_eye_tree(self, meld, eye, last_tile):
+        meld_eye_tree = MeldEyeTreeNode()
+        if not meld == None:
+            meld_eye_tree.meld = meld
+        elif not eye == None:
+            meld_eye_tree.eye = eye
+        this_suit = Suits.INVALID
+        b_eye_suit = False
+        for suit in range(Suits.NUM_OF_SUITS):
+            if len(self.pure_tiles[suit]) > 0:
+                this_suit = suit
+                if len(self.pure_tiles[suit]) % 3 == 2:
+                    b_eye_suit = True
+                break
+        else:
+            # No tile (building tree is completed)
+            return meld_eye_tree
+        self.sort_tiles()
+        if self.pure_tiles[this_suit][0].number == self.pure_tiles[this_suit][1].number:
+            if b_eye_suit:
+                eye = Eye()
+                eye.add_tile(self.pop_tile(this_suit, 0))
+                eye.add_tile(self.pop_tile(this_suit, 0))
+                meld_eye_tree.append_next_node(self.build_meld_eye_tree(None, eye, last_tile))
+                self.append_tile(eye.tiles[0])
+                self.append_tile(eye.tiles[1])
+                self.sort_tiles()
+            if len(self.pure_tiles[this_suit]) >= 3 and \
+               self.pure_tiles[this_suit][0].number == self.pure_tiles[this_suit][2].number:
+                # Triplet meld
+                meld = Meld()
+                meld.add_tile(self.pop_tile(this_suit, 0))
+                meld.add_tile(self.pop_tile(this_suit, 0))
+                meld.add_tile(self.pop_tile(this_suit, 0))
+                meld_eye_tree.append_next_node(self.build_meld_eye_tree(meld, None, last_tile))
+                self.append_tile(meld.tiles[0])
+                self.append_tile(meld.tiles[1])
+                self.append_tile(meld.tiles[2])
+                self.sort_tiles()
+        # Sequential meld
+        meld = Meld()
+        meld.add_tile(self.pop_tile(this_suit, 0))
+        prev_number = meld.tiles[0].number
+        for tile in self.pure_tiles[this_suit]:
+            if tile.number == prev_number:
+                continue
+            elif tile.number == (prev_number + 1):
+                prev_number += 1
+                meld.add_tile(tile)
+                self.pure_tiles[this_suit].remove(tile)
+                if len(meld.tiles) == 3:
+                    break
+                continue
+            else:
+                break
+        if len(meld.tiles) == 3:
+            meld_eye_tree.append_next_node(self.build_meld_eye_tree(meld, None, last_tile))
+            if last_tile in meld.tiles:
+                for tile in self.pure_tiles[this_suit]:
+                    if tile.number == last_tile.number:
+                        meld.remove_tile(last_tile)
+                        self.append_tile(last_tile)
+                        self.pure_tiles[this_suit].remove(tile)
+                        meld.append_tile(tile)
+                        meld_eye_tree.append_next_node( \
+                            self.build_meld_eye_tree(meld, None, last_tile))
+                        break
+            else:
+                for tile in meld.tiles:
+                    if tile.number == last_tile.number:
+                        meld.remove_tile(tile)
+                        self.append_tile(tile)
+                        self.pure_tiles[this_suit].remove(last_tile)
+                        meld.append_tile(last_tile)
+                        meld_eye_tree.append_next_node( \
+                            self.build_meld_eye_tree(meld, None, last_tile))
+                        break
+        for tile in meld.tiles:
+            self.append_tile(tile)
+        return meld_eye_tree
+
+
+class MeldEyeTreeNode():
+
+    def __init__(self):
+        self.meld = None
+        self.eye = None
+        next_nodes = []
+
+    def append_next_node(self, next_node):
+        self.next_nodes.append(next_node)
+
+    def list_winhands(self, last_tile, b_discarded, seat_wind, round_wind):
+        return None
 

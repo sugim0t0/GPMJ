@@ -4015,7 +4015,7 @@ class TestGpmj(unittest.TestCase):
         self.assertEqual(melds[0].tiles[1].number, 2)
         self.assertEqual(melds[0].tiles[2].number, 3)
 
-    def test_basicwinninghand_wait_nonuple_B1B2B3B4B5B6B7B8B9(self):
+    def test_basic_wait_nonuple_B1B2B3B4B5B6B7B8B9(self):
         # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B9][B9][B9]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
@@ -4030,10 +4030,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][33])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][34])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][35])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [set(),{1,2,3,4,5,6,7,8,9},set(),set(),set()])
 
-    def test_basicwinninghand_wait_octuple_B1B2B4B5B6B7B8B9(self):
+    def test_basic_wait_octuple_B1B2B4B5B6B7B8B9(self):
         # [B2][B3][B3][B3][B3][B4][B4][B5][B6][B7][B8][B8][B8]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][7])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
@@ -4048,10 +4048,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][29])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][30])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [set(),{1,2,4,5,6,7,8,9},set(),set(),set()])
 
-    def test_basicwinninghand_wait_septuple_B1B2B4B5B6B8B9(self):
+    def test_basic_wait_septuple_B1B2B4B5B6B8B9(self):
         # [B2][B3][B3][B3][B3][B4][B5][B6][B7][B7][B7][B7][B8]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][7])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
@@ -4066,10 +4066,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][26])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][27])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [set(),{1,2,4,5,6,8,9},set(),set(),set()])
 
-    def test_basicwinninghand_wait_hexatruple_B2B3B5B6B8B9(self):
+    def test_basic_wait_hexatruple_B2B3B5B6B8B9(self):
         # [B2][B3][B4][B4][B4][B4][B5][B6][B7][B8][Rd][Rd][Rd]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][8])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
@@ -4084,10 +4084,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][27])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [set(),{2,3,5,6,8,9},set(),set(),set()])
 
-    def test_basicwinninghand_wait_quintuple_B2B4B5B7B8(self):
+    def test_basic_wait_quintuple_B2B4B5B7B8(self):
         # [B3][B3][B3][B4][B5][B6][B7][D3][D4][D5][Rd][Rd][Rd]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][8])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
@@ -4102,10 +4102,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][11])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [set(),{2,4,5,7,8},set(),set(),set()])
 
-    def test_basicwinninghand_wait_quadruple_D1D4D7Wh(self):
+    def test_basic_wait_quadruple_D1D4D7Wh(self):
         # [D2][D3][D4][D5][D6][D7][D7][D7][B3][B4][B5][Wh][Wh]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
@@ -4120,10 +4120,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][24])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][25])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][26])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [{1,4,7},set(),set(),set(),{0}])
 
-    def test_basicwinninghand_wait_triple_D1D4D7(self):
+    def test_basic_wait_triple_D1D4D7(self):
         # [D2][D3][D4][D5][D6][C8][C8][C8][B3][B4][B5][Wh][Wh]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
@@ -4138,10 +4138,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][28])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][29])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][30])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [{1,4,7},set(),set(),set(),set()])
 
-    def test_basicwinninghand_wait_triple_D4D7Wh(self):
+    def test_basic_wait_triple_D4D7Wh(self):
         # [D4][D4][D5][D5][D6][D6][D7][D7][B3][B4][B5][Wh][Wh]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
@@ -4156,10 +4156,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][23])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][24])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][25])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [{4,7},set(),set(),set(),{0}])
 
-    def test_basicwinninghand_wait_double_eyes_C4Wh(self):
+    def test_basic_wait_double_eyes_C4Wh(self):
         # [D4][D4][D5][D5][D6][D6][B1][B2][B3][C4][C4][Wh][Wh]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
@@ -4174,10 +4174,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][23])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][14])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][15])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [set(),set(),{4},set(),{0}])
 
-    def test_basicwinninghand_wait_double_C3C6(self):
+    def test_basic_wait_double_C3C6(self):
         # [D4][D4][D5][D5][D6][D6][B1][B2][B3][C4][C5][Wh][Wh]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
@@ -4192,10 +4192,10 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][23])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][15])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][16])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [set(),set(),{3,6},set(),set()])
 
-    def test_basicwinninghand_wait_single_eye_D2(self):
+    def test_basic_wait_single_eye_D2(self):
         # [D2][D4][D4][D5][D5][D6][D6][B1][B2][B3][Wh][Wh][Wh]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
@@ -4210,7 +4210,7 @@ class TestGpmj(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][17])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][22])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][23])
-        self.required = self.hand.get_required_basicwinninghand()
+        self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [{2},set(),set(),set(),set()])
 
     def test_7pairs_None(self):

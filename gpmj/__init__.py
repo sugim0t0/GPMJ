@@ -1,2 +1,2 @@
-from . import gpmj
+from . import gpmjcore
 
