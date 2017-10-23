@@ -2,11 +2,16 @@ from distutils.core import setup
 
 setup(
     name='gpmj',
-    version='0.3',
+    version='0.30',
     packages=['gpmj'],
     package_dir={'gpmj': './gpmj'},
     )
 
-# python setup.py install
-# python setup.py install --user
+# INSTALL
+# python setup.py install [--user]
+
+# UNINSTALL
+# python setup.py install [--user] --record files.txt
+# cat files.txt | xargs rm -rf
+# rm filex.txt
 

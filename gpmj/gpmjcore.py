@@ -201,12 +201,12 @@ class HandJudgeChain():
                 win_hand.hand_value += self.hand_judge.open_value
             else:
                 win_hand.hand_value += self.hand_judge.closed_value
-            if self.next_chain_true == None:
+            if self.next_chain_true is None:
                 return True
             else:
                 return self.next_chain_true.judge_chain(win_hand)
         else:
-            if self.next_chain_false == None:
+            if self.next_chain_false is None:
                 return True
             else:
                 return self.next_chain_false.judge_chain(win_hand)
@@ -953,17 +953,19 @@ class ThirteenOrphansJudge(HandJudge):
 
 class WinHand():
 
-    def __init__(self, last_tile, b_discarded, seat_wind, round_wind):
+    def __init__(self):
         self.melds = []
         self.eyes = []
-        self.last_tile = last_tile
-        self.b_discarded = b_discarded
-        self.seat_wind = seat_wind
-        self.round_wind = round_wind
         self.b_open = False
         self.hand_flag = 0x0
         self.hand_value = 0
         self.hand_point = 0
+
+    def set_property(self, last_tile, b_discarded, seat_wind, round_wind):
+        self.last_tile = last_tile
+        self.b_discarded = b_discarded
+        self.seat_wind = seat_wind
+        self.round_wind = round_wind
 
     def append_meld(self, meld):
         if len(self.melds) < 4 and len(self.eyes) <= 1 and len(meld.tiles) >= 3:
@@ -1071,7 +1073,7 @@ class WinHand():
                 payment_non_dealer = score // 4
                 if (payment_non_dealer % 100) > 0:
                     payment_non_dealer += 100 - (payment_non_dealer % 100)
-                return (payment_non_dealer, payment_non_dealer)
+                return (payment_non_dealer, payment_dealer)
 
 
 class Tile():
@@ -1478,23 +1480,26 @@ class Hand():
             for meld in self.exposed:
                 this_node = MeldEyeTreeNode()
                 this_node.meld = meld
-                if tree_root == None:
+                if tree_root is None:
                     tree_root = this_node
-                if not prev_node == None:
+                if prev_node is not None:
                     prev_node.append_next_node(this_node)
                 prev_node = this_node
             else:
                 exposed_leaf = this_node
         # build pure melds and eye tree
-        pure_meld_eye_root = self.build_meld_eye_tree(None, None, last_tile)
-        if tree_root == None:
+        pure_meld_eye_root = self.build_pure_meld_eye_tree(None, None, last_tile)
+        if tree_root is None:
             tree_root = pure_meld_eye_root
         else:
             exposed_leaf.append_next_node(pure_meld_eye_root)
         win_hands = []
-        tree_root.list_winhands(last_tile, b_discarded, seat_wind, round_wind, win_hands)
+        tree_root.list_win_hands([], None, win_hands)
         if len(win_hands) == 0:
             return None
+        else:
+            for win_hand in win_hands:
+                win_hand.set_property(last_tile, b_discarded, seat_wind, round_wind)
         return win_hands
 
     def get_winhand_7pairs(self, last_tile, b_discarded, seat_wind, round_wind):
@@ -1511,7 +1516,8 @@ class Hand():
                 if not eyes[(tile_index // 2)].add_tile(tile):
                     return None
                 tile_index += 1
-        win_hand = WinHand(last_tile, b_discarded, seat_wind, round_wind)
+        win_hand = WinHand()
+        win_hand.set_property(last_tile, b_discarded, seat_wind, round_wind)
         for eye in eyes:
             win_hand.append_eye(eye)
         return win_hand
@@ -1533,19 +1539,19 @@ class Hand():
                 tile_p1 = tile
             elif tile.number == (discarded_tile.number + 2):
                 tile_p2 = tile
-        if not tile_m2 == None and not tile_m1 == None:
+        if tile_m2 is not None and tile_m1 is not None:
             meld = Meld()
             meld.add_tile(tile_m2)
             meld.add_tile(tile_m1)
             meld.add_tile(discarded_tile)
             melds.append(meld)
-        if not tile_m1 == None and not tile_p1 == None:
+        if tile_m1 is not None and tile_p1 is not None:
             meld = Meld()
             meld.add_tile(tile_m1)
             meld.add_tile(discarded_tile)
             meld.add_tile(tile_p1)
             melds.append(meld)
-        if not tile_p1 == None and not tile_p2 == None:
+        if tile_p1 is not None and tile_p2 is not None:
             meld = Meld()
             meld.add_tile(discarded_tile)
             meld.add_tile(tile_p1)
@@ -1593,11 +1599,11 @@ class Hand():
         self.exposed.append(meld)
         return True
 
-    def build_meld_eye_tree(self, meld, eye, last_tile):
+    def build_pure_meld_eye_tree(self, meld, eye, last_tile):
         meld_eye_tree = MeldEyeTreeNode()
-        if not meld == None:
+        if meld is not None:
             meld_eye_tree.meld = meld
-        elif not eye == None:
+        elif eye is not None:
             meld_eye_tree.eye = eye
         this_suit = Suits.INVALID
         b_eye_suit = False
@@ -1616,7 +1622,7 @@ class Hand():
                 eye = Eye()
                 eye.add_tile(self.pop_tile(this_suit, 0))
                 eye.add_tile(self.pop_tile(this_suit, 0))
-                meld_eye_tree.append_next_node(self.build_meld_eye_tree(None, eye, last_tile))
+                meld_eye_tree.append_next_node(self.build_pure_meld_eye_tree(None, eye, last_tile))
                 self.append_tile(eye.tiles[0])
                 self.append_tile(eye.tiles[1])
                 self.sort_tiles()
@@ -1627,7 +1633,7 @@ class Hand():
                 meld.add_tile(self.pop_tile(this_suit, 0))
                 meld.add_tile(self.pop_tile(this_suit, 0))
                 meld.add_tile(self.pop_tile(this_suit, 0))
-                meld_eye_tree.append_next_node(self.build_meld_eye_tree(meld, None, last_tile))
+                meld_eye_tree.append_next_node(self.build_pure_meld_eye_tree(meld, None, last_tile))
                 self.append_tile(meld.tiles[0])
                 self.append_tile(meld.tiles[1])
                 self.append_tile(meld.tiles[2])
@@ -1649,7 +1655,7 @@ class Hand():
             else:
                 break
         if len(meld.tiles) == 3:
-            meld_eye_tree.append_next_node(self.build_meld_eye_tree(meld, None, last_tile))
+            meld_eye_tree.append_next_node(self.build_pure_meld_eye_tree(meld, None, last_tile))
             if last_tile in meld.tiles:
                 for tile in self.pure_tiles[this_suit]:
                     if tile.number == last_tile.number:
@@ -1658,7 +1664,7 @@ class Hand():
                         self.pure_tiles[this_suit].remove(tile)
                         meld.append_tile(tile)
                         meld_eye_tree.append_next_node( \
-                            self.build_meld_eye_tree(meld, None, last_tile))
+                            self.build_pure_meld_eye_tree(meld, None, last_tile))
                         break
             else:
                 for tile in meld.tiles:
@@ -1668,7 +1674,7 @@ class Hand():
                         self.pure_tiles[this_suit].remove(last_tile)
                         meld.append_tile(last_tile)
                         meld_eye_tree.append_next_node( \
-                            self.build_meld_eye_tree(meld, None, last_tile))
+                            self.build_pure_meld_eye_tree(meld, None, last_tile))
                         break
         for tile in meld.tiles:
             self.append_tile(tile)
@@ -1685,6 +1691,36 @@ class MeldEyeTreeNode():
     def append_next_node(self, next_node):
         self.next_nodes.append(next_node)
 
-    def list_winhands(self, last_tile, b_discarded, seat_wind, round_wind):
-        return None
+    def list_win_hands(self, melds, eye, win_hands):
+        if self.meld is not None:
+            melds.append(self.meld)
+        elif self.eye is not None:
+            if eye is None:
+                eye = self.eye
+            else:
+                return False
+        if len(self.next_nodes) == 0:
+            if len(melds) == 4 and eye is not None:
+                # Create WinHand object
+                win_hand = WinHand()
+                for meld in melds:
+                    win_hand.append_meld(meld)
+                win_hand.append_eye(eye)
+                win_hands.append(win_hand)
+                if self.meld is not None:
+                    melds.remove(self.meld)
+                elif self.eye is not None:
+                    eye = None
+                return True
+            else:
+                if self.meld is not None:
+                    melds.remove(self.meld)
+                elif self.eye is not None:
+                    eye = None
+                return False
+        else:
+            for next_node in self.next_nodes:
+                if not next_node.list_win_hands(melds, eye, win_hands):
+                    return False
+        return True
 
