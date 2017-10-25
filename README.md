@@ -13,3 +13,16 @@
 &#126982;
 &#126981;
 &#126980;
+
+## Unit test
+`$ python -m unittest discover test/`
+
+## Coverage
+`$ cd test/`  
+`$ ln -s ../gpmj/gpmjcore.py gpmjcore.py`  
+Edit test_gpmjcore.py  
+Comment out `# from gpmj import gpmjcore`  
+And uncomment `import gpmjcore`  
+`$ coverage run test_gpmjcore.py`  
+`$ coverage html gpmjcore.py`  
+`$ open htmlcov/index.html`  

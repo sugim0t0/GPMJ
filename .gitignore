@@ -2,6 +2,8 @@
 __pycache__/
 build/
 doc/
+test/.coverage
+test/htmlcov/
 
 *.asta
 *.odp

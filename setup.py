@@ -13,5 +13,5 @@ setup(
 # UNINSTALL
 # python setup.py install [--user] --record files.txt
 # cat files.txt | xargs rm -rf
-# rm filex.txt
+# rm files.txt
 

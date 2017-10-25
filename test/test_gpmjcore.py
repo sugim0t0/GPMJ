@@ -2,6 +2,7 @@
 
 import unittest
 from gpmj import gpmjcore
+# import gpmjcore
 
 class TestGpmjCore(unittest.TestCase):
 
@@ -207,6 +208,25 @@ class TestGpmjCore(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_get_winhand_7pairs(self):
+        # [D1][D1][B1][B1][C9][C9][Es][St][St][Nt][Nt][Gr][Gr] + [Es]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][7])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][15])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][13])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][7])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][5])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        last_tile = self.all_tiles[gpmjcore.Suits.WINDS][1]
+        win_hand = self.hand.get_winhand_7pairs(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        self.assertEqual(len(win_hand.eyes), 7)
+
     def test_calc_score_non_dealer_v1_p30_pick(self):
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
@@ -215,6 +235,42 @@ class TestGpmjCore(unittest.TestCase):
         pay_non_dealer, pay_dealer = win_hand.calc_score()
         self.assertEqual(pay_non_dealer, 300)
         self.assertEqual(pay_dealer, 500)
+
+    def test_calc_score_non_dealer_v1_p40_pick(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
+        win_hand.hand_value = 1
+        win_hand.hand_point = 40
+        pay_non_dealer, pay_dealer = win_hand.calc_score()
+        self.assertEqual(pay_non_dealer, 400)
+        self.assertEqual(pay_dealer, 700)
+
+    def test_calc_score_non_dealer_v1_p50_pick(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
+        win_hand.hand_value = 1
+        win_hand.hand_point = 50
+        pay_non_dealer, pay_dealer = win_hand.calc_score()
+        self.assertEqual(pay_non_dealer, 400)
+        self.assertEqual(pay_dealer, 800)
+
+    def test_calc_score_non_dealer_v1_p60_pick(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
+        win_hand.hand_value = 1
+        win_hand.hand_point = 60
+        pay_non_dealer, pay_dealer = win_hand.calc_score()
+        self.assertEqual(pay_non_dealer, 500)
+        self.assertEqual(pay_dealer, 1000)
+
+    def test_calc_score_non_dealer_v1_p70_pick(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
+        win_hand.hand_value = 1
+        win_hand.hand_point = 70
+        pay_non_dealer, pay_dealer = win_hand.calc_score()
+        self.assertEqual(pay_non_dealer, 600)
+        self.assertEqual(pay_dealer, 1200)
 
     def test_calc_score_dealer_v1_p30_pick(self):
         win_hand = gpmjcore.WinHand()
