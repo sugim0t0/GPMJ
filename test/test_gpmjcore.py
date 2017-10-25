@@ -208,6 +208,26 @@ class TestGpmjCore(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_build_pure_meld_eye_tree_1(self):
+        # [D1][D1][D1][D1][D2][D2][D2][D2][D3][D3][D3][D3][D4] + [D4]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][3])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][5])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][6])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][7])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][9])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][10])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][11])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][13]
+        self.hand.append_tile(last_tile)
+        meld_eye_tree = self.hand.build_pure_meld_eye_tree(None, None, last_tile)
+        self.assertEqual(len(meld_eye_tree.next_nodes), 3)
+
     def test_get_winhand_7pairs(self):
         # [D1][D1][B1][B1][C9][C9][Es][St][St][Nt][Nt][Gr][Gr] + [Es]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])

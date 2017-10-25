@@ -57,13 +57,14 @@ Date           Version   Description
 18 Oct. 2017   0.28      Add calc_points()
 19 Oct. 2017   0.29      Add calc_score()
 23 Oct. 2017   0.30      Add MeldEyeTreeNode class
+25 Oct. 2017   0.31      Fix bug of build_pure_meld_eye_tree()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.30"
-__date__    = "23 Oct. 2017"
+__version__ = "0.31"
+__date__    = "25 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1662,17 +1663,17 @@ class Hand():
                         meld.remove_tile(last_tile)
                         self.append_tile(last_tile)
                         self.pure_tiles[this_suit].remove(tile)
-                        meld.append_tile(tile)
+                        meld.add_tile(tile)
                         meld_eye_tree.append_next_node( \
                             self.build_pure_meld_eye_tree(meld, None, last_tile))
                         break
-            else:
+            elif last_tile in self.pure_tiles[this_suit]:
                 for tile in meld.tiles:
                     if tile.number == last_tile.number:
                         meld.remove_tile(tile)
                         self.append_tile(tile)
                         self.pure_tiles[this_suit].remove(last_tile)
-                        meld.append_tile(last_tile)
+                        meld.add_tile(last_tile)
                         meld_eye_tree.append_next_node( \
                             self.build_pure_meld_eye_tree(meld, None, last_tile))
                         break
@@ -1686,7 +1687,7 @@ class MeldEyeTreeNode():
     def __init__(self):
         self.meld = None
         self.eye = None
-        next_nodes = []
+        self.next_nodes = []
 
     def append_next_node(self, next_node):
         self.next_nodes.append(next_node)
