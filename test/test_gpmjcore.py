@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import unittest
-from gpmj import gpmjcore
-# import gpmjcore
+# from gpmj import gpmjcore
+import gpmjcore
 
 class TestGpmjCore(unittest.TestCase):
 
@@ -208,7 +208,29 @@ class TestGpmjCore(unittest.TestCase):
         self.hand = None
         self.required = None
 
-    def test_build_pure_meld_eye_tree_1(self):
+    def test_list_win_hands(self):
+        # [D1][D1][D1][C1][C2][C3][B2][B3][B4][Es][Es][Es][Wh] + [Wh]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
+        last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][1]
+        self.hand.append_tile(last_tile)
+        meld_eye_tree = self.hand.build_pure_meld_eye_tree(None, None, last_tile)
+        win_hands = []
+        meld_eye_tree.list_win_hands([], None, win_hands)
+        self.assertEqual(len(win_hands), 1)
+
+    def test_build_pure_meld_eye_tree(self):
         # [D1][D1][D1][D1][D2][D2][D2][D2][D3][D3][D3][D3][D4] + [D4]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
@@ -227,6 +249,9 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(last_tile)
         meld_eye_tree = self.hand.build_pure_meld_eye_tree(None, None, last_tile)
         self.assertEqual(len(meld_eye_tree.next_nodes), 3)
+        win_hands = []
+        meld_eye_tree.list_win_hands([], None, win_hands)
+        self.assertEqual(len(win_hands), 9)
 
     def test_get_winhand_7pairs(self):
         # [D1][D1][B1][B1][C9][C9][Es][St][St][Nt][Nt][Gr][Gr] + [Es]

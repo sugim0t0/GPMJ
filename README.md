@@ -14,6 +14,13 @@
 &#126981;
 &#126980;
 
+## Install
+`$ python setup.py install [--user] --record files.txt`
+
+## Uninstall
+`$ cat files.txt | xargs rm -rf`
+`$ rm files.txt`
+
 ## Unit test
 `$ python -m unittest discover test/`
 

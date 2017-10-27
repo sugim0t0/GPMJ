@@ -58,13 +58,14 @@ Date           Version   Description
 19 Oct. 2017   0.29      Add calc_score()
 23 Oct. 2017   0.30      Add MeldEyeTreeNode class
 25 Oct. 2017   0.31      Fix bug of build_pure_meld_eye_tree()
+27 Oct. 2017   0.32      Fix bug of list_win_hands()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.31"
-__date__    = "25 Oct. 2017"
+__version__ = "0.32"
+__date__    = "27 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1601,6 +1602,7 @@ class Hand():
         return True
 
     def build_pure_meld_eye_tree(self, meld, eye, last_tile):
+        b_success = False
         meld_eye_tree = MeldEyeTreeNode()
         if meld is not None:
             meld_eye_tree.meld = meld
@@ -1623,7 +1625,10 @@ class Hand():
                 eye = Eye()
                 eye.add_tile(self.pop_tile(this_suit, 0))
                 eye.add_tile(self.pop_tile(this_suit, 0))
-                meld_eye_tree.append_next_node(self.build_pure_meld_eye_tree(None, eye, last_tile))
+                next_node = self.build_pure_meld_eye_tree(None, eye, last_tile)
+                if next_node is not None:
+                    b_success = True
+                    meld_eye_tree.append_next_node(next_node)
                 self.append_tile(eye.tiles[0])
                 self.append_tile(eye.tiles[1])
                 self.sort_tiles()
@@ -1634,7 +1639,10 @@ class Hand():
                 meld.add_tile(self.pop_tile(this_suit, 0))
                 meld.add_tile(self.pop_tile(this_suit, 0))
                 meld.add_tile(self.pop_tile(this_suit, 0))
-                meld_eye_tree.append_next_node(self.build_pure_meld_eye_tree(meld, None, last_tile))
+                next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
+                if next_node is not None:
+                    b_success = True
+                    meld_eye_tree.append_next_node(next_node)
                 self.append_tile(meld.tiles[0])
                 self.append_tile(meld.tiles[1])
                 self.append_tile(meld.tiles[2])
@@ -1643,7 +1651,7 @@ class Hand():
         meld = Meld()
         meld.add_tile(self.pop_tile(this_suit, 0))
         prev_number = meld.tiles[0].number
-        for tile in self.pure_tiles[this_suit]:
+        for tile in self.pure_tiles[this_suit][:]:
             if tile.number == prev_number:
                 continue
             elif tile.number == (prev_number + 1):
@@ -1656,30 +1664,36 @@ class Hand():
             else:
                 break
         if len(meld.tiles) == 3:
-            meld_eye_tree.append_next_node(self.build_pure_meld_eye_tree(meld, None, last_tile))
-            if last_tile in meld.tiles:
-                for tile in self.pure_tiles[this_suit]:
-                    if tile.number == last_tile.number:
-                        meld.remove_tile(last_tile)
-                        self.append_tile(last_tile)
-                        self.pure_tiles[this_suit].remove(tile)
-                        meld.add_tile(tile)
-                        meld_eye_tree.append_next_node( \
-                            self.build_pure_meld_eye_tree(meld, None, last_tile))
-                        break
-            elif last_tile in self.pure_tiles[this_suit]:
-                for tile in meld.tiles:
-                    if tile.number == last_tile.number:
-                        meld.remove_tile(tile)
-                        self.append_tile(tile)
-                        self.pure_tiles[this_suit].remove(last_tile)
-                        meld.add_tile(last_tile)
-                        meld_eye_tree.append_next_node( \
-                            self.build_pure_meld_eye_tree(meld, None, last_tile))
-                        break
+            next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
+            if next_node is not None:
+                b_success = True
+                meld_eye_tree.append_next_node(next_node)
+                if last_tile in meld.tiles:
+                    for tile in self.pure_tiles[this_suit][:]:
+                        if tile.number == last_tile.number:
+                            meld.remove_tile(last_tile)
+                            self.append_tile(last_tile)
+                            self.pure_tiles[this_suit].remove(tile)
+                            meld.add_tile(tile)
+                            next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
+                            meld_eye_tree.append_next_node(next_node)
+                            break
+                elif last_tile in self.pure_tiles[this_suit]:
+                    for tile in meld.tiles[:]:
+                        if tile.number == last_tile.number:
+                            meld.remove_tile(tile)
+                            self.append_tile(tile)
+                            self.pure_tiles[this_suit].remove(last_tile)
+                            meld.add_tile(last_tile)
+                            next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
+                            meld_eye_tree.append_next_node(next_node)
+                            break
         for tile in meld.tiles:
             self.append_tile(tile)
-        return meld_eye_tree
+        if b_success:
+            return meld_eye_tree
+        else:
+            return None
 
 
 class MeldEyeTreeNode():
@@ -1693,6 +1707,7 @@ class MeldEyeTreeNode():
         self.next_nodes.append(next_node)
 
     def list_win_hands(self, melds, eye, win_hands):
+        result = False
         if self.meld is not None:
             melds.append(self.meld)
         elif self.eye is not None:
@@ -1708,20 +1723,31 @@ class MeldEyeTreeNode():
                     win_hand.append_meld(meld)
                 win_hand.append_eye(eye)
                 win_hands.append(win_hand)
-                if self.meld is not None:
-                    melds.remove(self.meld)
-                elif self.eye is not None:
-                    eye = None
-                return True
+                result = True
             else:
-                if self.meld is not None:
-                    melds.remove(self.meld)
-                elif self.eye is not None:
-                    eye = None
-                return False
+                result = False
         else:
             for next_node in self.next_nodes:
-                if not next_node.list_win_hands(melds, eye, win_hands):
-                    return False
-        return True
+                result = next_node.list_win_hands(melds, eye, win_hands)
+                if result is False:
+                    break
+        if self.meld is not None:
+            melds.remove(self.meld)
+        elif self.eye is not None:
+            eye = None
+        return result
+
+    def print_tree(self, depth):
+        for x in range(depth):
+            print("    ", end="")
+        if self.meld is not None:
+            for tile in self.meld.tiles:
+                print(tile.print_char, end="")
+            print("")
+        elif self.eye is not None:
+            for tile in self.eye.tiles:
+                print(tile.print_char, end="")
+            print("")
+        for next_node in self.next_nodes:
+            next_node.print_tree(depth+1)
 
