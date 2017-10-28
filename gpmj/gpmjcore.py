@@ -59,13 +59,14 @@ Date           Version   Description
 23 Oct. 2017   0.30      Add MeldEyeTreeNode class
 25 Oct. 2017   0.31      Fix bug of build_pure_meld_eye_tree()
 27 Oct. 2017   0.32      Fix bug of list_win_hands()
+28 Oct. 2017   0.33      Change spec of declare_kong()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.32"
-__date__    = "27 Oct. 2017"
+__version__ = "0.33"
+__date__    = "28 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1116,9 +1117,6 @@ class Eye():
             return False
         return True
 
-    def pop_tile(self):
-        return self.tiles.pop(0)
-
 
 class Meld():
 
@@ -1174,12 +1172,6 @@ class Meld():
         self.tiles.remove(tile)
         if len(self.tiles) == 1:
             self.b_sequential = False
-
-    def pop_tile(self, index):
-        ret_tile = self.tiles.pop(index)
-        if len(self.tiles) == 1:
-            self.b_sequential = False
-        return ret_tile
 
     def make_kong(self, tile):
         if len(self.tiles) == 3 and \
@@ -1593,12 +1585,36 @@ class Hand():
         self.exposed.append(meld)
         return True
 
-    def declare_kong(self, meld):
-        if not len(meld.tiles) == 4:
+    def declare_kong(self, suit, number):
+        self.sort_tiles()
+        cnt = 0
+        for tile in self.pure_tiles[suit]:
+            if tile.number == number:
+                cnt += 1
+        if cnt == 4:
+            meld = Meld()
+            for tile in self.pure_tiles[suit][:]:
+                if tile.number == number:
+                    self.pure_tiles[suit].remove(tile)
+                    if len(meld.tiles) < 3:
+                        meld.add_tile(tile)
+                    else:
+                        meld.make_kong(tile)
+                        break
+            self.exposed.append(meld)
+        elif cnt == 1:
+            for tile in self.pure_tiles[suit][:]:
+                if tile.number == number:
+                    for meld in self.exposed:
+                        if not meld.b_sequential and meld.tiles[0].number == number:
+                            self.pure_tiles[suit].remove(tile)
+                            meld.make_kong(tile)
+                            break
+                    else:
+                        return False
+                    break
+        else:
             return False
-        for tile in meld.tiles:
-            self.pure_tiles[meld.tiles[0].suit].remove(tile)
-        self.exposed.append(meld)
         return True
 
     def build_pure_meld_eye_tree(self, meld, eye, last_tile):

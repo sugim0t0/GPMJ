@@ -18,7 +18,7 @@
 `$ python setup.py install [--user] --record files.txt`
 
 ## Uninstall
-`$ cat files.txt | xargs rm -rf`
+`$ cat files.txt | xargs rm -rf`  
 `$ rm files.txt`
 
 ## Unit test

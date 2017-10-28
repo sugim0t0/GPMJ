@@ -208,6 +208,109 @@ class TestGpmjCore(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_declare_kong_exposed(self):
+        # ([D1][D1][D1]) [D2][D3][D4][D5][D6][D7][D8][D9][D9][D9] + [D1]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        meld = gpmjcore.Meld()
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.steal_tile(meld, self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][24])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][3]
+        self.hand.append_tile(last_tile)
+        result = self.hand.declare_kong(gpmjcore.Suits.DOTS, 1)
+        self.assertEqual(result, True)
+        self.assertEqual(len(self.hand.exposed), 1)
+        self.assertEqual(self.hand.exposed[0].b_stolen, True)
+        self.assertEqual(len(self.hand.exposed[0].tiles), 4)
+
+    def test_declare_kong_hidden(self):
+        # [D1][D1][D1][D2][D3][D4][D5][D6][D7][D8][D9][D9][D9] + [D1]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][24])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][3]
+        self.hand.append_tile(last_tile)
+        result = self.hand.declare_kong(gpmjcore.Suits.DOTS, 1)
+        self.assertEqual(result, True)
+        self.assertEqual(len(self.hand.exposed), 1)
+        self.assertEqual(self.hand.exposed[0].b_stolen, False)
+        self.assertEqual(len(self.hand.exposed[0].tiles), 4)
+
+    def test_make_kong(self):
+        # [D1][D1][D1] + [D1]
+        meld = gpmjcore.Meld()
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        result = meld.make_kong(self.all_tiles[gpmjcore.Suits.DOTS][3])
+        self.assertEqual(result, False)
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        result = meld.make_kong(self.all_tiles[gpmjcore.Suits.DOTS][3])
+        self.assertEqual(result, True)
+
+    def test_get_winhands_basic_0(self):
+        # [D1][D1][D1][D2][D3][D4][D5][D6][D7][D8][D9][D9][D9] + [D6]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][24])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][21]
+        win_hands = self.hand.get_winhands_basic(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        self.assertEqual(len(win_hands), 4)
+
+    def test_get_winhands_basic_1(self):
+        # ([D1][D1][D1]) [D2][D3][D4][D5][D6][D7][D8][D9][D9][D9] + [D5]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        meld = gpmjcore.Meld()
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.steal_tile(meld, self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][24])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][17]
+        win_hands = self.hand.get_winhands_basic(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        self.assertEqual(len(win_hands), 1)
+
     def test_list_win_hands(self):
         # [D1][D1][D1][C1][C2][C3][B2][B3][B4][Es][Es][Es][Wh] + [Wh]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
@@ -249,6 +352,8 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(last_tile)
         meld_eye_tree = self.hand.build_pure_meld_eye_tree(None, None, last_tile)
         self.assertEqual(len(meld_eye_tree.next_nodes), 3)
+        print("")
+        meld_eye_tree.print_tree(0)
         win_hands = []
         meld_eye_tree.list_win_hands([], None, win_hands)
         self.assertEqual(len(win_hands), 9)
@@ -4613,6 +4718,8 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][3])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][35])
+        print("")
+        self.hand.print_tiles()
         self.required = self.hand.get_required_13orphans()
         self.assertEqual(self.required, [{1,9},{1,9},{1,9},{0,1,2,3},{0,1,2}])
 
