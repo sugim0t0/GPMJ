@@ -252,6 +252,10 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][3]
         self.hand.append_tile(last_tile)
+        result = self.hand.declare_kong(gpmjcore.Suits.DOTS, 2)
+        self.assertEqual(result, False)
+        result = self.hand.declare_kong(gpmjcore.Suits.DOTS, 9)
+        self.assertEqual(result, False)
         result = self.hand.declare_kong(gpmjcore.Suits.DOTS, 1)
         self.assertEqual(result, True)
         self.assertEqual(len(self.hand.exposed), 1)
@@ -313,6 +317,10 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_list_win_hands(self):
         # [D1][D1][D1][C1][C2][C3][B2][B3][B4][Es][Es][Es][Wh] + [Wh]
+        win_hands = []
+        meld_eye_tree_dummy = gpmjcore.MeldEyeTreeNode()
+        result = meld_eye_tree_dummy.list_win_hands([], None, win_hands)
+        self.assertEqual(result, False)
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
@@ -329,7 +337,11 @@ class TestGpmjCore(unittest.TestCase):
         last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][1]
         self.hand.append_tile(last_tile)
         meld_eye_tree = self.hand.build_pure_meld_eye_tree(None, None, last_tile)
-        win_hands = []
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        result = meld_eye_tree.list_win_hands([], eye, win_hands)
+        self.assertEqual(result, False)
         meld_eye_tree.list_win_hands([], None, win_hands)
         self.assertEqual(len(win_hands), 1)
 
@@ -376,6 +388,48 @@ class TestGpmjCore(unittest.TestCase):
         last_tile = self.all_tiles[gpmjcore.Suits.WINDS][1]
         win_hand = self.hand.get_winhand_7pairs(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         self.assertEqual(len(win_hand.eyes), 7)
+
+    def test_get_winhand_7pairs_1(self):
+        # ([D1][D1][D1]) [D2][D3][D4][D5][D6][D7][D8][D9][D9][D9] + [D5]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        meld = gpmjcore.Meld()
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.steal_tile(meld, self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][24])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][17]
+        win_hand = self.hand.get_winhand_7pairs(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        self.assertEqual(win_hand, None)
+
+    def test_get_winhand_7pairs_2(self):
+        # [D1][D1][D1][D2][D3][D4][D5][D6][D7][D8][D9][D9][D9] + [D6]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][24])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][21]
+        win_hand = self.hand.get_winhand_7pairs(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        self.assertEqual(win_hand, None)
 
     def test_calc_score_non_dealer_v1_p30_pick(self):
         win_hand = gpmjcore.WinHand()
@@ -774,7 +828,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][33])
-        expected = gpmjcore.HandFlag.NINE_GATES
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.NINE_GATES)
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
@@ -815,7 +870,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
-        expected = (gpmjcore.HandFlag.BIG_THREE_DRAGONS | \
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.BIG_THREE_DRAGONS | \
                     gpmjcore.HandFlag.FOUR_CONCEALED_TRIPLETS | \
                     gpmjcore.HandFlag.ALL_HONORS)
         win_hand = gpmjcore.WinHand()
@@ -858,7 +914,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][12])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][13])
-        expected = gpmjcore.HandFlag.LITTLE_FOUR_WINDS
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.LITTLE_FOUR_WINDS)
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
@@ -903,7 +960,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][8])
         eye.add_tile(last_tile)
-        expected = (gpmjcore.HandFlag.BIG_FOUR_WINDS | \
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.BIG_FOUR_WINDS | \
                     gpmjcore.HandFlag.FOUR_CONCEALED_TRIPLETS | \
                     gpmjcore.HandFlag.FOUR_KONGS | \
                     gpmjcore.HandFlag.ALL_HONORS)
@@ -948,7 +1006,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][21])
-        expected = gpmjcore.HandFlag.ALL_GREEN
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.ALL_GREEN)
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
@@ -989,7 +1048,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
-        expected = (gpmjcore.HandFlag.FOUR_CONCEALED_TRIPLETS | \
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.FOUR_CONCEALED_TRIPLETS | \
                     gpmjcore.HandFlag.ALL_TERMINALS)
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
@@ -1031,7 +1091,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][21])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][22])
-        expected = (gpmjcore.HandFlag.NO_POINTS_HAND | \
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.NO_POINTS_HAND | \
                     gpmjcore.HandFlag.ONE_SET_OF_IDENTICAL_SEQUENCES | \
                     gpmjcore.HandFlag.ALL_SIMPLES)
         win_hand = gpmjcore.WinHand()
@@ -1073,8 +1134,8 @@ class TestGpmjCore(unittest.TestCase):
         melds.append(meld4)
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
-        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
-        expected = (gpmjcore.HandFlag.NO_POINTS_HAND | \
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.NO_POINTS_HAND | \
                     gpmjcore.HandFlag.TERMINAL_IN_EACH_SET | \
                     gpmjcore.HandFlag.THREE_COLOR_STRAIGHT)
         win_hand = gpmjcore.WinHand()
@@ -1083,7 +1144,11 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
-        win_hand.append_eye(eye)
+        result = win_hand.append_eye(eye)
+        self.assertEqual(result, False)
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
+        result = win_hand.append_eye(eye)
+        self.assertEqual(result, True)
         self.basic_hand_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
         win_hand.calc_points()
@@ -1117,7 +1182,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][9])
         eye.add_tile(last_tile)
-        expected = (gpmjcore.HandFlag.TWO_SET_OF_IDENTICAL_SEQUENCES | \
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.TWO_SET_OF_IDENTICAL_SEQUENCES | \
                     gpmjcore.HandFlag.TERMINAL_OR_HONOR_IN_EACH_SET)
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
@@ -1159,7 +1225,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][10])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][11])
-        expected = (gpmjcore.HandFlag.ONE_SET_OF_IDENTICAL_SEQUENCES | \
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.ONE_SET_OF_IDENTICAL_SEQUENCES | \
                     gpmjcore.HandFlag.FLUSH | \
                     gpmjcore.HandFlag.STRAIGHT)
         win_hand = gpmjcore.WinHand()
@@ -1203,7 +1270,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
-        expected = (gpmjcore.HandFlag.ALL_TERMINALS_AND_HONORS | \
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.ALL_TERMINALS_AND_HONORS | \
                     gpmjcore.HandFlag.LITTLE_THREE_DRAGONS | \
                     gpmjcore.HandFlag.WHITE_DRAGON | \
                     gpmjcore.HandFlag.GREEN_DRAGON | \
@@ -1254,7 +1322,8 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
         eye.add_tile(last_tile)
-        expected = (gpmjcore.HandFlag.THREE_KONGS | \
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.THREE_KONGS | \
                     gpmjcore.HandFlag.THREE_COLOR_TRIPLETS)
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
@@ -1268,6 +1337,89 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.calc_points()
         self.assertEqual(win_hand.hand_point, 70)
         self.assertEqual(win_hand.hand_value, 4)
+
+    def test_HandJudgeChain_6(self):
+        # [B1][B2][B3][D3][D3][D3][Es][Es][Es][Gr][Gr][Rd][Rd] + [Gr]
+        last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][6]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][9])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][10])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][2])
+        meld3.b_stolen = True
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][8])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
+        expected = (gpmjcore.HandFlag.BASIC_HAND | \
+                    gpmjcore.HandFlag.SEAT_WIND | \
+                    gpmjcore.HandFlag.ROUND_WIND | \
+                    gpmjcore.HandFlag.GREEN_DRAGON)
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        self.basic_hand_jc.judge_chain(win_hand)
+        self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 40)
+        self.assertEqual(win_hand.hand_value, 3)
+
+    def test_HandJudgeChain_99(self):
+        # HandJudge error
+        last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][8]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][21])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][22])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][24])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][32])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][21])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][22])
+        melds.append(meld3)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
+        eye.add_tile(last_tile)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][20])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][21])
+        melds.append(meld4)
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_eye(eye)
+        result = self.basic_hand_jc.judge_chain(win_hand)
+        self.assertEqual(result, False)
+        win_hand.append_meld(meld4)
+        result = self.basic_hand_jc.judge_chain(win_hand)
+        self.assertEqual(result, False)
 
     def test_ThirteenOrphansJudge_13orphans_0(self):
         # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Nt][Gr][Rd] + [Es]
@@ -1306,8 +1458,44 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][35])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        result = judge.judge_hand(self.hand.pure_tiles)
+        self.assertEqual(result, False)
         result = judge.judge_13orphans_hand(self.hand.pure_tiles)
         self.assertEqual(result, True)
+
+    def test_ThirteenOrphansJudge_13orphans_2(self):
+        # [D1][D1][B1][B9][C1][C9][Es][St][Ws][Nt][Wh][Gr][Rd] + [Es]
+        judge = gpmjcore.ThirteenOrphansJudge()
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][10])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][13])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][10])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][3])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        result = judge.judge_13orphans_hand(self.hand.pure_tiles)
+        self.assertEqual(result, False)
+        # [D1][D2][B1][B9][C1][C9][Es][St][Ws][Nt][Wh][Gr][Rd] + [Es]
+        self.hand.sort_tiles()
+        self.hand.pop_tile(gpmjcore.Suits.DOTS, 1)
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        result = judge.judge_13orphans_hand(self.hand.pure_tiles)
+        self.assertEqual(result, False)
+        # [D1][D9][B1][B9][C1][C9][Es][St][St][Nt][Wh][Gr][Rd] + [Es]
+        self.hand.sort_tiles()
+        self.hand.pop_tile(gpmjcore.Suits.DOTS, 1)
+        self.hand.pop_tile(gpmjcore.Suits.WINDS, 3)
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][5])
+        result = judge.judge_13orphans_hand(self.hand.pure_tiles)
+        self.assertEqual(result, False)
 
     def test_SevenPairsJudge_7pairs_0(self):
         # [B1][B1][B3][B3][B3][B3][D1][D2][D2][Gr][Gr][Rd][Rd] + [D1]
@@ -1398,6 +1586,51 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.append_eye(eye7)
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
+
+    def test_SevenPairsJudge_7pairs_2(self):
+        # [B1][B1][B3][B3][B4][B4][D1][D2][D2][Gr][Gr] + [D1]
+        judge = gpmjcore.SevenPairsJudge()
+        eyes = []
+        eye1 = gpmjcore.Eye()
+        eye1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
+        eye1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
+        eyes.append(eye1)
+        eye2 = gpmjcore.Eye()
+        eye2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
+        eye2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][9])
+        eyes.append(eye2)
+        eye3 = gpmjcore.Eye()
+        eye3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][12])
+        eye3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][13])
+        eyes.append(eye3)
+        eye4 = gpmjcore.Eye()
+        eye4.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][1]
+        eye4.add_tile(last_tile)
+        eyes.append(eye4)
+        eye5 = gpmjcore.Eye()
+        eye5.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        eye5.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][5])
+        eyes.append(eye5)
+        eye6 = gpmjcore.Eye()
+        eye6.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
+        eye6.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        eyes.append(eye6)
+        eye7 = gpmjcore.Eye()
+        eye7.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][8])
+        eye7.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
+        eyes.append(eye7)
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_eye(eye1)
+        win_hand.append_eye(eye2)
+        win_hand.append_eye(eye3)
+        win_hand.append_eye(eye4)
+        win_hand.append_eye(eye5)
+        win_hand.append_eye(eye6)
+        # win_hand.append_eye(eye7)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
 
     def test_AllHonorsJudge_7pairs_0(self):
         # [Es][Es][St][St][Ws][Ws][D1][Wh][Wh][Gr][Gr][Rd][Rd] + [D1]
@@ -1925,6 +2158,82 @@ class TestGpmjCore(unittest.TestCase):
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
+    def test_NineGatesJudge_2(self):
+        # [Es][Es][C1][C2][C3][C3][C4][C5][C6][C7][C8][C9][C9] + [C9]
+        judge = gpmjcore.NineGatesJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.CHARACTERS][35]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][2])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][10])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][9])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][13])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][17])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][21])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][25])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][29])
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(last_tile)
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][33])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
+    def test_NineGatesJudge_3(self):
+        # [C1][C1][C1][C2][C3][C3][C4][C5][C5][C6][C7][C9][C9] + [C9]
+        judge = gpmjcore.NineGatesJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.CHARACTERS][35]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][2])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][10])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][9])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][13])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][17])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][16])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][20])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][24])
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(last_tile)
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][33])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][0])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
     def test_FourKongsJudge_0(self):
         # [B2][B2][B2][B2][D3][D3][D3][D3][D6][D6][D6][D6][C2][C2][C9][C9] + [C9]
         judge = gpmjcore.FourKongsJudge()
@@ -2169,6 +2478,201 @@ class TestGpmjCore(unittest.TestCase):
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
+    def test_AllGreenJudge_3(self):
+        # [B2][B2][B3][B3][B4][B4][B6][B6][B8][B8][B8][Wh][Wh] + [Wh]
+        judge = gpmjcore.AllGreenJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][0]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][29])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][30])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][12])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][13])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][5])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][9])
+        meld3.b_stolen = True
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][21])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
+    def test_AllGreenJudge_4(self):
+        # [B2][B2][B3][B3][B4][B4][B4][B6][B6][B6][D8][D8][D8] + [B4]
+        judge = gpmjcore.AllGreenJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.BAMBOO][10]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][29])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][30])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][28])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][12])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][13])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][5])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][9])
+        meld3.b_stolen = True
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][21])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][22])
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][11])
+        eye.add_tile(last_tile)
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
+    def test_AllGreenJudge_5(self):
+        # [B2][B2][B3][B3][B4][B4][Wh][Wh][B8][B8][B8][Gr][Gr] + [Gr]
+        judge = gpmjcore.AllGreenJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][4]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][29])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][30])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][12])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][13])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][5])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][9])
+        meld3.b_stolen = True
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][6])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
+    def test_AllGreenJudge_6(self):
+        # [B2][B2][B3][B3][B4][B4][B5][B5][B8][B8][B8][Gr][Gr] + [Gr]
+        judge = gpmjcore.AllGreenJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][4]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][29])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][30])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][12])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][13])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][5])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][9])
+        meld3.b_stolen = True
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][6])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][16])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][17])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
+    def test_AllGreenJudge_7(self):
+        # [B2][B2][B3][B3][B4][B4][D4][D4][B8][B8][B8][Gr][Gr] + [Gr]
+        judge = gpmjcore.AllGreenJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][4]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][29])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][30])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][12])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][13])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][5])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][9])
+        meld3.b_stolen = True
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][6])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][13])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
     def test_AllTerminalsJudge_0(self):
         # [B1][B1][B9][B9][B9][D1][D1][D1][D9][D9][D9][Nt][Nt] + [Nt]
         judge = gpmjcore.AllTerminalsJudge()
@@ -2284,6 +2788,45 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.append_eye(eye)
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
+
+    def test_AllTerminalsJudge_3(self):
+        # [B2][B2][B9][B9][B9][D1][D1][D1][D9][D9][D9][C1][C1] + [C1]
+        judge = gpmjcore.AllTerminalsJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.CHARACTERS][2]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][32])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][33])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][34])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
+        meld3.b_stolen = True
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][0])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][5])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
 
     def test_AllHonorsJudge_0(self):
         # [B1][B1][Es][Es][Es][St][St][St][Ws][Ws][Ws][Nt][Nt] + [Nt]
@@ -2826,6 +3369,44 @@ class TestGpmjCore(unittest.TestCase):
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
+    def test_FlushJudge_2(self):
+        # [D1][D1][D2][D2][D3][D3][D4][D4][D7][D8][D9][C1][C1] + [D4]
+        judge = gpmjcore.FlushJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][12]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][5])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][10])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][3])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][11])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][27])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][28])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][13])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][14])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][0])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
     def test_TwoSetOfIdenticalSequencesJudge_0(self):
         # [D4][D4][D5][D5][D6][D6][B1][B1][B2][B2][B3][Wh][Wh] + [B3]
         judge = gpmjcore.TwoSetOfIdenticalSequencesJudge()
@@ -2897,8 +3478,8 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
-        win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
+        win_hand.append_meld(meld3)
         win_hand.append_eye(eye)
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
@@ -3083,6 +3664,44 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
+    def test_TerminalInEachSetJudge_2(self):
+        # [B1][B1][B1][D1][D1][D1][D9][D9][D9][C1][C1][C9][C9] + [C1]
+        judge = gpmjcore.TerminalInEachSetJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.CHARACTERS][0]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][2])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
@@ -3417,6 +4036,8 @@ class TestGpmjCore(unittest.TestCase):
         melds = []
         meld1 = gpmjcore.Meld()
         meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][3])
+        result = meld1.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
+        self.assertEqual(result, False)
         meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
         meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
         melds.append(meld1)
@@ -3437,14 +4058,22 @@ class TestGpmjCore(unittest.TestCase):
         melds.append(meld4)
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
+        result = eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][31])
+        self.assertEqual(result, False)
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
+        result = eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][33])
+        self.assertEqual(result, False)
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
         win_hand.append_meld(meld4)
+        result = win_hand.calc_points()
+        self.assertEqual(result, False)
         win_hand.append_eye(eye)
+        win_hand.calc_points()
+        self.assertEqual(win_hand.hand_point, 50)
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, False)
 
@@ -3717,6 +4346,44 @@ class TestGpmjCore(unittest.TestCase):
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
 
+    def test_TerminalOrHonorInEachSetJudge_3(self):
+        # [B1][B2][B3][D1][D2][D3][D7][D8][D9][Es][Es][D2][D2] + [Es]
+        judge = gpmjcore.TerminalOrHonorInEachSetJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.WINDS][2]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][3])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][3])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][27])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][28])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][6])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][5])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
     def test_StraightJudge_0(self):
         # [B2][B3][B4][D1][D2][D3][D4][D5][D6][D7][D8][Wh][Wh] + [D6]
         judge = gpmjcore.StraightJudge()
@@ -3944,6 +4611,44 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.append_eye(eye)
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
+
+    def test_AllSimplesJudge_2(self):
+        # [D4][D4][D5][D5][D6][D6][Es][Es][Es][C4][C5][C6][C6] + [C6]
+        judge = gpmjcore.AllSimplesJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.CHARACTERS][20]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][2])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][14])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][15])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][17])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][21])
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][15])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][16])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][21])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][22])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
     
     def test_OneSetOfIdenticalSequencesJudge_0(self):
         # [D4][D4][D5][D5][D6][D6][B1][B2][B3][C4][C5][Wh][Wh] + [C6]
@@ -3975,10 +4680,10 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
-        win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
-        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld1)
         win_hand.append_meld(meld4)
+        win_hand.append_meld(meld3)
         win_hand.append_eye(eye)
         result = judge.judge_hand(win_hand)
         self.assertEqual(result, True)
@@ -4201,6 +4906,44 @@ class TestGpmjCore(unittest.TestCase):
         eye = gpmjcore.Eye()
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][9])
+        win_hand = gpmjcore.WinHand()
+        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.append_meld(meld1)
+        win_hand.append_meld(meld2)
+        win_hand.append_meld(meld3)
+        win_hand.append_meld(meld4)
+        win_hand.append_eye(eye)
+        result = judge.judge_hand(win_hand)
+        self.assertEqual(result, False)
+
+    def test_NoPointsHandJudge_4(self):
+        # [D4][D4][D5][D5][D6][D6][B1][B2][B3][C4][C5][Es][Es] + [C6]
+        judge = gpmjcore.NoPointsHandJudge()
+        last_tile = self.all_tiles[gpmjcore.Suits.CHARACTERS][20]
+        melds = []
+        meld1 = gpmjcore.Meld()
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][3])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][7])
+        meld1.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][11])
+        melds.append(meld1)
+        meld2 = gpmjcore.Meld()
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][14])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        meld2.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
+        melds.append(meld2)
+        meld3 = gpmjcore.Meld()
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][15])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][17])
+        meld3.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][21])
+        melds.append(meld3)
+        meld4 = gpmjcore.Meld()
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][15])
+        meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][16])
+        meld4.add_tile(last_tile)
+        melds.append(meld4)
+        eye = gpmjcore.Eye()
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
         win_hand = gpmjcore.WinHand()
         win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)

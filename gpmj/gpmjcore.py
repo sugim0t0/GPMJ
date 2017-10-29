@@ -133,12 +133,13 @@ class Dragons(IntEnum):
 class HandFlag(IntEnum):
 
     # Flags of winning hands
+    BASIC_HAND                     = 0x00000001
     # 1 value
-    WHITE_DRAGON                   = 0x00020000
-    GREEN_DRAGON                   = 0x00040000
-    RED_DRAGON                     = 0x00080000
-    SEAT_WIND                      = 0x00100000
-    ROUND_WIND                     = 0x00200000
+    WHITE_DRAGON                   = 0x00040000
+    GREEN_DRAGON                   = 0x00080000
+    RED_DRAGON                     = 0x00100000
+    SEAT_WIND                      = 0x00200000
+    ROUND_WIND                     = 0x00400000
   # READY_HAND = 
   # SELF_PICK =
   # ONE_SHOT =
@@ -146,41 +147,41 @@ class HandFlag(IntEnum):
   # LAST_DISCARD = 
   # DEAD_WALL_DRAW =
   # ROBBING_A_QUAD = 
-    NO_POINTS_HAND                 = 0x00000001
-    ONE_SET_OF_IDENTICAL_SEQUENCES = 0x00000002
-    ALL_SIMPLES                    = 0x00000004
+    NO_POINTS_HAND                 = 0x00000004
+    ONE_SET_OF_IDENTICAL_SEQUENCES = 0x00000008
+    ALL_SIMPLES                    = 0x00000010
   # HONOR_TILE =
     # 2 value (Closed), 1 value (Open)
-    THREE_COLOR_STRAIGHT           = 0x00000008
-    STRAIGHT                       = 0x00000010
-    TERMINAL_OR_HONOR_IN_EACH_SET  = 0x00000020
+    THREE_COLOR_STRAIGHT           = 0x00000020
+    STRAIGHT                       = 0x00000040
+    TERMINAL_OR_HONOR_IN_EACH_SET  = 0x00000080
     # 2 value
-    SEVEN_PAIRS                    = 0x00000040
+    SEVEN_PAIRS                    = 0x00000002
   # DOUBLE_READY =
-    ALL_TRIPLET_HAND               = 0x00000080
-    THREE_CLOSED_TRIPLETS          = 0x00000100
-    THREE_COLOR_TRIPLETS           = 0x00000200
-    THREE_KONGS                    = 0x00000400
-    ALL_TERMINALS_AND_HONORS       = 0x00000800
-    LITTLE_THREE_DRAGONS           = 0x00001000
+    ALL_TRIPLET_HAND               = 0x00000100
+    THREE_CLOSED_TRIPLETS          = 0x00000200
+    THREE_COLOR_TRIPLETS           = 0x00000400
+    THREE_KONGS                    = 0x00000800
+    ALL_TERMINALS_AND_HONORS       = 0x00001000
+    LITTLE_THREE_DRAGONS           = 0x00002000
     # 3 value (Closed), 2 value (Open)
-    TERMINAL_IN_EACH_SET           = 0x00002000
-    HALF_FLUSH                     = 0x00004000
+    TERMINAL_IN_EACH_SET           = 0x00004000
+    HALF_FLUSH                     = 0x00008000
     # 3 value
-    TWO_SET_OF_IDENTICAL_SEQUENCES = 0x00008000
+    TWO_SET_OF_IDENTICAL_SEQUENCES = 0x00010000
     # 6 value (Closed), 5 value (Open)
-    FLUSH                          = 0x00010000
+    FLUSH                          = 0x00020000
     # LIMIT HANDS
-    THIRTEEN_ORPHANS               = 0x10000001
-    FOUR_CONCEALED_TRIPLETS        = 0x10000002
-    BIG_THREE_DRAGONS              = 0x10000004
-    LITTLE_FOUR_WINDS              = 0x10000008
-    BIG_FOUR_WINDS                 = 0x10000010
-    ALL_HONORS                     = 0x10000020
-    ALL_TERMINALS                  = 0x10000040
-    ALL_GREEN                      = 0x10000080
-    NINE_GATES                     = 0x10000100
-    FOUR_KONGS                     = 0x10000200
+    THIRTEEN_ORPHANS               = 0x10000004
+    FOUR_CONCEALED_TRIPLETS        = 0x10000008
+    BIG_THREE_DRAGONS              = 0x10000010
+    LITTLE_FOUR_WINDS              = 0x10000020
+    BIG_FOUR_WINDS                 = 0x10000040
+    ALL_HONORS                     = 0x10000080
+    ALL_TERMINALS                  = 0x10000100
+    ALL_GREEN                      = 0x10000200
+    NINE_GATES                     = 0x10000400
+    FOUR_KONGS                     = 0x10000800
   # HEAVENLY_HAND =
   # HAND_OF_EARTH =
   # HAND_OF_MAN =
@@ -210,7 +211,10 @@ class HandJudgeChain():
                 return self.next_chain_true.judge_chain(win_hand)
         else:
             if self.next_chain_false is None:
-                return True
+                if win_hand.hand_flag > 0:
+                    return True
+                else:
+                    return False
             else:
                 return self.next_chain_false.judge_chain(win_hand)
 
@@ -218,7 +222,7 @@ class HandJudgeChain():
 class HandJudge():
 
     def __init__(self):
-        self.flag = 0x00000000
+        self.flag = HandFlag.BASIC_HAND
         self.closed_value = 0
         self.open_value = 0
 
@@ -227,9 +231,6 @@ class HandJudge():
            not len(win_hand.eyes[0].tiles) == 2 or \
            not len(win_hand.melds) == 4:
             return False
-        for meld in win_hand.melds:
-            if not (len(meld.tiles) == 3 or len(meld.tiles) == 4):
-                return False
         return True 
 
 
@@ -448,9 +449,6 @@ class SevenPairsJudge(HandJudge):
     def judge_hand(self, win_hand):
         if not len(win_hand.eyes) == 7:
             return False
-        for eye in win_hand.eyes:
-            if not len(eye.tiles) == 2:
-                return False
         for i in range(len(win_hand.eyes)-1):
             for j in range(i+1, len(win_hand.eyes)):
                 if win_hand.eyes[i].tiles[0].suit == win_hand.eyes[j].tiles[0].suit and \
