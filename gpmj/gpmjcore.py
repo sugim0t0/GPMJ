@@ -60,13 +60,14 @@ Date           Version   Description
 25 Oct. 2017   0.31      Fix bug of build_pure_meld_eye_tree()
 27 Oct. 2017   0.32      Fix bug of list_win_hands()
 28 Oct. 2017   0.33      Change spec of declare_kong()
+31 Oct. 2017   0.34      Add judge_different_9orphans()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.33"
-__date__    = "28 Oct. 2017"
+__version__ = "0.34"
+__date__    = "31 Oct. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1238,7 +1239,7 @@ class Hand():
                     if tile.number == number:
                         num_of_used += 1
                 for meld in self.exposed:
-                    for tile in meld:
+                    for tile in meld.tiles:
                         if tile.number == number:
                             num_of_used += 1
                 if num_of_used == 4:
@@ -1350,10 +1351,10 @@ class Hand():
                 if (suit_remained_one >= 0) or (suit_remained_two_1st >= 0):
                     return None
                 suit_remained_one = suit
-            if len(self.pure_tiles[suit]) % 3 == 2:
+            elif len(self.pure_tiles[suit]) % 3 == 2:
                 if (suit_remained_one >= 0) or (suit_remained_two_2nd >= 0):
                     return None
-                if suit_remained_two_1st >= 0:
+                elif suit_remained_two_1st >= 0:
                     suit_remained_two_2nd = suit
                 else:
                     suit_remained_two_1st = suit
@@ -1382,6 +1383,11 @@ class Hand():
             self.__judge_suits_remained_2tiles(suit_remained_two_2nd, suit_remained_two_1st, required)
         # Remove required used all tiles in self hand
         self.__remove_required_all_used(required)
+        cnt = 0
+        for suit in range(Suits.NUM_OF_SUITS):
+            cnt += len(required[suit])
+        if cnt == 0:
+            return None
         return required
 
     def get_required_13orphans(self):
@@ -1481,17 +1487,16 @@ class Hand():
                 exposed_leaf = this_node
         # build pure melds and eye tree
         pure_meld_eye_root = self.build_pure_meld_eye_tree(None, None, last_tile)
+        if pure_meld_eye_root is None:
+            return None
         if tree_root is None:
             tree_root = pure_meld_eye_root
         else:
             exposed_leaf.append_next_node(pure_meld_eye_root)
         win_hands = []
         tree_root.list_win_hands([], None, win_hands)
-        if len(win_hands) == 0:
-            return None
-        else:
-            for win_hand in win_hands:
-                win_hand.set_property(last_tile, b_discarded, seat_wind, round_wind)
+        for win_hand in win_hands:
+            win_hand.set_property(last_tile, b_discarded, seat_wind, round_wind)
         return win_hands
 
     def get_winhand_7pairs(self, last_tile, b_discarded, seat_wind, round_wind):
@@ -1674,7 +1679,6 @@ class Hand():
                 self.pure_tiles[this_suit].remove(tile)
                 if len(meld.tiles) == 3:
                     break
-                continue
             else:
                 break
         if len(meld.tiles) == 3:
@@ -1708,6 +1712,28 @@ class Hand():
             return meld_eye_tree
         else:
             return None
+
+    def judge_different_9orphans(self):
+        if len(self.exposed) > 0:
+            return False
+        cnt = 0
+        self.sort_tiles()
+        for suit in range(Suits.NUM_OF_SIMPLES):
+            prev_number = -1
+            for tile in self.pure_tiles[suit]:
+                if (tile.number == 1 or tile.number == 9) and not tile.number == prev_number:
+                    cnt += 1
+                    prev_number = tile.number
+        for suit in range(Suits.WINDS, Suits.NUM_OF_SUITS):
+            prev_number = -1
+            for tile in self.pure_tiles[suit]:
+                if not tile.number == prev_number:
+                    cnt += 1
+                    prev_number = tile.number
+        if cnt >= 9:
+            return True
+        else:
+            return False
 
 
 class MeldEyeTreeNode():
