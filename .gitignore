@@ -4,6 +4,9 @@ build/
 doc/
 test/.coverage
 test/htmlcov/
+test/gpmjcore.py
+test/gpmjgame.py
+test/gpmjplayer.py
 
 *.asta
 *.odp
