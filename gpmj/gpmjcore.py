@@ -1083,6 +1083,7 @@ class Tile():
     def __init__(self, suit, number):
         self.suit = suit
         self.number = number
+        self.b_red = False
         # Print characters
         self.print_char = '['
         if suit == Suits.WINDS:
