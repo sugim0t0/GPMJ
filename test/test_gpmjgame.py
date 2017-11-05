@@ -26,8 +26,12 @@ class TestGpmjGame(unittest.TestCase):
         self.assertEqual(len(self.game.wall), 122)
         self.assertEqual(len(self.game.dead_wall), 14)
 
+    def test_setup_hand_judger(self):
+        self.game.setup_hand_judger()
+
     def test_parse_config(self):
         self.game.config.parse_config("./gpmj.cfg")
+        self.game.create_tiles()
         self.assertEqual(self.game.config.num_of_red5[0], 1)
         self.assertEqual(self.game.config.num_of_red5[1], 1)
         self.assertEqual(self.game.config.num_of_red5[2], 1)

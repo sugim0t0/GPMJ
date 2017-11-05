@@ -173,6 +173,7 @@ class HandFlag(IntEnum):
     # 6 value (Closed), 5 value (Open)
     FLUSH                          = 0x00020000
     # LIMIT HANDS
+    LIMIT_HAND                     = 0x10000000
     THIRTEEN_ORPHANS               = 0x10000004
     FOUR_CONCEALED_TRIPLETS        = 0x10000008
     BIG_THREE_DRAGONS              = 0x10000010
