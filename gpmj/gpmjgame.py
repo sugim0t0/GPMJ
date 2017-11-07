@@ -260,8 +260,8 @@ class Game():
         win_hand = None
         # 13 orphans
         if self.thirteen_orphans_j.judge_13orphans_hand(hand.pure_tiles):
-            win_hand = WinHand()
-            win_hand.set_priority(last_tile, b_discarded, seat_wind, self.round_wind)
+            win_hand = gpmjcore.WinHand()
+            win_hand.set_property(last_tile, b_discarded, seat_wind, self.round_wind)
             win_hand.hand_value += 13
         else:
             # basic hand
@@ -291,7 +291,8 @@ class Game():
                         win_hand.calc_points()
         if win_hand is None:
             return (0, 0)
-        score = win_hand.calc_score()
+        num_of_dora = self.count_dora(hand, False) # To Be Modified
+        score = win_hand.calc_score(0) # To Be Modified
         if self.round_continue_count > 0:
             if b_discarded:
                 return (score[0] + 300 * self.round_continue_count, 0)
@@ -310,6 +311,39 @@ class Game():
         tile = self.dead_wall.pop(0)
         self.dead_wall.append(self.wall.pop())
         return tile
+
+    def count_dora(self, hand, b_reached):
+        num_of_dora = 0
+        doras = []
+        underneath_doras = []
+        for x in range(self.kong_count + 1):
+            doras.append(self.doras[x].get_dora_from_indicator())
+        if b_reached and self.config.available_underneath_dora:
+            for x in range(self.kong_count + 1):
+                underneath_doras.append(self.underneath_doras[x].get_dora_from_indicator())
+        for suit in range(gpmjcore.Suits.NUM_OF_SUITS):
+            for tile in hand.pure_tiles[suit]:
+                for dora in doras:
+                    # dora is tuple (suit, number)
+                    if tile.suit == dora[0] and tile.number == dora[1]:
+                        num_of_dora += 1
+                for dora in underneath_doras:
+                    if tile.suit == dora[0] and tile.number == dora[1]:
+                        num_of_dora += 1
+                if tile.b_red:
+                    num_of_dora += 1
+        for meld in hand.exposed:
+            for tile in meld.tiles:
+                for dora in doras:
+                    # dora is tuple (suit, number)
+                    if tile.suit == dora[0] and tile.number == dora[1]:
+                        num_of_dora += 1
+                for dora in underneath_doras:
+                    if tile.suit == dora[0] and tile.number == dora[1]:
+                        num_of_dora += 1
+                if tile.b_red:
+                    num_of_dora += 1
+        return num_of_dora
 
     def print_wall(self):
         # wall
@@ -348,6 +382,8 @@ class GameConfig():
         self.num_of_red5 = [0, 0, 0]
         # East wind game(=True) / East and South wind game(=False)
         self.east_wind_game = False
+        # Underneath Dora is available
+        self.available_underneath_dora = True
 
     def parse_config(self, cfg_file_path):
         config = configparser.ConfigParser()
@@ -359,5 +395,7 @@ class GameConfig():
         self.num_of_red5[gpmjcore.Suits.CHARACTERS] = default_section.getint('num_of_red5_character')
         # East wind game / East and South wind game
         self.east_wind_game = default_section.getboolean('east_wind_game')
+        # Underneath Dora is available
+        self.available_underneath_dora = default_section.getboolean('underneath_dora')
         return True
 

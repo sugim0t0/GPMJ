@@ -208,6 +208,30 @@ class TestGpmjCore(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_get_dora_from_indicator_0(self):
+        dora = self.all_tiles[gpmjcore.Suits.DOTS][0].get_dora_from_indicator()
+        self.assertEqual(dora, (gpmjcore.Suits.DOTS, 2))
+
+    def test_get_dora_from_indicator_1(self):
+        dora = self.all_tiles[gpmjcore.Suits.DOTS][32].get_dora_from_indicator()
+        self.assertEqual(dora, (gpmjcore.Suits.DOTS, 1))
+
+    def test_get_dora_from_indicator_2(self):
+        dora = self.all_tiles[gpmjcore.Suits.WINDS][0].get_dora_from_indicator()
+        self.assertEqual(dora, (gpmjcore.Suits.WINDS, gpmjcore.Winds.SOUTH))
+
+    def test_get_dora_from_indicator_3(self):
+        dora = self.all_tiles[gpmjcore.Suits.WINDS][12].get_dora_from_indicator()
+        self.assertEqual(dora, (gpmjcore.Suits.WINDS, gpmjcore.Winds.EAST))
+
+    def test_get_dora_from_indicator_4(self):
+        dora = self.all_tiles[gpmjcore.Suits.DRAGONS][0].get_dora_from_indicator()
+        self.assertEqual(dora, (gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+
+    def test_get_dora_from_indicator_5(self):
+        dora = self.all_tiles[gpmjcore.Suits.DRAGONS][8].get_dora_from_indicator()
+        self.assertEqual(dora, (gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+
     def test_judge_different_9orphans_0(self):
         # [D1][D2][D8][D9][C3][C9][B5][Es][Es][Ws][Nt][Wh][Gr] + [Rd]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
@@ -546,7 +570,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
-        pay_non_dealer, pay_dealer = win_hand.calc_score()
+        pay_non_dealer, pay_dealer = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 300)
         self.assertEqual(pay_dealer, 500)
 
@@ -555,7 +579,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 40
-        pay_non_dealer, pay_dealer = win_hand.calc_score()
+        pay_non_dealer, pay_dealer = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 400)
         self.assertEqual(pay_dealer, 700)
 
@@ -564,7 +588,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 50
-        pay_non_dealer, pay_dealer = win_hand.calc_score()
+        pay_non_dealer, pay_dealer = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 400)
         self.assertEqual(pay_dealer, 800)
 
@@ -573,7 +597,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 60
-        pay_non_dealer, pay_dealer = win_hand.calc_score()
+        pay_non_dealer, pay_dealer = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 500)
         self.assertEqual(pay_dealer, 1000)
 
@@ -582,7 +606,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 70
-        pay_non_dealer, pay_dealer = win_hand.calc_score()
+        pay_non_dealer, pay_dealer = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 600)
         self.assertEqual(pay_dealer, 1200)
 
@@ -591,7 +615,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 500)
 
     def test_calc_score_dealer_v1_p40_pick(self):
@@ -599,7 +623,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 40
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 700)
 
     def test_calc_score_dealer_v1_p50_pick(self):
@@ -607,7 +631,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 50
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 800)
 
     def test_calc_score_dealer_v1_p60_pick(self):
@@ -615,7 +639,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 60
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 1000)
 
     def test_calc_score_dealer_v1_p70_pick(self):
@@ -623,7 +647,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 70
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 1200)
 
     def test_calc_score_dealer_v2_p20_pick(self):
@@ -631,7 +655,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 2
         win_hand.hand_point = 20
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 700)
 
     def test_calc_score_dealer_v3_p60_pick(self):
@@ -639,7 +663,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 3
         win_hand.hand_point = 60
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 3900)
 
     def test_calc_score_dealer_v3_p70_pick(self):
@@ -647,7 +671,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 3
         win_hand.hand_point = 70
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 4000)
 
     def test_calc_score_dealer_v2_p30_steal(self):
@@ -655,7 +679,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 2
         win_hand.hand_point = 30
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 2900)
 
     def test_calc_score_dealer_v3_p60_steal(self):
@@ -663,7 +687,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 3
         win_hand.hand_point = 60
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 11600)
 
     def test_calc_score_dealer_v4_p30_steal(self):
@@ -671,7 +695,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 4
         win_hand.hand_point = 30
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 11600)
 
     def test_calc_score_dealer_v5_p30_steal(self):
@@ -679,7 +703,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 5
         win_hand.hand_point = 30
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 12000)
 
     def test_calc_score_dealer_v6_p30_steal(self):
@@ -687,7 +711,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 6
         win_hand.hand_point = 30
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 18000)
 
     def test_calc_score_dealer_v8_p30_steal(self):
@@ -695,7 +719,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 8
         win_hand.hand_point = 30
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 24000)
 
     def test_calc_score_dealer_v11_p30_steal(self):
@@ -703,7 +727,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 11
         win_hand.hand_point = 30
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 36000)
 
     def test_calc_score_dealer_v13_p30_steal(self):
@@ -711,7 +735,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 13
         win_hand.hand_point = 30
-        pay_non_dealer, _ = win_hand.calc_score()
+        pay_non_dealer, _ = win_hand.calc_score(0)
         self.assertEqual(pay_non_dealer, 48000)
 
     def test_Limit7PairsHandJudgeChain_0(self):

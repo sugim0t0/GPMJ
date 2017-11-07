@@ -61,13 +61,14 @@ Date           Version   Description
 27 Oct. 2017   0.32      Fix bug of list_win_hands()
 28 Oct. 2017   0.33      Change spec of declare_kong()
 31 Oct. 2017   0.34      Add judge_different_9orphans()
+07 Nov. 2017   0.35      Add get_dora_from_indicator()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.34"
-__date__    = "31 Oct. 2017"
+__version__ = "0.35"
+__date__    = "07 Nov. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1036,23 +1037,24 @@ class WinHand():
         else:
             return False
 
-    def calc_score(self):
+    def calc_score(self, additional_value):
         '''
         calc_score() MUST be called after calc_points()
         '''
+        value = self.hand_value + additional_value
         score = 0
-        if self.hand_value >= 13:
-            score = 32000 * (self.hand_value // 13)
-        elif self.hand_value >= 11:
+        if value >= 13:
+            score = 32000 * (value // 13)
+        elif value >= 11:
             score = 24000
-        elif self.hand_value >= 8:
+        elif value >= 8:
             score = 16000
-        elif self.hand_value >= 6:
+        elif value >= 6:
             score = 12000
-        elif self.hand_value >= 5:
+        elif value >= 5:
             score = 8000
         else:
-            score = self.hand_point * 4 * (2 ** (self.hand_value + 2))
+            score = self.hand_point * 4 * (2 ** (value + 2))
             if score > 8000:
                 score = 8000
         if self.seat_wind == Winds.EAST:
@@ -1095,6 +1097,25 @@ class Tile():
             self.print_char += str(Suits(suit))
             self.print_char += str(self.number)
         self.print_char += ']'
+
+    def get_dora_from_indicator(self):
+        number = self.number
+        if self.suit < Suits.NUM_OF_SIMPLES:
+            if number == 9:
+                number = 1
+            else:
+                number += 1
+        elif self.suit == Suits.WINDS:
+            if number == Winds.NORTH:
+                number = Winds.EAST
+            else:
+                number += 1
+        else:
+            if number == Dragons.RED:
+                number = Dragons.WHITE
+            else:
+                number += 1
+        return (self.suit, number)
 
 
 class Eye():
