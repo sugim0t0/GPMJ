@@ -377,7 +377,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][21]
-        win_hands = self.hand.get_winhands_basic(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hands = self.hand.get_winhands_basic(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         self.assertEqual(win_hands, None)
 
     def test_get_winhands_basic_0(self):
@@ -396,7 +396,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][21]
-        win_hands = self.hand.get_winhands_basic(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hands = self.hand.get_winhands_basic(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         self.assertEqual(len(win_hands), 4)
 
     def test_get_winhands_basic_1(self):
@@ -419,7 +419,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][17]
-        win_hands = self.hand.get_winhands_basic(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hands = self.hand.get_winhands_basic(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         self.assertEqual(len(win_hands), 1)
 
     def test_get_winhands_basic_2(self):
@@ -446,7 +446,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][17]
-        win_hands = self.hand.get_winhands_basic(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hands = self.hand.get_winhands_basic(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         self.assertEqual(len(win_hands), 1)
 
     def test_list_win_hands(self):
@@ -520,7 +520,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
         last_tile = self.all_tiles[gpmjcore.Suits.WINDS][1]
-        win_hand = self.hand.get_winhand_7pairs(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand = self.hand.get_winhand_7pairs(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         self.assertEqual(len(win_hand.eyes), 7)
 
     def test_get_winhand_7pairs_1(self):
@@ -543,7 +543,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][17]
-        win_hand = self.hand.get_winhand_7pairs(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand = self.hand.get_winhand_7pairs(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         self.assertEqual(win_hand, None)
 
     def test_get_winhand_7pairs_2(self):
@@ -562,12 +562,12 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][21]
-        win_hand = self.hand.get_winhand_7pairs(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand = self.hand.get_winhand_7pairs(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         self.assertEqual(win_hand, None)
 
     def test_calc_score_non_dealer_v1_p30_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
         pay_non_dealer, pay_dealer = win_hand.calc_score(0)
@@ -576,7 +576,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_non_dealer_v1_p40_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 40
         pay_non_dealer, pay_dealer = win_hand.calc_score(0)
@@ -585,7 +585,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_non_dealer_v1_p50_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 50
         pay_non_dealer, pay_dealer = win_hand.calc_score(0)
@@ -594,7 +594,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_non_dealer_v1_p60_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 60
         pay_non_dealer, pay_dealer = win_hand.calc_score(0)
@@ -603,7 +603,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_non_dealer_v1_p70_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 70
         pay_non_dealer, pay_dealer = win_hand.calc_score(0)
@@ -612,7 +612,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v1_p30_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -620,7 +620,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v1_p40_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 40
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -628,7 +628,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v1_p50_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 50
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -636,7 +636,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v1_p60_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 60
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -644,7 +644,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v1_p70_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 70
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -652,7 +652,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v2_p20_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 2
         win_hand.hand_point = 20
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -660,7 +660,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v3_p60_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 3
         win_hand.hand_point = 60
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -668,7 +668,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v3_p70_pick(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 3
         win_hand.hand_point = 70
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -676,7 +676,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v2_p30_steal(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 2
         win_hand.hand_point = 30
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -684,7 +684,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v3_p60_steal(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 3
         win_hand.hand_point = 60
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -692,7 +692,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v4_p30_steal(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 4
         win_hand.hand_point = 30
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -700,7 +700,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v5_p30_steal(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 5
         win_hand.hand_point = 30
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -708,7 +708,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v6_p30_steal(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 6
         win_hand.hand_point = 30
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -716,7 +716,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v8_p30_steal(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 8
         win_hand.hand_point = 30
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -724,7 +724,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v11_p30_steal(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 11
         win_hand.hand_point = 30
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -732,7 +732,7 @@ class TestGpmjCore(unittest.TestCase):
 
     def test_calc_score_dealer_v13_p30_steal(self):
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, None, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.hand_value = 13
         win_hand.hand_point = 30
         pay_non_dealer, _ = win_hand.calc_score(0)
@@ -773,7 +773,7 @@ class TestGpmjCore(unittest.TestCase):
         expected = (gpmjcore.HandFlag.SEVEN_PAIRS | \
                     gpmjcore.HandFlag.ALL_HONORS)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -822,7 +822,7 @@ class TestGpmjCore(unittest.TestCase):
         expected = (gpmjcore.HandFlag.SEVEN_PAIRS | \
                     gpmjcore.HandFlag.ALL_SIMPLES)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -871,7 +871,7 @@ class TestGpmjCore(unittest.TestCase):
         expected = (gpmjcore.HandFlag.SEVEN_PAIRS | \
                     gpmjcore.HandFlag.FLUSH)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -921,7 +921,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.ALL_TERMINALS_AND_HONORS | \
                     gpmjcore.HandFlag.HALF_FLUSH)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -965,7 +965,7 @@ class TestGpmjCore(unittest.TestCase):
         expected = (gpmjcore.HandFlag.BASIC_HAND | \
                     gpmjcore.HandFlag.NINE_GATES)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1009,7 +1009,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.FOUR_CONCEALED_TRIPLETS | \
                     gpmjcore.HandFlag.ALL_HONORS)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1051,7 +1051,7 @@ class TestGpmjCore(unittest.TestCase):
         expected = (gpmjcore.HandFlag.BASIC_HAND | \
                     gpmjcore.HandFlag.LITTLE_FOUR_WINDS)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1100,7 +1100,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.FOUR_KONGS | \
                     gpmjcore.HandFlag.ALL_HONORS)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1143,7 +1143,7 @@ class TestGpmjCore(unittest.TestCase):
         expected = (gpmjcore.HandFlag.BASIC_HAND | \
                     gpmjcore.HandFlag.ALL_GREEN)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1186,7 +1186,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.FOUR_CONCEALED_TRIPLETS | \
                     gpmjcore.HandFlag.ALL_TERMINALS)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1230,7 +1230,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.ONE_SET_OF_IDENTICAL_SEQUENCES | \
                     gpmjcore.HandFlag.ALL_SIMPLES)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1273,7 +1273,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.TERMINAL_IN_EACH_SET | \
                     gpmjcore.HandFlag.THREE_COLOR_STRAIGHT)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1320,7 +1320,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.TWO_SET_OF_IDENTICAL_SEQUENCES | \
                     gpmjcore.HandFlag.TERMINAL_OR_HONOR_IN_EACH_SET)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1364,7 +1364,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.FLUSH | \
                     gpmjcore.HandFlag.STRAIGHT)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1413,7 +1413,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.ALL_TRIPLET_HAND | \
                     gpmjcore.HandFlag.THREE_CLOSED_TRIPLETS)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1460,7 +1460,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.THREE_KONGS | \
                     gpmjcore.HandFlag.THREE_COLOR_TRIPLETS)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1505,7 +1505,7 @@ class TestGpmjCore(unittest.TestCase):
                     gpmjcore.HandFlag.ROUND_WIND | \
                     gpmjcore.HandFlag.GREEN_DRAGON)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1544,7 +1544,7 @@ class TestGpmjCore(unittest.TestCase):
         meld4.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][21])
         melds.append(meld4)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -1665,7 +1665,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -1710,7 +1710,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -1755,7 +1755,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -1800,7 +1800,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -1845,7 +1845,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][9])
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -1890,7 +1890,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(last_tile)
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -1935,7 +1935,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(last_tile)
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -1980,7 +1980,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(last_tile)
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -2025,7 +2025,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(last_tile)
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -2070,7 +2070,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(last_tile)
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -2115,7 +2115,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(last_tile)
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -2160,7 +2160,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(last_tile)
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -2205,7 +2205,7 @@ class TestGpmjCore(unittest.TestCase):
         eye7.add_tile(last_tile)
         eyes.append(eye7)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_eye(eye1)
         win_hand.append_eye(eye2)
         win_hand.append_eye(eye3)
@@ -2245,7 +2245,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][30])
         eye.add_tile(last_tile)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2283,7 +2283,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2321,7 +2321,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2359,7 +2359,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2401,7 +2401,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][4])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2443,7 +2443,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][4])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2486,7 +2486,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
         eye.add_tile(last_tile)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2525,7 +2525,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][30])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][31])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2564,7 +2564,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][21])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2603,7 +2603,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][11])
         eye.add_tile(last_tile)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2642,7 +2642,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][21])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2681,7 +2681,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][11])
         eye.add_tile(last_tile)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2720,7 +2720,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2759,7 +2759,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][16])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][17])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2798,7 +2798,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][12])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][13])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2837,7 +2837,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2875,7 +2875,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2914,7 +2914,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2953,7 +2953,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][5])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -2992,7 +2992,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3031,7 +3031,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3070,7 +3070,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][9])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3109,7 +3109,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3148,7 +3148,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][9])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3187,7 +3187,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][9])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3226,7 +3226,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3265,7 +3265,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3303,7 +3303,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3342,7 +3342,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3380,7 +3380,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3418,7 +3418,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
         eye.add_tile(last_tile)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3456,7 +3456,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][9])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3494,7 +3494,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][9])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3532,7 +3532,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3571,7 +3571,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3609,7 +3609,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld4)
@@ -3647,7 +3647,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3685,7 +3685,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][9])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3723,7 +3723,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3761,7 +3761,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3799,7 +3799,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3837,7 +3837,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3876,7 +3876,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3915,7 +3915,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3954,7 +3954,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -3993,7 +3993,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4034,7 +4034,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][4])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4076,7 +4076,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][4])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4115,7 +4115,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][4])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4154,7 +4154,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4198,7 +4198,7 @@ class TestGpmjCore(unittest.TestCase):
         result = eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][33])
         self.assertEqual(result, False)
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4241,7 +4241,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4279,7 +4279,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4318,7 +4318,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4357,7 +4357,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4395,7 +4395,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][35])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4433,7 +4433,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4471,7 +4471,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4509,7 +4509,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][6])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][5])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4547,7 +4547,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4585,7 +4585,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4623,7 +4623,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4661,7 +4661,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4699,7 +4699,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4737,7 +4737,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][21])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][22])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4775,7 +4775,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][21])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][22])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4813,7 +4813,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld4)
@@ -4851,7 +4851,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][20])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][21])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4889,7 +4889,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4927,7 +4927,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -4965,7 +4965,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][9])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -5003,7 +5003,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][9])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -5041,7 +5041,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][8])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][9])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)
@@ -5079,7 +5079,7 @@ class TestGpmjCore(unittest.TestCase):
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
         eye.add_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
         win_hand = gpmjcore.WinHand()
-        win_hand.set_property(last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        win_hand.set_property(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
         win_hand.append_meld(meld1)
         win_hand.append_meld(meld2)
         win_hand.append_meld(meld3)

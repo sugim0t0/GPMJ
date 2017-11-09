@@ -261,7 +261,7 @@ class Game():
         # 13 orphans
         if self.thirteen_orphans_j.judge_13orphans_hand(hand.pure_tiles):
             win_hand = gpmjcore.WinHand()
-            win_hand.set_property(last_tile, b_discarded, seat_wind, self.round_wind)
+            win_hand.set_property(0, last_tile, b_discarded, seat_wind, self.round_wind) # To Be Modified
             win_hand.hand_value += 13
         else:
             # basic hand

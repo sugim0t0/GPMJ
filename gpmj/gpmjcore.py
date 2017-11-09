@@ -62,13 +62,14 @@ Date           Version   Description
 28 Oct. 2017   0.33      Change spec of declare_kong()
 31 Oct. 2017   0.34      Add judge_different_9orphans()
 07 Nov. 2017   0.35      Add get_dora_from_indicator()
+09 Nov. 2017   0.36      Add StateFlag class
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.35"
-__date__    = "07 Nov. 2017"
+__version__ = "0.36"
+__date__    = "09 Nov. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -132,9 +133,33 @@ class Dragons(IntEnum):
             return "Rd"
 
 
+class StateFlag(IntEnum):
+
+    #
+    # Flags of states
+    #
+    # 1 value
+    DECLARE_READY                  = 0x00000001
+    SELF_PICK                      = 0x00000002
+    ONE_SHOT                       = 0x00000004
+    LAST_TILE_FROM_THE_WALL        = 0x00000008
+    LAST_DISCARD                   = 0x00000010
+    DEAD_WALL_DRAW                 = 0x00000020
+    ROBBING_A_QUAD                 = 0x00000040
+    # 2 value
+    DECLARE_DOUBLE_READY           = 0x00000080
+    # LIMIT STATES
+    LIMIT_STATE                    = 0x10000000
+    HEAVENLY_HAND                  = 0x10000001
+    HAND_OF_EARTH                  = 0x10000002
+    HAND_OF_MAN                    = 0x10000004
+
+
 class HandFlag(IntEnum):
 
+    #
     # Flags of winning hands
+    #
     BASIC_HAND                     = 0x00000001
     # 1 value
     WHITE_DRAGON                   = 0x00040000
@@ -142,24 +167,15 @@ class HandFlag(IntEnum):
     RED_DRAGON                     = 0x00100000
     SEAT_WIND                      = 0x00200000
     ROUND_WIND                     = 0x00400000
-  # READY_HAND = 
-  # SELF_PICK =
-  # ONE_SHOT =
-  # LAST_TILE_FROM_THE_WALL =
-  # LAST_DISCARD = 
-  # DEAD_WALL_DRAW =
-  # ROBBING_A_QUAD = 
     NO_POINTS_HAND                 = 0x00000004
     ONE_SET_OF_IDENTICAL_SEQUENCES = 0x00000008
     ALL_SIMPLES                    = 0x00000010
-  # HONOR_TILE =
     # 2 value (Closed), 1 value (Open)
     THREE_COLOR_STRAIGHT           = 0x00000020
     STRAIGHT                       = 0x00000040
     TERMINAL_OR_HONOR_IN_EACH_SET  = 0x00000080
     # 2 value
     SEVEN_PAIRS                    = 0x00000002
-  # DOUBLE_READY =
     ALL_TRIPLET_HAND               = 0x00000100
     THREE_CLOSED_TRIPLETS          = 0x00000200
     THREE_COLOR_TRIPLETS           = 0x00000400
@@ -185,9 +201,6 @@ class HandFlag(IntEnum):
     ALL_GREEN                      = 0x10000200
     NINE_GATES                     = 0x10000400
     FOUR_KONGS                     = 0x10000800
-  # HEAVENLY_HAND =
-  # HAND_OF_EARTH =
-  # HAND_OF_MAN =
 
 
 class HandJudgeChain():
@@ -955,17 +968,40 @@ class ThirteenOrphansJudge(HandJudge):
         return True
 
 
+class StateFlag(IntEnum):
+
+    #
+    # Flags of states
+    #
+    # 1 value
+    DECLARE_READY                  = 0x00000001
+    SELF_PICK                      = 0x00000002
+    ONE_SHOT                       = 0x00000004
+    LAST_TILE_FROM_THE_WALL        = 0x00000008
+    LAST_DISCARD                   = 0x00000010
+    DEAD_WALL_DRAW                 = 0x00000020
+    ROBBING_A_QUAD                 = 0x00000040
+    # 2 value
+    DECLARE_DOUBLE_READY           = 0x00000080
+    # LIMIT STATES
+    LIMIT_STATE                    = 0x10000000
+    HEAVENLY_HAND                  = 0x10000001
+    HAND_OF_EARTH                  = 0x10000002
+    HAND_OF_MAN                    = 0x10000004
+
 class WinHand():
 
     def __init__(self):
         self.melds = []
         self.eyes = []
         self.b_open = False
+        self.state_flag = 0x0
         self.hand_flag = 0x0
         self.hand_value = 0
         self.hand_point = 0
 
-    def set_property(self, last_tile, b_discarded, seat_wind, round_wind):
+    def set_property(self, state_flag, last_tile, b_discarded, seat_wind, round_wind):
+        self.state_flag = state_flag
         self.last_tile = last_tile
         self.b_discarded = b_discarded
         self.seat_wind = seat_wind
@@ -1037,11 +1073,12 @@ class WinHand():
         else:
             return False
 
-    def calc_score(self, additional_value):
+    def calc_score(self, state_value):
         '''
         calc_score() MUST be called after calc_points()
+        state_value includes state value (ex: DECLARE_READY) and number of doras.
         '''
-        value = self.hand_value + additional_value
+        value = self.hand_value + state_value
         score = 0
         if value >= 13:
             score = 32000 * (value // 13)
@@ -1490,7 +1527,7 @@ class Hand():
                 required[suit] = required[suit] | {prev_number}
         return required
 
-    def get_winhands_basic(self, last_tile, b_discarded, seat_wind, round_wind):
+    def get_winhands_basic(self, state_flag, last_tile, b_discarded, seat_wind, round_wind):
         self.append_tile(last_tile)
         self.sort_tiles()
         tree_root = None
@@ -1519,10 +1556,10 @@ class Hand():
         win_hands = []
         tree_root.list_win_hands([], None, win_hands)
         for win_hand in win_hands:
-            win_hand.set_property(last_tile, b_discarded, seat_wind, round_wind)
+            win_hand.set_property(state_flag, last_tile, b_discarded, seat_wind, round_wind)
         return win_hands
 
-    def get_winhand_7pairs(self, last_tile, b_discarded, seat_wind, round_wind):
+    def get_winhand_7pairs(self, state_flag, last_tile, b_discarded, seat_wind, round_wind):
         if len(self.exposed) > 0:
             return None
         eyes = []
@@ -1537,7 +1574,7 @@ class Hand():
                     return None
                 tile_index += 1
         win_hand = WinHand()
-        win_hand.set_property(last_tile, b_discarded, seat_wind, round_wind)
+        win_hand.set_property(state_flag, last_tile, b_discarded, seat_wind, round_wind)
         for eye in eyes:
             win_hand.append_eye(eye)
         return win_hand
