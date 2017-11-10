@@ -256,16 +256,16 @@ class Game():
         for x in range(13):
             hand.pure_tiles.append(self.wall.pop(0))
 
-    def get_hand_score(self, hand, last_tile, b_discarded, seat_wind):
+    def get_hand_score(self, hand, state_flag, last_tile, b_discarded, seat_wind):
         win_hand = None
         # 13 orphans
         if self.thirteen_orphans_j.judge_13orphans_hand(hand.pure_tiles):
             win_hand = gpmjcore.WinHand()
-            win_hand.set_property(0, last_tile, b_discarded, seat_wind, self.round_wind) # To Be Modified
+            win_hand.set_property(state_flag, last_tile, b_discarded, seat_wind, self.round_wind)
             win_hand.hand_value += 13
         else:
             # basic hand
-            win_hands = hand.get_winhands_basic(last_tile, b_discarded, seat_wind, self.round_wind)
+            win_hands = hand.get_winhands_basic(state_flag, last_tile, b_discarded, seat_wind, self.round_wind)
             if win_hands is not None:
                 for w_h in win_hands:
                     self.basic_limit_hand_jc.judge_chain(w_h)
@@ -283,7 +283,7 @@ class Game():
                                 win_hand = w_h
             # 7 pairs
             else:
-                win_hand = hand.get_winhand_7pairs(last_tile, b_discarded, seat_wind, self.round_wind)
+                win_hand = hand.get_winhand_7pairs(state_flag, last_tile, b_discarded, seat_wind, self.round_wind)
                 if win_hand is not None:
                     self.seven_pairs_limit_hand_jc.judge_chain(win_hand)
                     if not win_hand.hand_flag & gpmjcore.HandFlag.LIMIT_HAND:
@@ -291,8 +291,11 @@ class Game():
                         win_hand.calc_points()
         if win_hand is None:
             return (0, 0)
-        num_of_dora = self.count_dora(hand, False) # To Be Modified
-        score = win_hand.calc_score(0) # To Be Modified
+        b_declared_ready = False
+        if state_flag & (gpmjcore.StateFlag.DECLARE_READY | gpmjcore.StateFlag.DECLARE_DOUBLE_READY):
+            b_declared_ready = True
+        num_of_dora = self.count_dora(hand, b_declared_ready)
+        score = win_hand.calc_score(num_of_dora)
         if self.round_continue_count > 0:
             if b_discarded:
                 return (score[0] + 300 * self.round_continue_count, 0)
@@ -312,13 +315,13 @@ class Game():
         self.dead_wall.append(self.wall.pop())
         return tile
 
-    def count_dora(self, hand, b_reached):
+    def count_dora(self, hand, b_declared_ready):
         num_of_dora = 0
         doras = []
         underneath_doras = []
         for x in range(self.kong_count + 1):
             doras.append(self.doras[x].get_dora_from_indicator())
-        if b_reached and self.config.available_underneath_dora:
+        if b_declared_ready and self.config.available_underneath_dora:
             for x in range(self.kong_count + 1):
                 underneath_doras.append(self.underneath_doras[x].get_dora_from_indicator())
         for suit in range(gpmjcore.Suits.NUM_OF_SUITS):

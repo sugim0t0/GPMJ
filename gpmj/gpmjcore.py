@@ -63,13 +63,14 @@ Date           Version   Description
 31 Oct. 2017   0.34      Add judge_different_9orphans()
 07 Nov. 2017   0.35      Add get_dora_from_indicator()
 09 Nov. 2017   0.36      Add StateFlag class
+10 Nov. 2017   0.37      Add __add_state_value()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.36"
-__date__    = "09 Nov. 2017"
+__version__ = "0.37"
+__date__    = "10 Nov. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -989,6 +990,7 @@ class StateFlag(IntEnum):
     HAND_OF_EARTH                  = 0x10000002
     HAND_OF_MAN                    = 0x10000004
 
+
 class WinHand():
 
     def __init__(self):
@@ -1073,12 +1075,14 @@ class WinHand():
         else:
             return False
 
-    def calc_score(self, state_value):
+    def calc_score(self, num_of_doras):
         '''
         calc_score() MUST be called after calc_points()
-        state_value includes state value (ex: DECLARE_READY) and number of doras.
         '''
-        value = self.hand_value + state_value
+        self.__add_state_value()
+        if self.hand_value == 0:
+            return (0, 0)
+        value = self.hand_value + num_of_doras
         score = 0
         if value >= 13:
             score = 32000 * (value // 13)
@@ -1116,6 +1120,25 @@ class WinHand():
                 if (payment_non_dealer % 100) > 0:
                     payment_non_dealer += 100 - (payment_non_dealer % 100)
                 return (payment_non_dealer, payment_dealer)
+
+    def __add_state_value(self):
+        if self.state_flag & StateFlag.LIMIT_STATE:
+            self.hand_value += 13
+        else:
+            if self.state_flag & StateFlag.DECLARE_READY:
+                self.hand_value += 1
+            elif self.state_flag & StateFlag.DECLARE_DOUBLE_READY:
+                self.hand_value += 2
+            if self.state_flag & StateFlag.SELF_PICK:
+                self.hand_value += 1
+            if self.state_flag & StateFlag.ONE_SHOT:
+                self.hand_value += 1
+            if self.state_flag & \
+               (StateFlag.LAST_TILE_FROM_THE_WALL | \
+                StateFlag.LAST_DISCARD | \
+                StateFlag.DEAD_WALL_DRAW | \
+                StateFlag.ROBBING_A_QUAD):
+                self.hand_value += 1
 
 
 class Tile():
