@@ -12,6 +12,8 @@ Date           Version   Description
 03 Nov. 2017   0.3       Add setup_round(), print_wall()
 04 Nov. 2017   0.4       Add setup_hand_judger()
 05 Nov. 2017   0.5       Add get_hand_score()
+11 Nov. 2017   0.6       Add get_num_of_dora()
+12 Nov. 2017   0.7       Add print_dead_wall()
 -----------------------------------------------------------
 '''
 
@@ -19,8 +21,8 @@ import configparser
 import random
 import gpmjcore
 
-__version__ = "0.5"
-__date__    = "05 Nov. 2017"
+__version__ = "0.7"
+__date__    = "12 Nov. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -227,11 +229,12 @@ class Game():
         self.round_continue_count = 0
         if self.round_number < 4:
             self.round_number += 1
-            return
-        if self.round_wind < gpmjcore.Winds.NORTH:
-            self.round_wind += 1
         else:
-           self.round_wind = gpmjcore.Winds.EAST
+            self.round_number = 1
+            if self.round_wind < gpmjcore.Winds.NORTH:
+                self.round_wind += 1
+            else:
+                self.round_wind = gpmjcore.Winds.EAST
         return
 
     def setup_round(self):
@@ -248,13 +251,12 @@ class Game():
         # Dora
         self.kong_count = 0
         for x in range(5):
-            self.doras.append(self.dead_wall[4 + (x * 2)])
-            self.underneath_doras.append(self.dead_wall[5 + (x * 2)])
-        return self.doras[0]
+            self.doras.append(self.dead_wall[9 - (x * 2)])
+            self.underneath_doras.append(self.dead_wall[8 - (x * 2)])
 
     def deal_starttiles(self, hand):
         for x in range(13):
-            hand.pure_tiles.append(self.wall.pop(0))
+            hand.append_tile(self.wall.pop())
 
     def get_hand_score(self, hand, state_flag, last_tile, b_discarded, seat_wind):
         win_hand = None
@@ -294,7 +296,7 @@ class Game():
         b_declared_ready = False
         if state_flag & (gpmjcore.StateFlag.DECLARE_READY | gpmjcore.StateFlag.DECLARE_DOUBLE_READY):
             b_declared_ready = True
-        num_of_dora = self.count_dora(hand, b_declared_ready)
+        num_of_dora = self.get_num_of_dora(hand, b_declared_ready)
         score = win_hand.calc_score(num_of_dora)
         if self.round_continue_count > 0:
             if b_discarded:
@@ -307,15 +309,21 @@ class Game():
             return score
 
     def draw_tile(self):
-        return self.wall.pop(0)
+        if len(self.wall) > 0:
+            return self.wall.pop()
+        else:
+            return None
 
     def call_kong(self):
-        self.kong_count += 1
-        tile = self.dead_wall.pop(0)
-        self.dead_wall.append(self.wall.pop())
-        return tile
+        if self.kong_count < 4:
+            self.kong_count += 1
+            tile = self.dead_wall.pop()
+            self.dead_wall.insert(0, self.wall.pop(0))
+            return tile
+        else:
+            return None
 
-    def count_dora(self, hand, b_declared_ready):
+    def get_num_of_dora(self, hand, b_declared_ready):
         num_of_dora = 0
         doras = []
         underneath_doras = []
@@ -351,29 +359,79 @@ class Game():
     def print_wall(self):
         # wall
         print("[wall]")
-        for x in range(4):
-            for y in range(17):
-                index = (x * 34) + (y * 2)
-                if index < len(self.wall):
-                    print(self.wall[index].print_char, end="")
+        rest_of_tile = len(self.wall)
+        if rest_of_tile == 0:
+            print("No tiles in wall")
+            return
+        elif rest_of_tile == 1:
             print("")
-            for y in range(17):
-                index = (x * 34) + (y * 2) + 1
-                if index < len(self.wall):
-                    print(self.wall[index].print_char, end="")
+            print(self.wall[0].print_char)
+            return
+        remainder = rest_of_tile % 34
+        if (remainder % 2) == 0:
+            upper_index = len(self.wall) - 1
+            downer_index = len(self.wall) - 2
+        else:
+            upper_index = len(self.wall) - 2
+            downer_index = len(self.wall) - 1
+        if remainder > 0:
+            # Upper tiles of wall
+            if (remainder % 2) == 0:
+                space = (34 - remainder) // 2
+            else:
+                space = ((34 - remainder) // 2) + 1
+            for x in range(space):
+                print("    ", end="")
+            for x in range(17 - space):
+                print(self.wall[upper_index].print_char, end="")
+                upper_index -= 2
+                rest_of_tile -= 1
+            print("")
+            # Downer tiles of wall
+            space = (34 - remainder) // 2
+            for x in range(space):
+                print("    ", end="")
+            for x in range(17 - space):
+                print(self.wall[downer_index].print_char, end="")
+                downer_index -= 2
+                rest_of_tile -= 1
             print("")
             print("")
-        # dead_wall
+        while rest_of_tile > 0:
+            # Upper tiles of wall
+            for x in range(17):
+                print(self.wall[upper_index].print_char, end="")
+                upper_index -= 2
+                rest_of_tile -= 1
+            print("")
+            # Downer tiles of wall
+            for x in range(17):
+                print(self.wall[downer_index].print_char, end="")
+                downer_index -= 2
+                rest_of_tile -= 1
+            print("")
+            print("")
+        return
+
+    def print_dead_wall(self):
+        # dead wall
         print("[dead wall]")
-        for y in range(7):
-            index = y * 2
-            if index < len(self.dead_wall):
-                print(self.dead_wall[index].print_char, end="")
+        if (self.kong_count % 2) == 0:
+            upper_index = 13
+            downer_index = 12
+        else:
+            upper_index = 12
+            downer_index = 13
+            print("    ", end="")
+        # Upper tiles of dead wall
+        for x in range(7):
+            print(self.dead_wall[upper_index].print_char, end="")
+            upper_index -= 2
         print("")
-        for y in range(7):
-            index = (y * 2) + 1
-            if index < len(self.dead_wall):
-                print(self.dead_wall[index].print_char, end="")
+        # Downer tiles of dead wall
+        for x in range(7):
+            print(self.dead_wall[downer_index].print_char, end="")
+            downer_index -= 2
         print("")
         print("")
 
