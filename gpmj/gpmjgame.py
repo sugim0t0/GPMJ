@@ -260,6 +260,7 @@ class Game():
 
     def get_hand_score(self, hand, state_flag, last_tile, b_discarded, seat_wind):
         win_hand = None
+        hand.append_tile(last_tile)
         # 13 orphans
         if self.thirteen_orphans_j.judge_13orphans_hand(hand.pure_tiles):
             win_hand = gpmjcore.WinHand()
@@ -275,6 +276,7 @@ class Game():
                         win_hand = w_h
                         break
                     else:
+                        w_h.hand_value = 0
                         self.basic_hand_jc.judge_chain(w_h)
                         if (win_hand is None) or (win_hand.hand_value < w_h.hand_value):
                             w_h.calc_points()
@@ -289,6 +291,7 @@ class Game():
                 if win_hand is not None:
                     self.seven_pairs_limit_hand_jc.judge_chain(win_hand)
                     if not win_hand.hand_flag & gpmjcore.HandFlag.LIMIT_HAND:
+                        win_hand.hand_value = 0
                         self.seven_pairs_hand_jc.judge_chain(win_hand)
                         win_hand.calc_points()
         if win_hand is None:

@@ -297,7 +297,7 @@ class TestGpmjGame(unittest.TestCase):
         self.assertEqual(self.game.config.num_of_red5[2], 1)
 
     def test_get_hand_score_0(self):
-        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Nt][Gr][Rd] + [Es]
+        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Wh][Gr][Rd] + [Es]
         self.setup_game()
         hand = gpmjcore.Hand()
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
@@ -319,7 +319,7 @@ class TestGpmjGame(unittest.TestCase):
         self.assertEqual(score[1], 16000)
 
     def test_get_hand_score_1(self):
-        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Nt][Gr][Rd] + [Es]
+        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Wh][Gr][Rd] + [Es]
         self.setup_game()
         self.game.goto_next_round(True)
         self.game.goto_next_round(True)
@@ -344,7 +344,7 @@ class TestGpmjGame(unittest.TestCase):
         self.assertEqual(score[1], 16300)
 
     def test_get_hand_score_2(self):
-        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Nt][Gr][Rd] + [Es]
+        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Wh][Gr][Rd] + [Es]
         self.setup_game()
         self.game.goto_next_round(True)
         self.game.goto_next_round(True)
@@ -368,7 +368,7 @@ class TestGpmjGame(unittest.TestCase):
         self.assertEqual(score[1], 0)
 
     def test_get_hand_score_3(self):
-        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Nt][Gr][Rd] + [Es]
+        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Wh][Gr][Rd] + [Es]
         self.setup_game()
         self.game.goto_next_round(True)
         self.game.goto_next_round(True)
@@ -392,7 +392,7 @@ class TestGpmjGame(unittest.TestCase):
         self.assertEqual(score[1], 0)
 
     def test_get_hand_score_4(self):
-        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Nt][Gr][Rd] + [Es]
+        # [D1][D9][B1][B9][C1][C9][Es][St][Ws][Nt][Wh][Gr][Rd] + [Es]
         self.setup_game()
         self.game.goto_next_round(True)
         self.game.goto_next_round(True)
@@ -469,6 +469,165 @@ class TestGpmjGame(unittest.TestCase):
         score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.EAST)
         self.assertEqual(score[0], 2600)
         self.assertEqual(score[1], 0)
+
+    def test_get_hand_score_7(self):
+        # [D1][D1][D1][B2][B3][B4][B4][B4][Wh][Wh][Wh][C8][C8] + [C8]
+        self.setup_game()
+        doras = []
+        underneath_doras = []
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        self.set_doras(doras, underneath_doras)
+        hand = gpmjcore.Hand()
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 2))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 3))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
+        last_tile = gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8)
+        state_flag = (gpmjcore.StateFlag.SELF_PICK | gpmjcore.StateFlag.DECLARE_READY)
+        score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.EAST)
+        self.assertEqual(score[0], 12000)
+        self.assertEqual(score[1], 0)
+
+    def test_get_hand_score_8(self):
+        # [D1][D1][D1][B2][B2][B4][B4][B4][Wh][Wh][Wh][C8][C8] + [C8]
+        self.setup_game()
+        doras = []
+        underneath_doras = []
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        self.set_doras(doras, underneath_doras)
+        hand = gpmjcore.Hand()
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 2))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 2))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
+        last_tile = gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8)
+        state_flag = (gpmjcore.StateFlag.SELF_PICK | gpmjcore.StateFlag.DECLARE_READY)
+        score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.EAST)
+        self.assertEqual(score[0], 16000)
+        self.assertEqual(score[1], 0)
+
+    def test_get_hand_score_9(self):
+        # [D1][D1][D2][D2][B2][B2][B4][B4][Wh][Wh][C8][C8][C9] + [C9]
+        self.setup_game()
+        doras = []
+        underneath_doras = []
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        self.set_doras(doras, underneath_doras)
+        hand = gpmjcore.Hand()
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 2))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 2))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 9))
+        last_tile = gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 9)
+        score = self.game.get_hand_score(hand, 0, last_tile, True, gpmjcore.Winds.WEST)
+        self.assertEqual(score[0], 6400)
+        self.assertEqual(score[1], 0)
+
+    def test_get_hand_score_10(self):
+        # [D3][D4][D4][D5][D6][B1][B1][B1][C3][C4][C5][C8][C8] + [D5]
+        self.setup_game()
+        doras = []
+        underneath_doras = []
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        self.set_doras(doras, underneath_doras)
+        hand = gpmjcore.Hand()
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 3))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 5))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 6))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 3))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 5))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
+        last_tile = gpmjcore.Tile(gpmjcore.Suits.DOTS, 5)
+        state_flag = (gpmjcore.StateFlag.SELF_PICK | gpmjcore.StateFlag.DECLARE_READY)
+        score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.WEST)
+        self.assertEqual(score[0], 700)
+        self.assertEqual(score[1], 1300)
+
+    def test_get_hand_score_11(self):
+        # [D3][D3][D4][D5][B1][B1][B1][C3][C4][C5][C6][C7][C8] + [D3]
+        self.setup_game()
+        doras = []
+        underneath_doras = []
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.WHITE))
+        underneath_doras.append(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
+        self.set_doras(doras, underneath_doras)
+        hand = gpmjcore.Hand()
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 3))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 3))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 5))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 1))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 3))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 4))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 5))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 6))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 7))
+        hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
+        last_tile = gpmjcore.Tile(gpmjcore.Suits.DOTS, 3)
+        state_flag = (gpmjcore.StateFlag.SELF_PICK | gpmjcore.StateFlag.DECLARE_READY)
+        score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.WEST)
+        self.assertEqual(score[0], 700)
+        self.assertEqual(score[1], 1300)
 
 if __name__ == '__main__':
     unittest.main()

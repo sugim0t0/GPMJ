@@ -937,11 +937,13 @@ class ThirteenOrphansJudge(HandJudge):
         return False
 
     def judge_13orphans_hand(self, pure_tiles):
+        num_of_tiles = 0
         # Simples
         for suit in range(Suits.NUM_OF_SIMPLES):
             b_1_exist = False
             b_9_exist = False
             for tile in pure_tiles[suit]:
+                num_of_tiles += 1
                 if tile.number == 1:
                     b_1_exist = True
                 elif tile.number == 9:
@@ -953,6 +955,7 @@ class ThirteenOrphansJudge(HandJudge):
         # Winds
         b_winds_exist = [False for i in range(Winds.NUM_OF_WINDS)]
         for tile in pure_tiles[Suits.WINDS]:
+            num_of_tiles += 1
             b_winds_exist[tile.number] = True
         else:
             for wind in range(Winds.NUM_OF_WINDS):
@@ -961,11 +964,14 @@ class ThirteenOrphansJudge(HandJudge):
         # Dragons
         b_dragons_exist = [False for i in range(Dragons.NUM_OF_DRAGONS)]
         for tile in pure_tiles[Suits.DRAGONS]:
+            num_of_tiles += 1
             b_dragons_exist[tile.number] = True
         else:
             for dragon in range(Dragons.NUM_OF_DRAGONS):
                 if not b_dragons_exist[dragon]:
                     return False
+        if num_of_tiles != 14:
+            return False
         return True
 
 
@@ -1551,7 +1557,6 @@ class Hand():
         return required
 
     def get_winhands_basic(self, state_flag, last_tile, b_discarded, seat_wind, round_wind):
-        self.append_tile(last_tile)
         self.sort_tiles()
         tree_root = None
         # build exposed melds tree
@@ -1588,7 +1593,6 @@ class Hand():
         eyes = []
         for x in range(7):
             eyes.append(Eye())
-        self.append_tile(last_tile)
         self.sort_tiles()
         tile_index = 0
         for suit in range(Suits.NUM_OF_SUITS):
