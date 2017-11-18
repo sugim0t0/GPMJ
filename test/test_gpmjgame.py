@@ -25,7 +25,81 @@ class TestGpmjGame(unittest.TestCase):
         self.game.doras = doras
         self.game.underneath_doras = underneath_doras
 
-    def test_goto_next_round(self):
+    def test_set_player(self):
+        self.setup_game()
+        player_info = self.game.set_player()
+        self.assertEqual(player_info.seat_wind, gpmjcore.Winds.EAST)
+        player_info = self.game.set_player()
+        self.assertEqual(player_info.seat_wind, gpmjcore.Winds.SOUTH)
+        player_info = self.game.set_player()
+        self.assertEqual(player_info.seat_wind, gpmjcore.Winds.WEST)
+        player_info = self.game.set_player()
+        self.assertEqual(player_info.seat_wind, gpmjcore.Winds.NORTH)
+        player_info = self.game.set_player()
+        self.assertIsNone(player_info)
+
+    def test_win_0(self):
+        self.setup_game()
+        player_info_east = self.game.set_player()
+        player_info_south = self.game.set_player()
+        player_info_west = self.game.set_player()
+        player_info_north = self.game.set_player()
+        self.game.win(player_info_east, False, gpmjcore.Winds.INVALID, (2000, 0))
+        self.assertEqual(player_info_east.score, 31000)
+        self.assertEqual(player_info_south.score, 23000)
+        self.assertEqual(player_info_west.score, 23000)
+        self.assertEqual(player_info_north.score, 23000)
+
+    def test_win_1(self):
+        self.setup_game()
+        player_info_east = self.game.set_player()
+        player_info_south = self.game.set_player()
+        player_info_west = self.game.set_player()
+        player_info_north = self.game.set_player()
+        self.game.win(player_info_east, True, gpmjcore.Winds.SOUTH, (12000, 0))
+        self.assertEqual(player_info_east.score, 37000)
+        self.assertEqual(player_info_south.score, 13000)
+        self.assertEqual(player_info_west.score, 25000)
+        self.assertEqual(player_info_north.score, 25000)
+
+    def test_win_2(self):
+        self.setup_game()
+        player_info_east = self.game.set_player()
+        player_info_south = self.game.set_player()
+        player_info_west = self.game.set_player()
+        player_info_north = self.game.set_player()
+        self.game.win(player_info_south, False, gpmjcore.Winds.INVALID, (2000, 4000))
+        self.assertEqual(player_info_east.score, 21000)
+        self.assertEqual(player_info_south.score, 33000)
+        self.assertEqual(player_info_west.score, 23000)
+        self.assertEqual(player_info_north.score, 23000)
+
+    def test_win_3(self):
+        self.setup_game()
+        player_info_east = self.game.set_player()
+        player_info_south = self.game.set_player()
+        player_info_west = self.game.set_player()
+        result = self.game.win(player_info_south, True, gpmjcore.Winds.NORTH, (2000, 0))
+        self.assertEqual(result, False)
+
+    def test_goto_next_round_0(self):
+        self.setup_game()
+        player_info_east = self.game.set_player()
+        player_info_south = self.game.set_player()
+        player_info_west = self.game.set_player()
+        player_info_north = self.game.set_player()
+        self.game.win(player_info_south, False, gpmjcore.Winds.INVALID, (2000, 4000))
+        self.game.goto_next_round(False)
+        self.game.goto_next_round(False)
+        self.game.goto_next_round(False)
+        self.game.goto_next_round(False)
+        self.game.goto_next_round(False)
+        self.game.goto_next_round(False)
+        self.game.goto_next_round(False)
+        result = self.game.goto_next_round(False)
+        self.assertEqual(result, False)
+
+    def test_goto_next_round_1(self):
         self.setup_game()
         self.game.goto_next_round(False)
         self.assertEqual(self.game.round_number, 2)

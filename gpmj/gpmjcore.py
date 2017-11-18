@@ -155,6 +155,10 @@ class StateFlag(IntEnum):
     HAND_OF_EARTH                  = 0x10000002
     HAND_OF_MAN                    = 0x10000004
 
+    def __str__(self):
+        if self.value == StateFlag.DECLARE_READY.value:
+            return "Declare ready (1)"
+
 
 class HandFlag(IntEnum):
 

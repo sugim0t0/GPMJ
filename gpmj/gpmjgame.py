@@ -14,6 +14,7 @@ Date           Version   Description
 05 Nov. 2017   0.5       Add get_hand_score()
 11 Nov. 2017   0.6       Add get_num_of_dora()
 12 Nov. 2017   0.7       Add print_dead_wall()
+18 Nov. 2017   0.8       Add PlayerInfo class
 -----------------------------------------------------------
 '''
 
@@ -21,8 +22,8 @@ import configparser
 import random
 import gpmjcore
 
-__version__ = "0.7"
-__date__    = "12 Nov. 2017"
+__version__ = "0.8"
+__date__    = "18 Nov. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -50,6 +51,15 @@ class Game():
         self.round_wind = gpmjcore.Winds.EAST
         self.round_number = 1
         self.round_continue_count = 0
+        # Players info.
+        self.players_info = []
+
+    def set_player(self):
+        if len(self.players_info) == gpmjcore.Winds.NUM_OF_WINDS:
+            return None
+        player_info = PlayerInfo(len(self.players_info))
+        self.players_info.append(player_info)
+        return player_info
 
     def create_tiles(self):
         # Simples
@@ -223,19 +233,29 @@ class Game():
         all_terminals_and_honors_7p_jc.connect_chain(None, None)
 
     def goto_next_round(self, b_continued):
+        '''
+        True  : Go to next round
+        False : GAME OVER
+        '''
         if b_continued:
             self.round_continue_count += 1
-            return
+            return True
         self.round_continue_count = 0
         if self.round_number < 4:
             self.round_number += 1
         else:
+            if self.config.east_wind_game or \
+               self.round_wind >= gpmjcore.Winds.SOUTH:
+                for player_info in self.players_info:
+                    if player_info.score >= self.config.min_score_gameover:
+                        # GAME OVER
+                        return False
             self.round_number = 1
             if self.round_wind < gpmjcore.Winds.NORTH:
                 self.round_wind += 1
             else:
                 self.round_wind = gpmjcore.Winds.EAST
-        return
+        return True
 
     def setup_round(self):
         # Build walls
@@ -317,8 +337,34 @@ class Game():
         else:
             return None
 
+    def win(self, win_player_info, b_discarded, discard_player_wind, score):
+        if b_discarded:
+            for player_info in self.players_info:
+                if player_info.seat_wind == discard_player_wind:
+                    win_player_info.score += score[0]
+                    player_info.score -= score[0]
+                    return True
+            else:
+                return False
+        else:
+            if win_player_info.seat_wind == gpmjcore.Winds.EAST:
+                for player_info in self.players_info:
+                    if player_info is not win_player_info:
+                        win_player_info.score += score[0]
+                        player_info.score -= score[0]
+            else:
+                for player_info in self.players_info:
+                    if player_info is not win_player_info:
+                        if player_info.seat_wind == gpmjcore.Winds.EAST:
+                            win_player_info.score += score[1]
+                            player_info.score -= score[1]
+                        else:
+                            win_player_info.score += score[0]
+                            player_info.score -= score[0]
+            return True
+
     def call_kong(self):
-        if self.kong_count < 4:
+        if self.kong_count < 4 and len(self.wall) > 0:
             self.kong_count += 1
             tile = self.dead_wall.pop()
             self.dead_wall.insert(0, self.wall.pop(0))
@@ -439,6 +485,22 @@ class Game():
         print("")
 
 
+class PlayerInfo():
+
+    def __init__(self, seat_wind):
+        self.score = 25000
+        self.reset_round(seat_wind)
+
+    def reset_round(self, seat_wind):
+        self.seat_wind = seat_wind
+        self.b_first_pick = True
+        self.b_declared_ready = False
+        self.b_declared_double_ready = False
+        self.b_one_shot = False
+        self.b_stolen = False
+        self.discards = []
+
+
 class GameConfig():
 
     def __init__(self):
@@ -448,6 +510,8 @@ class GameConfig():
         self.east_wind_game = False
         # Underneath Dora is available
         self.available_underneath_dora = True
+        # Minimum score for GAME OVER
+        self.min_score_gameover = 0
 
     def parse_config(self, cfg_file_path):
         config = configparser.ConfigParser()
@@ -461,5 +525,7 @@ class GameConfig():
         self.east_wind_game = default_section.getboolean('east_wind_game')
         # Underneath Dora is available
         self.available_underneath_dora = default_section.getboolean('underneath_dora')
+        # Minimum score for GAME OVER
+        self.min_score_gameover = default_section.getint('min_score_gameover')
         return True
 
