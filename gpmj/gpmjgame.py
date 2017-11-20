@@ -15,6 +15,7 @@ Date           Version   Description
 11 Nov. 2017   0.6       Add get_num_of_dora()
 12 Nov. 2017   0.7       Add print_dead_wall()
 18 Nov. 2017   0.8       Add PlayerInfo class
+20 Nov. 2017   0.9       Add print_players_score()
 -----------------------------------------------------------
 '''
 
@@ -22,8 +23,8 @@ import configparser
 import random
 import gpmjcore
 
-__version__ = "0.8"
-__date__    = "18 Nov. 2017"
+__version__ = "0.9"
+__date__    = "20 Nov. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -54,10 +55,10 @@ class Game():
         # Players info.
         self.players_info = []
 
-    def set_player(self):
+    def set_player(self, name):
         if len(self.players_info) == gpmjcore.Winds.NUM_OF_WINDS:
             return None
-        player_info = PlayerInfo(len(self.players_info))
+        player_info = PlayerInfo(name, len(self.players_info))
         self.players_info.append(player_info)
         return player_info
 
@@ -484,10 +485,15 @@ class Game():
         print("")
         print("")
 
+    def print_players_score(self):
+        for player_info in self.players_info:
+            print(player_info.name + ":" + str(player_info.score))
+
 
 class PlayerInfo():
 
-    def __init__(self, seat_wind):
+    def __init__(self, name, seat_wind):
+        self.name = name
         self.score = 25000
         self.reset_round(seat_wind)
 
