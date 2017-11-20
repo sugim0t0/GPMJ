@@ -64,13 +64,14 @@ Date           Version   Description
 07 Nov. 2017   0.35      Add get_dora_from_indicator()
 09 Nov. 2017   0.36      Add StateFlag class
 10 Nov. 2017   0.37      Add __add_state_value()
+20 Nov. 2017   0.38      Add print_win_hand()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.37"
-__date__    = "10 Nov. 2017"
+__version__ = "0.38"
+__date__    = "20 Nov. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -158,6 +159,26 @@ class StateFlag(IntEnum):
     def __str__(self):
         if self.value == StateFlag.DECLARE_READY.value:
             return "Declare ready (1)"
+        elif self.value == StateFlag.SELF_PICK.value:
+            return "Self pick (1)"
+        elif self.value == StateFlag.ONE_SHOT.value:
+            return "One shot (1)"
+        elif self.value == StateFlag.LAST_TILE_FROM_THE_WALL.value:
+            return "Last tile from the wall (1)"
+        elif self.value == StateFlag.LAST_DISCARD.value:
+            return "Last discard (1)"
+        elif self.value == StateFlag.DEAD_WALL_DRAW.value:
+            return "Dead wall draw (1)"
+        elif self.value == StateFlag.ROBBING_A_QUAD.value:
+            return "Robbing a quad (1)"
+        elif self.value == StateFlag.DECLARE_DOUBLE_READY.value:
+            return "Declare double ready (2)"
+        elif self.value == StateFlag.HEAVENLY_HAND.value:
+            return "Heavenly hand (13)"
+        elif self.value == StateFlag.HAND_OF_EARTH.value:
+            return "Hand of earth (13)"
+        elif self.value == StateFlag.HAND_OF_MAN.value:
+            return "Hand of man (13)"
 
 
 class HandFlag(IntEnum):
@@ -206,6 +227,72 @@ class HandFlag(IntEnum):
     ALL_GREEN                      = 0x10000200
     NINE_GATES                     = 0x10000400
     FOUR_KONGS                     = 0x10000800
+
+    def __str__(self):
+        if self.value == HandFlag.WHITE_DRAGON.value:
+            return "White dragon (1)"
+        elif self.value == HandFlag.GREEN_DRAGON.value:
+            return "Green dragon (1)"
+        elif self.value == HandFlag.RED_DRAGON.value:
+            return "Red dragon (1)"
+        elif self.value == HandFlag.SEAT_WIND.value:
+            return "Seat wind (1)"
+        elif self.value == HandFlag.ROUND_WIND.value:
+            return "Round wind (1)"
+        elif self.value == HandFlag.NO_POINTS_HAND.value:
+            return "No points hand (1)"
+        elif self.value == HandFlag.ONE_SET_OF_IDENTICAL_SEQUENCES.value:
+            return "One set of identical sequences (1)"
+        elif self.value == HandFlag.ALL_SIMPLES.value:
+            return "All simples (1)"
+        elif self.value == HandFlag.THREE_COLOR_STRAIGHT.value:
+            return "Three color straight (2-1)"
+        elif self.value == HandFlag.STRAIGHT.value:
+            return "Straight (2-1)"
+        elif self.value == HandFlag.TERMINAL_OR_HONOR_IN_EACH_SET.value:
+            return "Terminal or honor in each set (2-1)"
+        elif self.value == HandFlag.SEVEN_PAIRS.value:
+            return "Seven pairs (2)"
+        elif self.value == HandFlag.ALL_TRIPLET_HAND.value:
+            return "All triplet hand (2)"
+        elif self.value == HandFlag.THREE_CLOSED_TRIPLETS.value:
+            return "Three closed triplets (2)"
+        elif self.value == HandFlag.THREE_COLOR_TRIPLETS.value:
+            return "Three color triplets (2)"
+        elif self.value == HandFlag.THREE_KONGS.value:
+            return "Three kongs (2)"
+        elif self.value == HandFlag.ALL_TERMINALS_AND_HONORS.value:
+            return "All terminals and honors (2)"
+        elif self.value == HandFlag.LITTLE_THREE_DRAGONS.value:
+            return "Little three dragons (2)"
+        elif self.value == HandFlag.TERMINAL_IN_EACH_SET.value:
+            return "Terminal in each set (3-2)"
+        elif self.value == HandFlag.HALF_FLUSH.value:
+            return "Half flush (3-2)"
+        elif self.value == HandFlag.TWO_SET_OF_IDENTICAL_SEQUENCES.value:
+            return "Two set of identical sequences (3)"
+        elif self.value == HandFlag.FLUSH.value:
+            return "Flush (6-5)"
+        elif self.value == HandFlag.THIRTEEN_ORPHANS.value:
+            return "Thirteen orphans (13)"
+        elif self.value == HandFlag.FOUR_CONCEALED_TRIPLETS.value:
+            return "Four concealed triplets (13)"
+        elif self.value == HandFlag.BIG_THREE_DRAGONS.value:
+            return "Big three dragons (13)"
+        elif self.value == HandFlag.LITTLE_FOUR_WINDS.value:
+            return "Little four winds (13)"
+        elif self.value == HandFlag.BIG_FOUR_WINDS.value:
+            return "Big four winds (13)"
+        elif self.value == HandFlag.ALL_HONORS.value:
+            return "All honors (13)"
+        elif self.value == HandFlag.ALL_TERMINALS.value:
+            return "All terminals (13)"
+        elif self.value == HandFlag.ALL_GREEN.value:
+            return "All green (13)"
+        elif self.value == HandFlag.NINE_GATES.value:
+            return "Nine gates (13)"
+        elif self.value == HandFlag.FOUR_KONGS.value:
+            return "Four kongs (13)"
 
 
 class HandJudgeChain():
@@ -979,28 +1066,6 @@ class ThirteenOrphansJudge(HandJudge):
         return True
 
 
-class StateFlag(IntEnum):
-
-    #
-    # Flags of states
-    #
-    # 1 value
-    DECLARE_READY                  = 0x00000001
-    SELF_PICK                      = 0x00000002
-    ONE_SHOT                       = 0x00000004
-    LAST_TILE_FROM_THE_WALL        = 0x00000008
-    LAST_DISCARD                   = 0x00000010
-    DEAD_WALL_DRAW                 = 0x00000020
-    ROBBING_A_QUAD                 = 0x00000040
-    # 2 value
-    DECLARE_DOUBLE_READY           = 0x00000080
-    # LIMIT STATES
-    LIMIT_STATE                    = 0x10000000
-    HEAVENLY_HAND                  = 0x10000001
-    HAND_OF_EARTH                  = 0x10000002
-    HAND_OF_MAN                    = 0x10000004
-
-
 class WinHand():
 
     def __init__(self):
@@ -1011,6 +1076,29 @@ class WinHand():
         self.hand_flag = 0x0
         self.hand_value = 0
         self.hand_point = 0
+
+    def print_win_hand(self):
+        if self.state_flag & StateFlag.LIMIT_STATE:
+            # Limit state
+            for x in range(3):
+                if self.state_flag & (1 << x):
+                    flag = StateFlag.LIMIT_STATE | (1 << x)
+                    print(str(StateFlag(flag)))
+        if self.hand_flag & HandFlag.LIMIT_HAND:
+            # Limit hand
+            for x in range(10):
+                if self.hand_flag & (4 << x):
+                    flag = HandFlag.LIMIT_HAND | (4 << x)
+                    print(str(HandFlag(flag)))
+        else:
+            # State
+            for x in range(8):
+                if self.state_flag & (1 << x):
+                    print(str(StateFlag(1 << x)))
+            # Hand
+            for x in range(22):
+                if self.hand_flag & (2 << x):
+                    print(str(HandFlag(2 << x)))
 
     def set_property(self, state_flag, last_tile, b_discarded, seat_wind, round_wind):
         self.state_flag = state_flag

@@ -208,6 +208,147 @@ class TestGpmjCore(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_print_win_hand_0(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.state_flag = \
+            gpmjcore.StateFlag.DECLARE_READY | \
+            gpmjcore.StateFlag.SELF_PICK | \
+            gpmjcore.StateFlag.ONE_SHOT | \
+            gpmjcore.StateFlag.LAST_TILE_FROM_THE_WALL
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.NO_POINTS_HAND | \
+            gpmjcore.HandFlag.ALL_SIMPLES | \
+            gpmjcore.HandFlag.THREE_COLOR_STRAIGHT
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_1(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.state_flag = \
+            gpmjcore.StateFlag.DECLARE_DOUBLE_READY | \
+            gpmjcore.StateFlag.LAST_DISCARD
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.ROUND_WIND | \
+            gpmjcore.HandFlag.SEAT_WIND | \
+            gpmjcore.HandFlag.ALL_TRIPLET_HAND | \
+            gpmjcore.HandFlag.THREE_CLOSED_TRIPLETS | \
+            gpmjcore.HandFlag.HALF_FLUSH
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_2(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.state_flag = \
+            gpmjcore.StateFlag.HEAVENLY_HAND
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.BIG_FOUR_WINDS | \
+            gpmjcore.HandFlag.FOUR_CONCEALED_TRIPLETS
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_3(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.state_flag = \
+            gpmjcore.StateFlag.HAND_OF_EARTH
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.LITTLE_FOUR_WINDS
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_4(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.state_flag = \
+            gpmjcore.StateFlag.HAND_OF_EARTH
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.LITTLE_FOUR_WINDS
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_5(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.state_flag = \
+            gpmjcore.StateFlag.HAND_OF_MAN
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.THIRTEEN_ORPHANS
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_6(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.state_flag = \
+            gpmjcore.StateFlag.DEAD_WALL_DRAW
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.STRAIGHT | \
+            gpmjcore.HandFlag.FLUSH | \
+            gpmjcore.HandFlag.ONE_SET_OF_IDENTICAL_SEQUENCES
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_7(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.state_flag = \
+            gpmjcore.StateFlag.ROBBING_A_QUAD
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.WHITE_DRAGON | \
+            gpmjcore.HandFlag.GREEN_DRAGON | \
+            gpmjcore.HandFlag.LITTLE_THREE_DRAGONS | \
+            gpmjcore.HandFlag.ALL_TERMINALS_AND_HONORS
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_8(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.RED_DRAGON | \
+            gpmjcore.HandFlag.TERMINAL_OR_HONOR_IN_EACH_SET
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_9(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.THREE_COLOR_TRIPLETS | \
+            gpmjcore.HandFlag.THREE_KONGS
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_A(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.TERMINAL_IN_EACH_SET | \
+            gpmjcore.HandFlag.TWO_SET_OF_IDENTICAL_SEQUENCES
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_B(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.BIG_THREE_DRAGONS | \
+            gpmjcore.HandFlag.FOUR_KONGS
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_C(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.ALL_TERMINALS
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_D(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.ALL_GREEN
+        print("")
+        win_hand.print_win_hand()
+
+    def test_print_win_hand_E(self):
+        win_hand = gpmjcore.WinHand()
+        win_hand.hand_flag = \
+            gpmjcore.HandFlag.NINE_GATES
+        print("")
+        win_hand.print_win_hand()
+
     def test_add_state_value_0(self):
         win_hand = gpmjcore.WinHand()
         state_flag = gpmjcore.StateFlag.HAND_OF_EARTH
@@ -861,6 +1002,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.append_eye(eye7)
         self.seven_pairs_limit_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.print_win_hand()
         win_hand.calc_points()
         self.assertEqual(win_hand.hand_point, 25)
         self.assertEqual(win_hand.hand_value, 15)
@@ -910,6 +1052,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.append_eye(eye7)
         self.seven_pairs_7p_jc.judge_chain(win_hand)
         self.assertEqual(win_hand.hand_flag, expected)
+        win_hand.print_win_hand()
         win_hand.calc_points()
         self.assertEqual(win_hand.hand_point, 25)
         self.assertEqual(win_hand.hand_value, 3)
