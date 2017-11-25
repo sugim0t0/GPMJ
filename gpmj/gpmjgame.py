@@ -233,7 +233,7 @@ class Game():
         half_flush_7p_jc.connect_chain(all_terminals_and_honors_7p_jc, all_terminals_and_honors_7p_jc)
         all_terminals_and_honors_7p_jc.connect_chain(None, None)
 
-    def goto_next_round(self, b_continued):
+    def goto_next_round(self, b_continued, b_count_keep):
         '''
         True  : Go to next round
         False : GAME OVER
@@ -241,7 +241,10 @@ class Game():
         if b_continued:
             self.round_continue_count += 1
             return True
-        self.round_continue_count = 0
+        if b_count_keep:
+            self.round_continue_count += 1
+        else:
+            self.round_continue_count = 0
         if self.round_number < 4:
             self.round_number += 1
         else:
@@ -363,6 +366,22 @@ class Game():
                             win_player_info.score += score[0]
                             player_info.score -= score[0]
             return True
+
+    def round_over(self):
+        num_of_ready_players = 0
+        for player_info in self.players_info:
+            b_ready = False
+            for suit in range(gpmjcore.Suits.NUM_OF_SUITS):
+                if len(player_info.hand.required[suit]) > 0:
+                    player_info.b_ready = True
+                    num_of_ready_players += 1
+                    break
+        if num_of_ready_players > 0 and num_of_ready_players < 4:
+            for player_info in self.players_info:
+                if player_info.b_ready:
+                    player_info.score += (3000 // num_of_ready_players)
+                else:
+                    player_info.score -= (3000 // (4 - num_of_ready_players))
 
     def call_kong(self):
         if self.kong_count < 4 and len(self.wall) > 0:
@@ -499,6 +518,8 @@ class PlayerInfo():
 
     def reset_round(self, seat_wind):
         self.seat_wind = seat_wind
+        self.hand = gpmjcore.Hand()
+        self.b_ready = False
         self.b_first_pick = True
         self.b_declared_ready = False
         self.b_declared_double_ready = False

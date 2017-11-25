@@ -65,13 +65,14 @@ Date           Version   Description
 09 Nov. 2017   0.36      Add StateFlag class
 10 Nov. 2017   0.37      Add __add_state_value()
 20 Nov. 2017   0.38      Add print_win_hand()
+25 Nov. 2017   0.39      Add update_required()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.38"
-__date__    = "20 Nov. 2017"
+__version__ = "0.39"
+__date__    = "25 Nov. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1391,7 +1392,7 @@ class Hand():
                 print(tile.print_char, end="")
         print("")
 
-    def __update_required(self, required, melds, eye):
+    def __append_required(self, required, melds, eye):
         if len(eye.tiles) == 1:
             required[eye.tiles[0].suit] = required[eye.tiles[0].suit] | {eye.tiles[0].number}
         else:
@@ -1456,8 +1457,10 @@ class Hand():
                self.pure_tiles[suit][x].number == self.pure_tiles[suit][x+1].number:
                 eye.add_tile(self.pure_tiles[suit].pop(x+1))
             eye.add_tile(self.pure_tiles[suit].pop(x))
-            if len(self.pure_tiles[suit]) == 0 or \
-               self.__judge_suit_melds(suit, 0, eye, melds, required):
+            if len(self.pure_tiles[suit]) == 0:
+                self.__append_required(required, melds, eye)
+                b_ready = True
+            elif self.__judge_suit_melds(suit, 0, eye, melds, required):
                 b_ready = True
             # Move tiles in eye into self.pure_tiles[suit]
             while len(eye.tiles) > 0:
@@ -1482,7 +1485,7 @@ class Hand():
                     if self.__judge_suit_melds(suit, tile_index+1, fixed_eye, melds, required):
                         b_ready = True
                 else:
-                    self.__update_required(required, melds, fixed_eye)
+                    self.__append_required(required, melds, fixed_eye)
                     b_ready = True
                 meld.remove_tile(self.pure_tiles[suit][tile_index])
         return b_ready
@@ -1521,6 +1524,19 @@ class Hand():
                 eye.reset()
             x += 1
         return b_ready
+
+    def update_required(self):
+        required = self.get_required_13orphans()
+        if required is not None:
+            self.required = required
+            return
+        required = self.get_required_basic()
+        if required is not None:
+            self.required = required
+            return
+        required = self.get_required_7pairs()
+        if required is not None:
+            self.required = required
 
     def get_required_basic(self):
         required = [set(), set(), set(), set(), set()]

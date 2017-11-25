@@ -9,6 +9,8 @@ test/gpmjgame.py
 test/gpmjplayer.py
 test/gpmj.cfg
 
+tags
+
 *.asta
 *.odp
 *#

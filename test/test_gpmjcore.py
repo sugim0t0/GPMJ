@@ -5840,6 +5840,24 @@ class TestGpmjCore(unittest.TestCase):
         self.required = self.hand.get_required_basic()
         self.assertEqual(self.required, [{2},set(),set(),set(),set()])
 
+    def test_basic_wait_single_eye_C2(self):
+        # [C2][D4][D4][D5][D5][D6][D6][B1][B2][B3][Wh][Wh][Wh]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][3])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][7])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][14])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][15])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][17])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][22])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][23])
+        self.required = self.hand.get_required_basic()
+        self.assertEqual(self.required, [set(),set(),{2},set(),set()])
+
     def test_7pairs_none_0(self):
         # [D1][D1][D1][D1][C9][C9][Es][St][St][Nt][Nt][Gr][Gr]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
