@@ -1537,6 +1537,7 @@ class Hand():
         required = self.get_required_7pairs()
         if required is not None:
             self.required = required
+            return
 
     def get_required_basic(self):
         required = [set(), set(), set(), set(), set()]
