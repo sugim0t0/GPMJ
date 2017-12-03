@@ -17,15 +17,18 @@ Date           Version   Description
 18 Nov. 2017   0.8       Add PlayerInfo class
 20 Nov. 2017   0.9       Add print_players_score()
 26 Nov. 2017   0.10      Add discard_tile(), game_over()
+03 Dec. 2017   0.11      Add GameCtrl class
 -----------------------------------------------------------
 '''
 
 import configparser
 import random
+import threading, queue
 import gpmjcore
+from enum import Enum, IntEnum
 
-__version__ = "0.10"
-__date__    = "26 Nov. 2017"
+__version__ = "0.11"
+__date__    = "03 Dec. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -262,6 +265,8 @@ class Game():
                 self.round_wind += 1
             else:
                 self.round_wind = gpmjcore.Winds.EAST
+        for player_info in self.players_info:
+            player_info.seat_wind = (player_info.seat_wind + 1) % gpmjcore.Winds.NUM_OF_WINDS
         return True
 
     def setup_round(self):
@@ -395,12 +400,15 @@ class Game():
         return True
 
     def round_over(self):
+        b_dealer_ready = False
         num_of_ready_players = 0
         for player_info in self.players_info:
             b_ready = False
             for suit in range(gpmjcore.Suits.NUM_OF_SUITS):
                 if len(player_info.hand.required[suit]) > 0:
                     player_info.b_ready = True
+                    if player_info.seat_wind == gpmjcore.Winds.EAST:
+                        b_dealer_ready = True
                     num_of_ready_players += 1
                     break
         if num_of_ready_players > 0 and num_of_ready_players < 4:
@@ -409,6 +417,10 @@ class Game():
                     player_info.score += (3000 // num_of_ready_players)
                 else:
                     player_info.score -= (3000 // (4 - num_of_ready_players))
+        if self.config.continue_by_dealer_ready:
+            return b_dealer_ready
+        else:
+            return False
 
     def game_over(self):
         top_player_info = None
@@ -547,6 +559,80 @@ class Game():
             print(player_info.name + ":" + str(player_info.score))
 
 
+class GameCtrl(threading.Thread):
+
+    def __init__(self, game):
+        super(GameCtrl, self).__init__()
+        self.game = Game()
+        self.game.create_tiles()
+        self.game.setup_hand_judger()
+        self.turn_player = None
+
+    def run(self):
+        for player_info in self.game.players_info:
+            for next_player_info in self.game.players_info:
+                if ((player_info.seat_wind + 1) % gpmjcore.Winds.NUM_OF_WINDS) \
+                   == next_player_info.seat_wind:
+                    player_info.next_player = next_player_info
+                    break
+        while(True):
+            (b_continued, b_count_keep) = self.__round()
+            if not self.game.goto_next_round(b_continued, b_count_keep):
+                # GAME OVER
+                break
+
+    def __round(self):
+        ev_game = None
+        ev_player = None
+        self.game.setup_round()
+        for player_info in self.game.players_info:
+            self.game.deal_starttiles(self.game.dealplayer_info.hand)
+            if player_info.seat_wind == gpmjcore.Winds.EAST:
+                self.turn_player = player_info
+        while(True):
+            tile = self.game.draw_tile()
+            if tile is None:
+                return (self.game.round_over(), True)
+            ev_game = GameEvent(EventId.EV_PICKUP_TILE, tile)
+            self.turn_player.ev_game_queue.put(ev_game, False, None)
+            while(True):
+                ev_player = self.turn_player.ev_player_queue.get(True, None)
+                if ev_player.event_id == EV_DISCARD_TILE:
+                    discard_tile = ev_player.tile
+                    # judge win
+                    next_player_info = self.turn_player.next_player
+                    for x in range(3):
+                        if discard_tile.number in next_player_info.hand.required[discard_tile.suit]:
+                            # 2017.12.03
+                            pass
+                        next_player_info = next_player_info.next_player
+
+
+class EventId(IntEnum):
+ 
+    # Game -> Player events
+    EV_PICKUP_TILE  = 0
+    # Game <- Player events
+    EV_DISCARD_TILE = 1
+    EV_DO_NOTHING   = 2
+    # Game <-> Player events
+    EV_CLOSED_KONG  = 3
+    EV_ADDED_KONG   = 4
+    EV_STOLEN_KONG  = 5
+    EV_CHOW         = 6
+    EV_PONG         = 7
+    EV_WIN_SELFPICK = 8
+    EV_WIN_DISCARD  = 9
+
+
+class GameEvent():
+
+    def __init__(self, event_id, tile, melds):
+        self.event_id = event_id
+        self.tile = tile
+        self.melds = melds
+
+
 class PlayerInfo():
 
     def __init__(self, name, seat_wind):
@@ -554,6 +640,9 @@ class PlayerInfo():
         self.score = 25000
         self.reset_round(seat_wind)
         self.start_seat_wind = seat_wind
+        self.next_player = None
+        self.ev_game_queue = queue.Queue()   # Game -> Player
+        self.ev_player_queue = queue.Queue() # Game <- Player
 
     def reset_round(self, seat_wind):
         self.seat_wind = seat_wind
@@ -580,6 +669,8 @@ class GameConfig():
         self.east_wind_game = False
         # Minimum score for GAME OVER
         self.min_score_gameover = 0
+        ## ROUND
+        self.continue_by_dealer_ready = True
 
     def parse_config(self, cfg_file_path):
         config = configparser.ConfigParser()
@@ -598,5 +689,11 @@ class GameConfig():
         self.east_wind_game = game_section.getboolean('east_wind_game')
         # Minimum score for GAME OVER
         self.min_score_gameover = game_section.getint('min_score_gameover')
+
+        ## ROUND
+        round_section = config['round']
+        # Round is continued by dealer's ready
+        self.continue_by_dealer_ready = round_section.getboolean('continue_by_dealer_ready')
         return True
+
 
