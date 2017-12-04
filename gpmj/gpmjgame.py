@@ -18,6 +18,7 @@ Date           Version   Description
 20 Nov. 2017   0.9       Add print_players_score()
 26 Nov. 2017   0.10      Add discard_tile(), game_over()
 03 Dec. 2017   0.11      Add GameCtrl class
+04 Dec. 2017   0.12      Add make_state_flag()
 -----------------------------------------------------------
 '''
 
@@ -27,8 +28,8 @@ import threading, queue
 import gpmjcore
 from enum import Enum, IntEnum
 
-__version__ = "0.11"
-__date__    = "03 Dec. 2017"
+__version__ = "0.12"
+__date__    = "04 Dec. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -603,8 +604,11 @@ class GameCtrl(threading.Thread):
                     next_player_info = self.turn_player.next_player
                     for x in range(3):
                         if discard_tile.number in next_player_info.hand.required[discard_tile.suit]:
-                            # 2017.12.03
-                            pass
+                            b_last = False
+                            if len(self.game.wall) == 0:
+                                b_last = True
+                            state_flag = next_player_info.make_state_flag(True, False, False, b_last)
+                            win_hands = next_player_info.hand.get_winhands_basic(state_flag, discard_tile, True, next_player_info.seat_wind, self.game.round_wind)
                         next_player_info = next_player_info.next_player
 
 
@@ -654,6 +658,37 @@ class PlayerInfo():
         self.b_one_shot = False
         self.b_stolen = False
         self.discards = []
+
+    def make_state_flag(self, b_discarded, b_dead_wall_draw, b_robbing_a_quad, b_last):
+        state_flag = 0x0
+        # LIMIT STATES
+        if self.b_first_pick:
+            if b_discarded:
+                state_flag |= gpmjcore.StateFlag.HAND_OF_MAN
+            elif self.seat_wind == gpmjcore.Winds.EAST:
+                state_flag |= gpmjcore.StateFlag.HEAVENLY_HAND
+            else:
+                state_flag |= gpmjcore.StateFlag.HAND_OF_EARTH
+            return state_flag
+        # NORMAL STATES
+        if self.b_declared_double_ready:
+            state_flag |= gpmjcore.StateFlag.DECLARE_DOUBLE_READY
+        elif self.b_declared_ready:
+            state_flag |= gpmjcore.StateFlag.DECLARE_READY
+        if self.b_one_shot:
+            state_flag |= gpmjcore.StateFlag.ONE_SHOT
+        if not self.b_stolen and not b_discarded:
+            state_flag |= gpmjcore.StateFlag.SELF_PICK
+        if b_last:
+            if b_discarded:
+                state_flag |= gpmjcore.StateFlag.LAST_DISCARD
+            else:
+                state_flag |= gpmjcore.StateFlag.LAST_TILE_FROM_THE_WALL
+        if b_dead_wall_draw:
+            state_flag |= gpmjcore.StateFlag.DEAD_WALL_DRAW
+        elif b_robbing_a_quad:
+            state_flag |= gpmjcore.StateFLAG.ROBBING_A_QUAD
+        return state_flag
 
 
 class GameConfig():
