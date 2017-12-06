@@ -19,6 +19,7 @@ Date           Version   Description
 26 Nov. 2017   0.10      Add discard_tile(), game_over()
 03 Dec. 2017   0.11      Add GameCtrl class
 04 Dec. 2017   0.12      Add make_state_flag()
+06 Dec. 2017   0.13      Add __check_win_selfpick() and __check_win_discard()
 -----------------------------------------------------------
 '''
 
@@ -28,8 +29,8 @@ import threading, queue
 import gpmjcore
 from enum import Enum, IntEnum
 
-__version__ = "0.12"
-__date__    = "04 Dec. 2017"
+__version__ = "0.13"
+__date__    = "06 Dec. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -594,39 +595,70 @@ class GameCtrl(threading.Thread):
             tile = self.game.draw_tile()
             if tile is None:
                 return (self.game.round_over(), True)
-            ev_game = GameEvent(EventId.EV_PICKUP_TILE, tile)
+            # check win by selfpick tile
+            self.__check_win_selfpick(self.turn_player, tile, b_last, False)
+            ev_game = GameEvent(EventId.EV_PICKUP_TILE, tile, None)
             self.turn_player.ev_game_queue.put(ev_game, False, None)
             while(True):
                 ev_player = self.turn_player.ev_player_queue.get(True, None)
-                if ev_player.event_id == EV_DISCARD_TILE:
+                if ev_player.event_id == EV_DISCARD_TILE or ev_player.event_id == EV_DECLARE_READY:
                     discard_tile = ev_player.tile
-                    # judge win
-                    next_player_info = self.turn_player.next_player
-                    for x in range(3):
-                        if discard_tile.number in next_player_info.hand.required[discard_tile.suit]:
-                            b_last = False
-                            if len(self.game.wall) == 0:
-                                b_last = True
-                            state_flag = next_player_info.make_state_flag(True, False, False, b_last)
-                            win_hands = next_player_info.hand.get_winhands_basic(state_flag, discard_tile, True, next_player_info.seat_wind, self.game.round_wind)
-                        next_player_info = next_player_info.next_player
+                    # check win by discarded tile
+                    b_last = False
+                    if len(self.game.wall) == 0:
+                        b_last = True
+                    self.__check_win_discard(self.turn_player, discard_tile, b_last)
+                    if ev_player.event_id == EV_DECLARE_READY:
+                        self.game.discard_tile(self.turn_player, discard_tile, True)
+                    else:
+                        self.game.discard_tile(self.turn_player, discard_tile, False)
+
+    def __check_win_selfpick(self, turn_player, tile, b_last, b_dead_wall_draw):
+        if tile.number in turn_player.hand.required[tile.suit]:
+            state_flag = turn_player.make_state_flag(False, b_dead_wall_draw, False, b_last)
+            score = self.game.get_hand_score(turn_player.hand, state_flag, tile, False, turn_player.seat_wind)
+            if not score == (0, 0):
+                ev_game = GameEvent(EventId.EV_WIN_SELFPICK, tile, None)
+                turn_player.ev_game_queue.put(ev_game, False, None)
+                ev_player = turn_player.ev_player_queue.get(True, None)
+                if ev_player.event_id == EV_WIN_SELFPICK:
+                    self.game.win(turn_player, False, gpmjcore.Winds.INVALID, score)
+                    return True
+        return False
+
+    def __check_win_discard(self, turn_player, tile, b_last, b_robbing_a_quad):
+        next_player = turn_player.next_player
+        for x in range(3):
+            if tile.number in next_player.hand.required[tile.suit]:
+                state_flag = next_player.make_state_flag(True, False, b_robbing_a_quad, b_last)
+                score = self.game.get_hand_score(next_player.hand, state_flag, tile, True, next_player.seat_wind)
+                if not score == (0, 0):
+                    ev_game = GameEvent(EventId.EV_WIN_DISCARD, tile, None)
+                    next_player.ev_game_queue.put(ev_game, False, None)
+                    ev_player = next_player.ev_player_queue.get(True, None)
+                    if ev_player.event_id == EV_WIN_DISCARD:
+                        self.game.win(next_player, True, self.turn_player.seat_wind, score)
+                        return True
+            next_player = next_player.next_player
+        return False
 
 
 class EventId(IntEnum):
  
     # Game -> Player events
-    EV_PICKUP_TILE  = 0
+    EV_PICKUP_TILE   = 0
     # Game <- Player events
-    EV_DISCARD_TILE = 1
-    EV_DO_NOTHING   = 2
+    EV_DISCARD_TILE  = 1
+    EV_DECLARE_READY = 2
+    EV_DO_NOTHING    = 3
     # Game <-> Player events
-    EV_CLOSED_KONG  = 3
-    EV_ADDED_KONG   = 4
-    EV_STOLEN_KONG  = 5
-    EV_CHOW         = 6
-    EV_PONG         = 7
-    EV_WIN_SELFPICK = 8
-    EV_WIN_DISCARD  = 9
+    EV_CLOSED_KONG   = 4
+    EV_ADDED_KONG    = 5
+    EV_STOLEN_KONG   = 6
+    EV_CHOW          = 7
+    EV_PONG          = 8
+    EV_WIN_SELFPICK  = 9
+    EV_WIN_DISCARD   = 10
 
 
 class GameEvent():
