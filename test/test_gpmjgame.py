@@ -25,6 +25,89 @@ class TestGpmjGame(unittest.TestCase):
         self.game.doras = doras
         self.game.underneath_doras = underneath_doras
 
+    def test_make_state_flag_0(self):
+        self.setup_game()
+        player_info_east = self.game.set_player("Tanaka")
+        player_info_south = self.game.set_player("Suzuki")
+        player_info_west = self.game.set_player("Watanabe")
+        player_info_north = self.game.set_player("Sasaki")
+        state_flag = player_info_east.make_state_flag(True, False, False, False)
+        self.assertEqual(state_flag, gpmjcore.StateFlag.HAND_OF_MAN)
+
+    def test_make_state_flag_1(self):
+        self.setup_game()
+        player_info_east = self.game.set_player("Tanaka")
+        player_info_south = self.game.set_player("Suzuki")
+        player_info_west = self.game.set_player("Watanabe")
+        player_info_north = self.game.set_player("Sasaki")
+        state_flag = player_info_east.make_state_flag(False, False, False, False)
+        self.assertEqual(state_flag, gpmjcore.StateFlag.HEAVENLY_HAND)
+
+    def test_make_state_flag_2(self):
+        self.setup_game()
+        player_info_east = self.game.set_player("Tanaka")
+        player_info_south = self.game.set_player("Suzuki")
+        player_info_west = self.game.set_player("Watanabe")
+        player_info_north = self.game.set_player("Sasaki")
+        state_flag = player_info_south.make_state_flag(False, False, False, False)
+        self.assertEqual(state_flag, gpmjcore.StateFlag.HAND_OF_EARTH)
+
+    def test_make_state_flag_3(self):
+        self.setup_game()
+        player_info_east = self.game.set_player("Tanaka")
+        player_info_south = self.game.set_player("Suzuki")
+        player_info_west = self.game.set_player("Watanabe")
+        player_info_north = self.game.set_player("Sasaki")
+        player_info_east.b_first_pick = False
+        player_info_east.b_declared_double_ready = True
+        player_info_east.b_one_shot = True
+        state_flag = player_info_east.make_state_flag(False, False, False, False)
+        self.assertTrue(state_flag & gpmjcore.StateFlag.DECLARE_DOUBLE_READY)
+        self.assertTrue(state_flag & gpmjcore.StateFlag.ONE_SHOT)
+        self.assertTrue(state_flag & gpmjcore.StateFlag.SELF_PICK)
+
+    def test_make_state_flag_4(self):
+        self.setup_game()
+        player_info_east = self.game.set_player("Tanaka")
+        player_info_south = self.game.set_player("Suzuki")
+        player_info_west = self.game.set_player("Watanabe")
+        player_info_north = self.game.set_player("Sasaki")
+        player_info_east.b_first_pick = False
+        player_info_east.b_declared_ready = True
+        state_flag = player_info_east.make_state_flag(True, False, False, True)
+        self.assertTrue(state_flag & gpmjcore.StateFlag.DECLARE_READY)
+        self.assertTrue(state_flag & gpmjcore.StateFlag.LAST_DISCARD)
+
+    def test_make_state_flag_5(self):
+        self.setup_game()
+        player_info_east = self.game.set_player("Tanaka")
+        player_info_south = self.game.set_player("Suzuki")
+        player_info_west = self.game.set_player("Watanabe")
+        player_info_north = self.game.set_player("Sasaki")
+        player_info_east.b_first_pick = False
+        state_flag = player_info_east.make_state_flag(False, False, False, True)
+        self.assertTrue(state_flag & gpmjcore.StateFlag.LAST_TILE_FROM_THE_WALL)
+
+    def test_make_state_flag_6(self):
+        self.setup_game()
+        player_info_east = self.game.set_player("Tanaka")
+        player_info_south = self.game.set_player("Suzuki")
+        player_info_west = self.game.set_player("Watanabe")
+        player_info_north = self.game.set_player("Sasaki")
+        player_info_east.b_first_pick = False
+        state_flag = player_info_east.make_state_flag(False, True, False, False)
+        self.assertTrue(state_flag & gpmjcore.StateFlag.DEAD_WALL_DRAW)
+
+    def test_make_state_flag_7(self):
+        self.setup_game()
+        player_info_east = self.game.set_player("Tanaka")
+        player_info_south = self.game.set_player("Suzuki")
+        player_info_west = self.game.set_player("Watanabe")
+        player_info_north = self.game.set_player("Sasaki")
+        player_info_east.b_first_pick = False
+        state_flag = player_info_east.make_state_flag(False, False, True, False)
+        self.assertTrue(state_flag & gpmjcore.StateFlag.ROBBING_A_QUAD)
+
     def test_round_over_0(self):
         self.setup_game()
         player_info_east = self.game.set_player("Tanaka")
@@ -296,6 +379,72 @@ class TestGpmjGame(unittest.TestCase):
         self.assertEqual(player_info_south.score, 26000)
         self.assertEqual(player_info_west.score, 26000)
         self.assertEqual(player_info_north.score, 22000)
+
+    def test_round_over_4(self):
+        self.setup_game()
+        player_info_east = self.game.set_player("Tanaka")
+        player_info_south = self.game.set_player("Suzuki")
+        player_info_west = self.game.set_player("Watanabe")
+        player_info_north = self.game.set_player("Sasaki")
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 2))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 3))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 3))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 4))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 5))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 3))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 2))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 3))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 5))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 3))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 4))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 5))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_south.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 3))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 2))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 3))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 3))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 4))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 5))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.WEST))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_west.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 1))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 3))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 2))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 3))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.BAMBOO, 4))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 3))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 4))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 5))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_north.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.NORTH))
+        player_info_east.hand.update_required()
+        player_info_south.hand.update_required()
+        player_info_west.hand.update_required()
+        player_info_north.hand.update_required()
+        self.game.config.continue_by_dealer_ready = False
+        result = self.game.round_over()
+        self.assertEqual(result, False)
 
     def test_discard_tile_0(self):
         self.setup_game()
