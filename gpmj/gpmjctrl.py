@@ -8,6 +8,7 @@ Modification History:
 Date           Version   Description
 ===========================================================
 11 Dec. 2017   0.1       Creation
+12 Dec. 2017   0.2       Add PlayerCtrl and GameCtrl classes
 -----------------------------------------------------------
 '''
 
@@ -17,8 +18,8 @@ import gpmjgame
 import gpmjplayer
 from enum import Enum, IntEnum
 
-__version__ = "0.1"
-__date__    = "11 Dec. 2017"
+__version__ = "0.2"
+__date__    = "12 Dec. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class PlayerCtrl(threading.Thread):
@@ -32,19 +33,44 @@ class PlayerCtrl(threading.Thread):
         ev_game = None
         while(True):
             ev_game = self.player.info.ev_game_queue.get(True, None)
-            if ev_game.event_id == EventFlag.EV_PICKUP_TILE:
-                discard_tile
-                ev_player = self.player.
-          #  elif ev_game.event_id == EventFlag.EV_CLOSED_KONG:
-          #  elif ev_game.event_id == EventFlag.EV_ADDED_KONG:
-          #  elif ev_game.event_id == EventFlag.EV_STOLEN_KONG:
-          #  elif ev_game.event_id == EventFlag.EV_CHOW:
-          #  elif ev_game.event_id == EventFlag.EV_PONG:
-          #  elif ev_game.event_id == EventFlag.EV_WIN_SELFPICK:
-          #  elif ev_game.event_id == EventFlag.EV_WIN_DISCARD:
+            # Events from pick up tile
+            if ev_game.event_flag & EventFlag.EV_WIN_SELFPICK:
+                if self.player.win_selfpick_handler(ev_game.tile):
+                    ev_player = GameEvent(EventFlag.EV_WIN_SELFPICK, ev_game.tile, None)
+                    self.player.info.ev_player_queue.put(ev_player, False, None)
+                    continue
+            if ev_game.event_flag & EventFlag.EV_CLOSED_KONG:
+                if self.player.closed_kong_handler(ev_game.tile):
+                    ev_player = GameEvent(EventFlag.EV_CLOSED_KONG, ev_game.tile, None)
+                    self.player.info.ev_player_queue.put(ev_player, False, None)
+                    continue
+            elif ev_game.event_flag & EventFlag.EV_ADDED_KONG:
+                if self.player.added_kong_handler(ev_game.tile):
+                    ev_player = GameEvent(EventFlag.EV_ADDED_KONG, ev_game.tile, None)
+                    self.player.info.ev_player_queue.put(ev_player, False, None)
+                    continue
+            if ev_game.event_flag & EventFlag.EV_DECLARE_READY:
+                discard_tile = self.player.declare_ready_handler(ev_game.tile)
+                if discard_tile is not None:
+                    ev_player = GameEvent(EventFlag.EV_DECLARE_READY, discard_tile, None)
+                    self.player.info.ev_player_queue.put(ev_player, False, None)
+                    continue
+            if ev_game.event_flag & EventFlag.EV_PICKUP_TILE:
+                discard_tile = self.player.pickup_tile_handler(ev_game.tile)
+                ev_player = GameEvent(EventFlag.EV_DISCARD_TILE, discard_tile, None)
+                self.player.info.ev_player_queue.put(ev_player, False, None)
+                continue
+            # Events from discarded tile
+            if ev_game.event_flag & EventFlag.EV_WIN_DISCARD:
+                if self.player.win_discard_handler(ev_game.tile):
+                    ev_player = GameEvent(EventFlag.EV_WIN_DISCARD, ev_game.tile, None)
+                    self.player.info.ev_player_queue.put(ev_player, False, None)
+                    continue
+          #  elif ev_game.event_flag == EventFlag.EV_STOLEN_KONG:
+          #  elif ev_game.event_flag == EventFlag.EV_CHOW:
+          #  elif ev_game.event_flag == EventFlag.EV_PONG:
             else:
                 break
-            self.player.info.ev_player_queue.put(ev_player, False, None)
 
 
 class GameCtrl(threading.Thread):
@@ -91,15 +117,15 @@ class GameCtrl(threading.Thread):
             self.turn_player.ev_game_queue.put(ev_game, False, None)
             while(True):
                 ev_player = self.turn_player.ev_player_queue.get(True, None)
-                if ev_player.event_id == EventFlag.EV_DISCARD_TILE or \
-                   ev_player.event_id == EventFlag.EV_DECLARE_READY:
+                if ev_player.event_flag == EventFlag.EV_DISCARD_TILE or \
+                   ev_player.event_flag == EventFlag.EV_DECLARE_READY:
                     discard_tile = ev_player.tile
                     # check win by discarded tile
                     b_last = False
                     if len(self.game.wall) == 0:
                         b_last = True
                     self.__check_win_discard(self.turn_player, discard_tile, b_last)
-                    if ev_player.event_id == EventFlag.EV_DECLARE_READY:
+                    if ev_player.event_flag == EventFlag.EV_DECLARE_READY:
                         self.game.discard_tile(self.turn_player, discard_tile, True)
                     else:
                         self.game.discard_tile(self.turn_player, discard_tile, False)
@@ -114,7 +140,7 @@ class GameCtrl(threading.Thread):
                 ev_game = GameEvent(EventFlag.EV_WIN_SELFPICK, tile, None)
                 turn_player.ev_game_queue.put(ev_game, False, None)
                 ev_player = turn_player.ev_player_queue.get(True, None)
-                if ev_player.event_id == EventFlag.EV_WIN_SELFPICK:
+                if ev_player.event_flag == EventFlag.EV_WIN_SELFPICK:
                     self.game.win(turn_player, False, gpmjcore.Winds.INVALID, score)
                     return True
         return False
@@ -129,7 +155,7 @@ class GameCtrl(threading.Thread):
                     ev_game = GameEvent(EventFlag.EV_WIN_DISCARD, tile, None)
                     next_player.ev_game_queue.put(ev_game, False, None)
                     ev_player = next_player.ev_player_queue.get(True, None)
-                    if ev_player.event_id == EventFlag.EV_WIN_DISCARD:
+                    if ev_player.event_flag == EventFlag.EV_WIN_DISCARD:
                         self.game.win(next_player, True, self.turn_player.seat_wind, score)
                         return True
             next_player = next_player.next_player
@@ -156,8 +182,8 @@ class EventFlag(IntEnum):
 
 class GameEvent():
 
-    def __init__(self, event_id, tile, melds):
-        self.event_id = event_id
+    def __init__(self, event_flag, tile, melds):
+        self.event_flag = event_flag
         self.tile = tile
         self.melds = melds
 

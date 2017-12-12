@@ -39,7 +39,7 @@ class Player():
     def stolen_kong_handler(self):
         return False
 
-    def win_selfpick_handler(self):
+    def win_selfpick_handler(self, tile):
         return True
 
     def win_discard_handler(self):
