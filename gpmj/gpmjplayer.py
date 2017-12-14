@@ -27,21 +27,33 @@ class Player():
         self.info = None
 
     # Following functions SHOULD be overridden.
+
+    # Event handler for pick up tile
     def pickup_tile_handler(self, tile):
         return tile
-
-    def chow_handler(self, melds):
-        return None
-
-    def pong_handler(self, melds):
-        return None
-
-    def stolen_kong_handler(self):
-        return False
 
     def win_selfpick_handler(self, tile):
         return True
 
-    def win_discard_handler(self):
+    def closed_kong_handler(self, tile):
+        return False
+
+    def added_kong_handler(self, tile):
+        return False
+
+    def declare_ready_handler(self, tile):
+        return False
+
+    # Event handler for discarded tile
+    def win_discard_handler(self, tile):
         return True
+
+    def chow_handler(self, tile, melds):
+        return None
+
+    def pong_handler(self, tile, melds):
+        return None
+
+    def stolen_kong_handler(self, tile):
+        return False
 

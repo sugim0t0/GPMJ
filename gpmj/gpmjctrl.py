@@ -9,6 +9,7 @@ Date           Version   Description
 ===========================================================
 11 Dec. 2017   0.1       Creation
 12 Dec. 2017   0.2       Add PlayerCtrl and GameCtrl classes
+14 Dec. 2017   0.3       Add run()@PlayerCtrl
 -----------------------------------------------------------
 '''
 
@@ -66,9 +67,23 @@ class PlayerCtrl(threading.Thread):
                     ev_player = GameEvent(EventFlag.EV_WIN_DISCARD, ev_game.tile, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                     continue
-          #  elif ev_game.event_flag == EventFlag.EV_STOLEN_KONG:
-          #  elif ev_game.event_flag == EventFlag.EV_CHOW:
-          #  elif ev_game.event_flag == EventFlag.EV_PONG:
+            if ev_game.event_flag == EventFlag.EV_STOLEN_KONG:
+                if self.player.stolen_kong_handler(ev_game.tile):
+                    ev_player = GameEvent(EventFlag.EV_STOLEN_KONG, ev_game.tile, None)
+                    self.player.info.ev_player_queue.put(ev_player, False, None)
+                    continue
+            if ev_game.event_flag == EventFlag.EV_PONG:
+                meld = self.player.pong_handler(ev_game.tile, ev_game.melds):
+                if meld is not None:
+                    ev_player = GameEvent(EventFlag.EV_PONG, None, meld)
+                    self.player.info.ev_player_queue.put(ev_player, False, None)
+                    continue
+            if ev_game.event_flag == EventFlag.EV_CHOW:
+                meld = self.player.chow_handler(ev_game.tile, ev_game.melds):
+                if meld is not None:
+                    ev_player = GameEvent(EventFlag.EV_CHOW, None, meld)
+                    self.player.info.ev_player_queue.put(ev_player, False, None)
+                    continue
             else:
                 break
 
