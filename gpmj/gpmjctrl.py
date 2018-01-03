@@ -19,8 +19,8 @@ import gpmjgame
 import gpmjplayer
 from enum import Enum, IntEnum
 
-__version__ = "0.2"
-__date__    = "12 Dec. 2017"
+__version__ = "0.3"
+__date__    = "14 Dec. 2017"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class PlayerCtrl(threading.Thread):
@@ -73,13 +73,13 @@ class PlayerCtrl(threading.Thread):
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                     continue
             if ev_game.event_flag == EventFlag.EV_PONG:
-                meld = self.player.pong_handler(ev_game.tile, ev_game.melds):
+                meld = self.player.pong_handler(ev_game.tile, ev_game.melds)
                 if meld is not None:
                     ev_player = GameEvent(EventFlag.EV_PONG, None, meld)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                     continue
             if ev_game.event_flag == EventFlag.EV_CHOW:
-                meld = self.player.chow_handler(ev_game.tile, ev_game.melds):
+                meld = self.player.chow_handler(ev_game.tile, ev_game.melds)
                 if meld is not None:
                     ev_player = GameEvent(EventFlag.EV_CHOW, None, meld)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
@@ -90,12 +90,16 @@ class PlayerCtrl(threading.Thread):
 
 class GameCtrl(threading.Thread):
 
-    def __init__(self, game):
+    def __init__(self):
         super(GameCtrl, self).__init__()
-        self.game = Game()
+        self.game = gpmjgame.Game()
+        self.game.config.parse_config("./gpmj.cfg")
         self.game.create_tiles()
         self.game.setup_hand_judger()
         self.turn_player = None
+
+    def set_playerctrl(self, playerctrl):
+        playerctrl.player.info = self.game.set_player(playerctrl.player.name)
 
     def run(self):
         for player_info in self.game.players_info:
@@ -109,19 +113,25 @@ class GameCtrl(threading.Thread):
             if not self.game.goto_next_round(b_continued, b_count_keep):
                 # GAME OVER
                 break
+            # Reset player info
+            for player_info in self.game.players_info:
+                player_info.reset_round(b_continued)
 
     def __round(self):
         ev_game = None
         ev_player = None
         self.game.setup_round()
+        b_last = False
         for player_info in self.game.players_info:
-            self.game.deal_starttiles(self.game.dealplayer_info.hand)
+            self.game.deal_starttiles(player_info.hand)
             if player_info.seat_wind == gpmjcore.Winds.EAST:
                 self.turn_player = player_info
         while(True):
             tile = self.game.draw_tile()
             if tile is None:
                 return (self.game.round_over(), True)
+            if len(self.game.wall) == 0:
+                b_last = True
             # check win by selfpick tile
             if True == self.__check_win_selfpick(self.turn_player, tile, b_last, False):
                 if self.turn_player.seat_wind == gpmjcore.Winds.EAST:
@@ -136,10 +146,7 @@ class GameCtrl(threading.Thread):
                    ev_player.event_flag == EventFlag.EV_DECLARE_READY:
                     discard_tile = ev_player.tile
                     # check win by discarded tile
-                    b_last = False
-                    if len(self.game.wall) == 0:
-                        b_last = True
-                    self.__check_win_discard(self.turn_player, discard_tile, b_last)
+                    self.__check_win_discard(self.turn_player, discard_tile, b_last, False)
                     if ev_player.event_flag == EventFlag.EV_DECLARE_READY:
                         self.game.discard_tile(self.turn_player, discard_tile, True)
                     else:

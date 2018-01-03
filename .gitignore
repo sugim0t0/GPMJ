@@ -11,6 +11,7 @@ test/gpmjctrl.py
 test/gpmj.cfg
 
 tags
+files.txt
 
 *.asta
 *.odp

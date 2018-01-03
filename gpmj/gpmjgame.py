@@ -568,14 +568,14 @@ class PlayerInfo():
     def __init__(self, name, seat_wind):
         self.name = name
         self.score = 25000
-        self.reset_round(seat_wind)
         self.start_seat_wind = seat_wind
+        self.seat_wind = seat_wind
+        self.reset_round(True)
         self.next_player = None
         self.ev_game_queue = queue.Queue()   # Game -> Player
         self.ev_player_queue = queue.Queue() # Game <- Player
 
-    def reset_round(self, seat_wind):
-        self.seat_wind = seat_wind
+    def reset_round(self, b_continued):
         self.hand = gpmjcore.Hand()
         self.b_ready = False
         self.b_first_pick = True
@@ -584,6 +584,8 @@ class PlayerInfo():
         self.b_one_shot = False
         self.b_stolen = False
         self.discards = []
+        if not b_continued:
+            self.seat_wind = (self.seat_wind + 3) % gpmjcore.Winds.NUM_OF_WINDS
 
     def make_state_flag(self, b_discarded, b_dead_wall_draw, b_robbing_a_quad, b_last):
         state_flag = 0x0
