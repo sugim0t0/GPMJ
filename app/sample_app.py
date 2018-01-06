@@ -17,8 +17,8 @@ import gpmjgame
 import gpmjplayer
 import gpmjctrl
 
-__version__ = "0.1"
-__date__    = "23 Dec. 2017"
+__version__ = "0.2"
+__date__    = "03 Jan. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class ManualPlayer(gpmjplayer.Player):
@@ -28,7 +28,7 @@ class ManualPlayer(gpmjplayer.Player):
 
     def pickup_tile_handler(self, tile):
         self.info.hand.print_tiles()
-        print("Pickup Tile:"+tile.print_char)
+        print(" :"+tile.print_char)
         return tile
 
     def win_selfpick_handler(self, tile):

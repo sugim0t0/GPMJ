@@ -66,13 +66,14 @@ Date           Version   Description
 10 Nov. 2017   0.37      Add __add_state_value()
 20 Nov. 2017   0.38      Add print_win_hand()
 25 Nov. 2017   0.39      Add update_required()
+06 Jan. 2018   0.40      Add get_num_of_pure_tiles() and convert_overall_index_into_suit_index()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.39"
-__date__    = "25 Nov. 2017"
+__version__ = "0.40"
+__date__    = "06 Jan. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1374,7 +1375,20 @@ class Hand():
         self.pure_tiles[tile.suit].append(tile)
 
     def pop_tile(self, suit, index):
-        return self.pure_tiles[suit].pop(index)
+        if len(self.pure_tiles[suit]) > index:
+            return self.pure_tiles[suit].pop(index)
+        else:
+            return None
+
+    def convert_overall_index_into_suit_index(self, overall_index):
+        index = overall_index
+        for suit in range(Suits.NUM_OF_SUITS):
+            if len(self.pure_tiles[suit]) > index:
+                return index
+            else:
+                index -= len(self.pure_tiles[suit])
+        else:
+            return -1
 
     def sort_tiles(self):
         # Bubble sort
@@ -1390,7 +1404,23 @@ class Hand():
         for suit in range(Suits.NUM_OF_SUITS):
             for tile in self.pure_tiles[suit]:
                 print(tile.print_char, end="")
-        print("")
+        for meld in self.exposed:
+            if meld.b_stolen:
+                print(" (", end="")
+            else:
+                print(" [", end="")
+            for tile in meld.tiles:
+                print(tile.print_char, end="")
+            if meld.b_stolen:
+                print(")", end="")
+            else:
+                print("]", end="")
+
+    def get_num_of_pure_tiles(self):
+        num_of_pure_tiles = 0
+        for suit in range(Suits.NUM_OF_SUITS):
+            num_of_pure_tiles += len(self.pure_tiles[suit])
+        return num_of_pure_tiles
 
     def __append_required(self, required, melds, eye):
         if len(eye.tiles) == 1:

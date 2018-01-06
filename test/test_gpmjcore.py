@@ -208,6 +208,89 @@ class TestGpmjCore(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_pop_tile(self):
+        # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B9][B9][B9]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][19])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][27])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][34])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][35])
+        self.hand.sort_tiles()
+        tile = self.hand.pop_tile(gpmjcore.Suits.DOTS, 0)
+        self.assertIsNone(tile)
+        tile = self.hand.pop_tile(gpmjcore.Suits.BAMBOO, 4)
+        self.assertEqual(tile.number, 3)
+
+    def test_convert_overall_index_into_suit_index(self):
+        # [D1][D9][B1][B9][C1][C9][Es][Es][St][Ws][Nt][Gr][Rd]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][10])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][13])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][10])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][3])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][35])
+        self.hand.sort_tiles()
+        index = self.hand.convert_overall_index_into_suit_index(13)
+        self.assertEqual(index, -1)
+        index = self.hand.convert_overall_index_into_suit_index(0)
+        self.assertEqual(index, 0)
+        index = self.hand.convert_overall_index_into_suit_index(8)
+        self.assertEqual(index, 2)
+
+    def test_get_num_of_pure_tiles_0(self):
+        # [D1][D9][B1][B9][C1][C9][Es][Es][St][Ws][Nt][Gr][Rd]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][10])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][13])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][10])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][3])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][35])
+        self.assertEqual(self.hand.get_num_of_pure_tiles(), 13)
+
+    def test_get_num_of_pure_tiles_1(self):
+        # ([D1][D2][D3]) [D1][D9][C9][B1][Es][Es][Ws][Nt][Wh][Gr]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        meld = gpmjcore.Meld()
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][4])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DOTS][8])
+        self.hand.steal_tile(meld, self.all_tiles[gpmjcore.Suits.DOTS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
+        self.hand.print_tiles()
+        self.assertEqual(self.hand.get_num_of_pure_tiles(), 10)
+
     def test_update_required_basic(self):
         # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B9][B9][B9]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
@@ -707,6 +790,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
+        self.hand.print_tiles()
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][17]
         self.hand.append_tile(last_tile)
         win_hands = self.hand.get_winhands_basic(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
@@ -6059,6 +6143,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][3])
+        self.hand.print_tiles()
         self.required = self.hand.get_required_13orphans()
         self.assertEqual(self.required, None)
 
