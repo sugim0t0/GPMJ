@@ -10,6 +10,7 @@ Date           Version   Description
 11 Dec. 2017   0.1       Creation
 12 Dec. 2017   0.2       Add PlayerCtrl and GameCtrl classes
 14 Dec. 2017   0.3       Add run()@PlayerCtrl
+08 Jan. 2018   0.4       Modified to call update_required()
 -----------------------------------------------------------
 '''
 
@@ -19,8 +20,8 @@ import gpmjgame
 import gpmjplayer
 from enum import Enum, IntEnum
 
-__version__ = "0.3"
-__date__    = "14 Dec. 2017"
+__version__ = "0.4"
+__date__    = "08 Jan. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class PlayerCtrl(threading.Thread):
@@ -132,6 +133,7 @@ class GameCtrl(threading.Thread):
                 return (self.game.round_over(), True)
             if len(self.game.wall) == 0:
                 b_last = True
+            self.turn_player.hand.sort_tiles()
             # check win by selfpick tile
             if True == self.__check_win_selfpick(self.turn_player, tile, b_last, False):
                 if self.turn_player.seat_wind == gpmjcore.Winds.EAST:
@@ -142,6 +144,7 @@ class GameCtrl(threading.Thread):
             self.turn_player.ev_game_queue.put(ev_game, False, None)
             while(True):
                 ev_player = self.turn_player.ev_player_queue.get(True, None)
+                self.game.pickup_tile(self.turn_player, tile)
                 if ev_player.event_flag == EventFlag.EV_DISCARD_TILE or \
                    ev_player.event_flag == EventFlag.EV_DECLARE_READY:
                     discard_tile = ev_player.tile
@@ -151,6 +154,7 @@ class GameCtrl(threading.Thread):
                         self.game.discard_tile(self.turn_player, discard_tile, True)
                     else:
                         self.game.discard_tile(self.turn_player, discard_tile, False)
+                    self.turn_player.hand.update_required()
                     self.turn_player = self.turn_player.next_player
                     break
 

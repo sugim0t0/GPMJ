@@ -67,13 +67,14 @@ Date           Version   Description
 20 Nov. 2017   0.38      Add print_win_hand()
 25 Nov. 2017   0.39      Add update_required()
 06 Jan. 2018   0.40      Add get_num_of_pure_tiles() and convert_overall_index_into_suit_index()
+08 Jan. 2018   0.41      Divide print_tiles() into print_pure_tiles() and print_exposed_tiles()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.40"
-__date__    = "06 Jan. 2018"
+__version__ = "0.41"
+__date__    = "08 Jan. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1374,6 +1375,13 @@ class Hand():
     def append_tile(self, tile):
         self.pure_tiles[tile.suit].append(tile)
 
+    def remove_tile(self, tile):
+        if tile in self.pure_tiles[tile.suit]:
+            self.pure_tiles[tile.suit].remove(tile)
+            return True
+        else:
+            return False
+
     def pop_tile(self, suit, index):
         if len(self.pure_tiles[suit]) > index:
             return self.pure_tiles[suit].pop(index)
@@ -1384,11 +1392,11 @@ class Hand():
         index = overall_index
         for suit in range(Suits.NUM_OF_SUITS):
             if len(self.pure_tiles[suit]) > index:
-                return index
+                return (suit, index)
             else:
                 index -= len(self.pure_tiles[suit])
         else:
-            return -1
+            return (Suits.INVALID, 0)
 
     def sort_tiles(self):
         # Bubble sort
@@ -1400,10 +1408,12 @@ class Hand():
                             self.pure_tiles[suit][j], self.pure_tiles[suit][j-1] = \
                             self.pure_tiles[suit][j-1], self.pure_tiles[suit][j]
 
-    def print_tiles(self):
+    def print_pure_tiles(self):
         for suit in range(Suits.NUM_OF_SUITS):
             for tile in self.pure_tiles[suit]:
                 print(tile.print_char, end="")
+
+    def print_exposed_tiles(self):
         for meld in self.exposed:
             if meld.b_stolen:
                 print(" (", end="")

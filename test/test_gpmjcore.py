@@ -228,6 +228,7 @@ class TestGpmjCore(unittest.TestCase):
         self.assertIsNone(tile)
         tile = self.hand.pop_tile(gpmjcore.Suits.BAMBOO, 4)
         self.assertEqual(tile.number, 3)
+        self.assertEqual(self.hand.get_num_of_pure_tiles(), 12)
 
     def test_convert_overall_index_into_suit_index(self):
         # [D1][D9][B1][B9][C1][C9][Es][Es][St][Ws][Nt][Gr][Rd]
@@ -245,11 +246,13 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][35])
         self.hand.sort_tiles()
-        index = self.hand.convert_overall_index_into_suit_index(13)
-        self.assertEqual(index, -1)
-        index = self.hand.convert_overall_index_into_suit_index(0)
+        (suit, index) = self.hand.convert_overall_index_into_suit_index(13)
+        self.assertEqual(suit, gpmjcore.Suits.INVALID)
+        (suit, index) = self.hand.convert_overall_index_into_suit_index(0)
+        self.assertEqual(suit, gpmjcore.Suits.DOTS)
         self.assertEqual(index, 0)
-        index = self.hand.convert_overall_index_into_suit_index(8)
+        (suit, index) = self.hand.convert_overall_index_into_suit_index(8)
+        self.assertEqual(suit, gpmjcore.Suits.WINDS)
         self.assertEqual(index, 2)
 
     def test_get_num_of_pure_tiles_0(self):
@@ -288,7 +291,8 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][12])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
-        self.hand.print_tiles()
+        self.hand.print_pure_tiles()
+        self.hand.print_exposed_tiles()
         self.assertEqual(self.hand.get_num_of_pure_tiles(), 10)
 
     def test_update_required_basic(self):
@@ -790,7 +794,8 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][32])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][33])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
-        self.hand.print_tiles()
+        self.hand.print_pure_tiles()
+        self.hand.print_exposed_tiles()
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][17]
         self.hand.append_tile(last_tile)
         win_hands = self.hand.get_winhands_basic(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
@@ -6143,7 +6148,8 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][3])
-        self.hand.print_tiles()
+        self.hand.print_pure_tiles()
+        self.hand.print_exposed_tiles()
         self.required = self.hand.get_required_13orphans()
         self.assertEqual(self.required, None)
 
@@ -6253,7 +6259,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][35])
         print("")
-        self.hand.print_tiles()
+        self.hand.print_pure_tiles()
         self.required = self.hand.get_required_13orphans()
         self.assertEqual(self.required, [{1,9},{1,9},{1,9},{0,1,2,3},{0,1,2}])
 

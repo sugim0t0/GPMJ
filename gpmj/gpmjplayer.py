@@ -57,3 +57,24 @@ class Player():
     def stolen_kong_handler(self, tile):
         return False
 
+    # Tools for manual player
+    def print_tiles(self, pickup_tile):
+        self.info.hand.print_pure_tiles()
+        if pickup_tile is not None:
+            print(" :"+pickup_tile.print_char, end="")
+        self.info.hand.print_exposed_tiles()
+        num_pure_tiles = self.info.hand.get_num_of_pure_tiles()
+        print("")
+        for i in range(ord("a"), ord("a")+num_pure_tiles):
+            print("  "+chr(i)+" ", end="")
+        else:
+            if pickup_tile is not None:
+                print(" :<SP>", end="")
+        print("")
+
+    def get_discard_tile(self, cmd):
+        offset = ord(cmd) - ord("a")
+        (suit, index) = self.info.hand.convert_overall_index_into_suit_index(offset)
+        return self.info.hand.pure_tiles[suit][index]
+
+

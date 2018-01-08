@@ -353,9 +353,11 @@ class Game():
         else:
             return None
 
+    def pickup_tile(self, player_info, tile):
+        player_info.hand.append_tile(tile)
+
     def discard_tile(self, player_info, tile, b_declare_ready):
-        if tile in player_info.hand.pure_tiles[tile.suit]:
-            player_info.hand.pure_tiles[tile.suit].remove(tile)
+        player_info.hand.remove_tile(tile)
         player_info.discards.append(tile)
         if b_declare_ready:
             if player_info.score >= 1000:

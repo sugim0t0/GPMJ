@@ -27,11 +27,15 @@ class ManualPlayer(gpmjplayer.Player):
         super(ManualPlayer, self).__init__(name)
 
     def pickup_tile_handler(self, tile):
-        self.info.hand.print_tiles()
-        print(" :"+tile.print_char)
-        return tile
+        self.print_tiles(tile)
+        cmd = input(">> ")
+        if cmd == " ":
+            return tile
+        else:
+            return self.get_discard_tile(cmd)
 
     def win_selfpick_handler(self, tile):
+        print("Win by selfpick")
         return True
 
     def closed_kong_handler(self, tile):
@@ -45,6 +49,7 @@ class ManualPlayer(gpmjplayer.Player):
 
     # Event handler for discarded tile
     def win_discard_handler(self, tile):
+        print("Win by discard")
         return True
 
     def chow_handler(self, tile, melds):
