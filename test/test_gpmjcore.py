@@ -208,6 +208,28 @@ class TestGpmjCore(unittest.TestCase):
         self.hand = None
         self.required = None
 
+    def test_remove_tile(self):
+        # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B9][B9][B9]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][3])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][11])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][19])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][27])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][34])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][35])
+        self.hand.sort_tiles()
+        result = self.hand.remove_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][11])
+        self.assertEqual(result, True)
+        result = self.hand.remove_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][10])
+        self.assertEqual(result, False)
+        self.assertEqual(self.hand.get_num_of_pure_tiles(), 12)
+
     def test_pop_tile(self):
         # [B1][B1][B1][B2][B3][B4][B5][B6][B7][B8][B9][B9][B9]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][1])

@@ -148,12 +148,13 @@ class GameCtrl(threading.Thread):
                 if ev_player.event_flag == EventFlag.EV_DISCARD_TILE or \
                    ev_player.event_flag == EventFlag.EV_DECLARE_READY:
                     discard_tile = ev_player.tile
-                    # check win by discarded tile
-                    self.__check_win_discard(self.turn_player, discard_tile, b_last, False)
                     if ev_player.event_flag == EventFlag.EV_DECLARE_READY:
                         self.game.discard_tile(self.turn_player, discard_tile, True)
                     else:
                         self.game.discard_tile(self.turn_player, discard_tile, False)
+                    self.turn_player.print_discards()
+                    # check win by discarded tile
+                    self.__check_win_discard(self.turn_player, discard_tile, b_last, False)
                     self.turn_player.hand.update_required()
                     self.turn_player = self.turn_player.next_player
                     break

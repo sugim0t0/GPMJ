@@ -22,6 +22,7 @@ Date           Version   Description
 06 Dec. 2017   0.13      Add __check_win_selfpick() and __check_win_discard()
 09 Dec. 2017   0.14      Add __round()
 11 Dec. 2017   0.15      Divide GameCtrl class into gpmjctrl module
+09 Jan. 2018   0.16      Add print_discards()
 -----------------------------------------------------------
 '''
 
@@ -31,8 +32,8 @@ import queue
 import gpmjcore
 from enum import Enum, IntEnum
 
-__version__ = "0.15"
-__date__    = "11 Dec. 2017"
+__version__ = "0.16"
+__date__    = "09 Jan. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -619,6 +620,13 @@ class PlayerInfo():
         elif b_robbing_a_quad:
             state_flag |= gpmjcore.StateFlag.ROBBING_A_QUAD
         return state_flag
+
+    # Tools
+    def print_discards(self):
+        print(" - "+self.name+" -")
+        for tile in self.discards:
+            print(tile.print_char, end="")
+        print("")
 
 
 class GameConfig():

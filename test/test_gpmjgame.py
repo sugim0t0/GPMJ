@@ -480,6 +480,7 @@ class TestGpmjGame(unittest.TestCase):
         self.setup_game()
         player_info_east = self.game.set_player("Tanaka")
         discard_tile = gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED)
+        self.game.pickup_tile(player_info_east, gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
         player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
         player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
         player_info_east.hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DOTS, 2))
@@ -501,6 +502,7 @@ class TestGpmjGame(unittest.TestCase):
         self.assertEqual(self.game.num_of_declared_ready_sticks, 1)
         pick_tile = gpmjcore.Tile(gpmjcore.Suits.DOTS, 3)
         self.game.discard_tile(player_info_east, pick_tile, False)
+        player_info_east.print_discards()
         self.assertEqual(player_info_east.b_one_shot, False)
 
     def test_discard_tile_1(self):
@@ -712,7 +714,7 @@ class TestGpmjGame(unittest.TestCase):
         self.game.deal_starttiles(hand)
         hand.sort_tiles()
         print("")
-        hand.print_tiles()
+        hand.print_pure_tiles()
         num_of_tiles = 0
         for suit in range(gpmjcore.Suits.NUM_OF_SUITS):
             num_of_tiles += len(hand.pure_tiles[suit])
