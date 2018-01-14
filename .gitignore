@@ -9,6 +9,11 @@ test/gpmjgame.py
 test/gpmjplayer.py
 test/gpmjctrl.py
 test/gpmj.cfg
+app/gpmjcore.py
+app/gpmjgame.py
+app/gpmjplayer.py
+app/gpmjctrl.py
+app/gpmj.cfg
 
 tags
 files.txt

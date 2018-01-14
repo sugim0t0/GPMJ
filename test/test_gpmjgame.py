@@ -962,7 +962,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.EAST)
-        score = self.game.get_hand_score(hand, 0, last_tile, False, gpmjcore.Winds.SOUTH)
+        win_hand = self.game.get_winhand(hand, 0, last_tile, False, gpmjcore.Winds.SOUTH)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 8000)
         self.assertEqual(score[1], 16000)
 
@@ -987,7 +988,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.EAST)
-        score = self.game.get_hand_score(hand, 0, last_tile, False, gpmjcore.Winds.SOUTH)
+        win_hand = self.game.get_winhand(hand, 0, last_tile, False, gpmjcore.Winds.SOUTH)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 8300)
         self.assertEqual(score[1], 16300)
 
@@ -1011,7 +1013,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.EAST)
-        score = self.game.get_hand_score(hand, 0, last_tile, True, gpmjcore.Winds.SOUTH)
+        win_hand = self.game.get_winhand(hand, 0, last_tile, True, gpmjcore.Winds.SOUTH)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 32600)
         self.assertEqual(score[1], 0)
 
@@ -1035,7 +1038,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.EAST)
-        score = self.game.get_hand_score(hand, 0, last_tile, False, gpmjcore.Winds.EAST)
+        win_hand = self.game.get_winhand(hand, 0, last_tile, False, gpmjcore.Winds.EAST)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 16200)
         self.assertEqual(score[1], 0)
 
@@ -1060,7 +1064,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.GREEN))
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.DRAGONS, gpmjcore.Dragons.RED))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.WINDS, gpmjcore.Winds.EAST)
-        score = self.game.get_hand_score(hand, 0, last_tile, True, gpmjcore.Winds.EAST)
+        win_hand = self.game.get_winhand(hand, 0, last_tile, True, gpmjcore.Winds.EAST)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 48900)
         self.assertEqual(score[1], 0)
 
@@ -1082,7 +1087,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 9)
-        score = self.game.get_hand_score(hand, 0, last_tile, False, gpmjcore.Winds.EAST)
+        win_hand = self.game.get_winhand(hand, 0, last_tile, False, gpmjcore.Winds.EAST)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 0)
         self.assertEqual(score[1], 0)
 
@@ -1114,7 +1120,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8)
         state_flag = gpmjcore.StateFlag.SELF_PICK
-        score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.EAST)
+        win_hand = self.game.get_winhand(hand, state_flag, last_tile, False, gpmjcore.Winds.EAST)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 2600)
         self.assertEqual(score[1], 0)
 
@@ -1146,7 +1153,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8)
         state_flag = (gpmjcore.StateFlag.SELF_PICK | gpmjcore.StateFlag.DECLARE_READY)
-        score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.EAST)
+        win_hand = self.game.get_winhand(hand, state_flag, last_tile, False, gpmjcore.Winds.EAST)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 12000)
         self.assertEqual(score[1], 0)
 
@@ -1178,7 +1186,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8)
         state_flag = (gpmjcore.StateFlag.SELF_PICK | gpmjcore.StateFlag.DECLARE_READY)
-        score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.EAST)
+        win_hand = self.game.get_winhand(hand, state_flag, last_tile, False, gpmjcore.Winds.EAST)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 16000)
         self.assertEqual(score[1], 0)
 
@@ -1209,7 +1218,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 9))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 9)
-        score = self.game.get_hand_score(hand, 0, last_tile, True, gpmjcore.Winds.WEST)
+        win_hand = self.game.get_winhand(hand, 0, last_tile, True, gpmjcore.Winds.WEST)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 6400)
         self.assertEqual(score[1], 0)
 
@@ -1241,7 +1251,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.DOTS, 5)
         state_flag = (gpmjcore.StateFlag.SELF_PICK | gpmjcore.StateFlag.DECLARE_READY)
-        score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.WEST)
+        win_hand = self.game.get_winhand(hand, state_flag, last_tile, False, gpmjcore.Winds.WEST)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 700)
         self.assertEqual(score[1], 1300)
 
@@ -1273,7 +1284,8 @@ class TestGpmjGame(unittest.TestCase):
         hand.append_tile(gpmjcore.Tile(gpmjcore.Suits.CHARACTERS, 8))
         last_tile = gpmjcore.Tile(gpmjcore.Suits.DOTS, 3)
         state_flag = (gpmjcore.StateFlag.SELF_PICK | gpmjcore.StateFlag.DECLARE_READY)
-        score = self.game.get_hand_score(hand, state_flag, last_tile, False, gpmjcore.Winds.WEST)
+        win_hand = self.game.get_winhand(hand, state_flag, last_tile, False, gpmjcore.Winds.WEST)
+        score = self.game.get_hand_score(win_hand)
         self.assertEqual(score[0], 700)
         self.assertEqual(score[1], 1300)
 

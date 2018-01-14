@@ -23,6 +23,7 @@ Date           Version   Description
 09 Dec. 2017   0.14      Add __round()
 11 Dec. 2017   0.15      Divide GameCtrl class into gpmjctrl module
 09 Jan. 2018   0.16      Add print_discards()
+14 Jan. 2018   0.17      Add get_winhand()
 -----------------------------------------------------------
 '''
 
@@ -32,8 +33,8 @@ import queue
 import gpmjcore
 from enum import Enum, IntEnum
 
-__version__ = "0.16"
-__date__    = "09 Jan. 2018"
+__version__ = "0.17"
+__date__    = "14 Jan. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -295,7 +296,7 @@ class Game():
         for x in range(13):
             hand.append_tile(self.wall.pop())
 
-    def get_hand_score(self, hand, state_flag, last_tile, b_discarded, seat_wind):
+    def get_winhand(self, hand, state_flag, last_tile, b_discarded, seat_wind):
         win_hand = None
         hand.append_tile(last_tile)
         # 13 orphans
@@ -331,22 +332,29 @@ class Game():
                         win_hand.hand_value = 0
                         self.seven_pairs_hand_jc.judge_chain(win_hand)
                         win_hand.calc_points()
-        if win_hand is None:
-            return (0, 0)
-        b_declared_ready = False
-        if state_flag & (gpmjcore.StateFlag.DECLARE_READY | gpmjcore.StateFlag.DECLARE_DOUBLE_READY):
-            b_declared_ready = True
-        num_of_dora = self.get_num_of_dora(hand, b_declared_ready)
-        score = win_hand.calc_score(num_of_dora)
-        if self.round_continue_count > 0:
-            if b_discarded:
-                return (score[0] + 300 * self.round_continue_count, 0)
-            elif seat_wind == gpmjcore.Winds.EAST:
-                return (score[0] + 100 * self.round_continue_count, 0)
+        # set number of doras
+        if win_hand is not None:
+            b_declared_ready = False
+            if win_hand.state_flag & (gpmjcore.StateFlag.DECLARE_READY | gpmjcore.StateFlag.DECLARE_DOUBLE_READY):
+                b_declared_ready = True
+            win_hand.num_of_dora = self.get_num_of_dora(hand, b_declared_ready)
+        hand.remove_tile(last_tile)
+        return win_hand
+
+    def get_hand_score(self, win_hand):
+        if win_hand is not None:
+            score = win_hand.calc_score()
+            if self.round_continue_count > 0:
+                if win_hand.b_discarded:
+                    return (score[0] + 300 * self.round_continue_count, 0)
+                elif win_hand.seat_wind == gpmjcore.Winds.EAST:
+                    return (score[0] + 100 * self.round_continue_count, 0)
+                else:
+                    return (score[0] + 100 * self.round_continue_count, score[1] + 100 * self.round_continue_count)
             else:
-                return (score[0] + 100 * self.round_continue_count, score[1] + 100 * self.round_continue_count)
+                return score
         else:
-            return score
+            return (0, 0)
 
     def draw_tile(self):
         if len(self.wall) > 0:

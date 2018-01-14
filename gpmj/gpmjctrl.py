@@ -162,12 +162,13 @@ class GameCtrl(threading.Thread):
     def __check_win_selfpick(self, turn_player, tile, b_last, b_dead_wall_draw):
         if tile.number in turn_player.hand.required[tile.suit]:
             state_flag = turn_player.make_state_flag(False, b_dead_wall_draw, False, b_last)
-            score = self.game.get_hand_score(turn_player.hand, state_flag, tile, False, turn_player.seat_wind)
-            if not score == (0, 0):
+            win_hand = self.game.get_winhand(turn_player.hand, state_flag, tile, False, turn_player.seat_wind)
+            if win_hand is not None:
                 ev_game = GameEvent(EventFlag.EV_WIN_SELFPICK, tile, None)
                 turn_player.ev_game_queue.put(ev_game, False, None)
                 ev_player = turn_player.ev_player_queue.get(True, None)
                 if ev_player.event_flag == EventFlag.EV_WIN_SELFPICK:
+                    score = self.game.get_hand_score(win_hand)
                     self.game.win(turn_player, False, gpmjcore.Winds.INVALID, score)
                     return True
         return False
@@ -177,12 +178,13 @@ class GameCtrl(threading.Thread):
         for x in range(3):
             if tile.number in next_player.hand.required[tile.suit]:
                 state_flag = next_player.make_state_flag(True, False, b_robbing_a_quad, b_last)
-                score = self.game.get_hand_score(next_player.hand, state_flag, tile, True, next_player.seat_wind)
-                if not score == (0, 0):
+                win_hand = self.game.get_winhand(next_player.hand, state_flag, tile, True, next_player.seat_wind)
+                if win_hand is not None:
                     ev_game = GameEvent(EventFlag.EV_WIN_DISCARD, tile, None)
                     next_player.ev_game_queue.put(ev_game, False, None)
                     ev_player = next_player.ev_player_queue.get(True, None)
                     if ev_player.event_flag == EventFlag.EV_WIN_DISCARD:
+                        score = self.game.get_hand_score(win_hand)
                         self.game.win(next_player, True, self.turn_player.seat_wind, score)
                         return True
             next_player = next_player.next_player

@@ -68,13 +68,14 @@ Date           Version   Description
 25 Nov. 2017   0.39      Add update_required()
 06 Jan. 2018   0.40      Add get_num_of_pure_tiles() and convert_overall_index_into_suit_index()
 08 Jan. 2018   0.41      Divide print_tiles() into print_pure_tiles() and print_exposed_tiles()
+14 Jan. 2018   0.42      Add num_of_dora as WinHand object member
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.41"
-__date__    = "08 Jan. 2018"
+__version__ = "0.42"
+__date__    = "14 Jan. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1079,6 +1080,7 @@ class WinHand():
         self.hand_flag = 0x0
         self.hand_value = 0
         self.hand_point = 0
+        self.num_of_dora = 0
 
     def print_win_hand(self):
         if self.state_flag & StateFlag.LIMIT_STATE:
@@ -1176,14 +1178,14 @@ class WinHand():
         else:
             return False
 
-    def calc_score(self, num_of_doras):
+    def calc_score(self):
         '''
         calc_score() MUST be called after calc_points()
         '''
         self.__add_state_value()
         if self.hand_value == 0:
             return (0, 0)
-        value = self.hand_value + num_of_doras
+        value = self.hand_value + self.num_of_dora
         score = 0
         if value >= 13:
             score = 32000 * (value // 13)
