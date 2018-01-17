@@ -288,6 +288,8 @@ class Game():
             self.dead_wall.append(self.tiles[x])
         # Dora
         self.kong_count = 0
+        self.doras = []
+        self.underneath_doras = []
         for x in range(5):
             self.doras.append(self.dead_wall[9 - (x * 2)])
             self.underneath_doras.append(self.dead_wall[8 - (x * 2)])
@@ -316,6 +318,8 @@ class Game():
                     else:
                         w_h.hand_value = 0
                         self.basic_hand_jc.judge_chain(w_h)
+                        if w_h.hand_value == 0:
+                            continue
                         if (win_hand is None) or (win_hand.hand_value < w_h.hand_value):
                             w_h.calc_points()
                             win_hand = w_h
@@ -571,7 +575,7 @@ class Game():
 
     def print_players_score(self):
         for player_info in self.players_info:
-            print(player_info.name + ":" + str(player_info.score))
+            print(player_info.name + "(" + str(gpmjcore.Winds(player_info.seat_wind)) + ")" + ":" + str(player_info.score))
 
 
 class PlayerInfo():

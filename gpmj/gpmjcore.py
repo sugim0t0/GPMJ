@@ -1104,6 +1104,8 @@ class WinHand():
             for x in range(22):
                 if self.hand_flag & (2 << x):
                     print(str(HandFlag(2 << x)))
+        if self.num_of_dora > 0:
+            print("dora(" + str(self.num_of_dora) + ")")
 
     def set_property(self, state_flag, last_tile, b_discarded, seat_wind, round_wind):
         self.state_flag = state_flag

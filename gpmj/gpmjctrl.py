@@ -123,6 +123,7 @@ class GameCtrl(threading.Thread):
         ev_player = None
         self.game.setup_round()
         b_last = False
+        self.game.print_players_score()
         for player_info in self.game.players_info:
             self.game.deal_starttiles(player_info.hand)
             if player_info.seat_wind == gpmjcore.Winds.EAST:
@@ -154,7 +155,11 @@ class GameCtrl(threading.Thread):
                         self.game.discard_tile(self.turn_player, discard_tile, False)
                     self.turn_player.print_discards()
                     # check win by discarded tile
-                    self.__check_win_discard(self.turn_player, discard_tile, b_last, False)
+                    if True == self.__check_win_discard(self.turn_player, discard_tile, b_last, False):
+                        if self.turn_player.seat_wind == gpmjcore.Winds.EAST:
+                            return (True, True)
+                        else:
+                            return (False, False)
                     self.turn_player.hand.update_required()
                     self.turn_player = self.turn_player.next_player
                     break
@@ -169,6 +174,7 @@ class GameCtrl(threading.Thread):
                 ev_player = turn_player.ev_player_queue.get(True, None)
                 if ev_player.event_flag == EventFlag.EV_WIN_SELFPICK:
                     score = self.game.get_hand_score(win_hand)
+                    win_hand.print_win_hand()
                     self.game.win(turn_player, False, gpmjcore.Winds.INVALID, score)
                     return True
         return False
@@ -185,6 +191,7 @@ class GameCtrl(threading.Thread):
                     ev_player = next_player.ev_player_queue.get(True, None)
                     if ev_player.event_flag == EventFlag.EV_WIN_DISCARD:
                         score = self.game.get_hand_score(win_hand)
+                        win_hand.print_win_hand()
                         self.game.win(next_player, True, self.turn_player.seat_wind, score)
                         return True
             next_player = next_player.next_player
