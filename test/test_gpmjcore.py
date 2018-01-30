@@ -396,6 +396,7 @@ class TestGpmjCore(unittest.TestCase):
             gpmjcore.HandFlag.ALL_TRIPLET_HAND | \
             gpmjcore.HandFlag.THREE_CLOSED_TRIPLETS | \
             gpmjcore.HandFlag.HALF_FLUSH
+        win_hand.num_of_dora = 2
         print("")
         win_hand.print_win_hand()
 
@@ -518,6 +519,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(state_flag, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
+        win_hand.hand_value += win_hand.get_state_value()
         pay_non_dealer, pay_dealer = win_hand.calc_score()
         self.assertEqual(pay_non_dealer, 8000)
         self.assertEqual(pay_dealer, 16000)
@@ -529,6 +531,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(state_flag, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
+        win_hand.hand_value += win_hand.get_state_value()
         pay_non_dealer, pay_dealer = win_hand.calc_score()
         self.assertEqual(pay_non_dealer, 1000)
         self.assertEqual(pay_dealer, 2000)
@@ -540,6 +543,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(state_flag, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
+        win_hand.hand_value += win_hand.get_state_value()
         pay_non_dealer, pay_dealer = win_hand.calc_score()
         self.assertEqual(pay_non_dealer, 2000)
         self.assertEqual(pay_dealer, 3900)
@@ -552,6 +556,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(state_flag, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
+        win_hand.hand_value += win_hand.get_state_value()
         pay_non_dealer, pay_dealer = win_hand.calc_score()
         self.assertEqual(pay_non_dealer, 2000)
         self.assertEqual(pay_dealer, 3900)
@@ -562,6 +567,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(state_flag, None, False, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
+        win_hand.hand_value += win_hand.get_state_value()
         pay_non_dealer, pay_dealer = win_hand.calc_score()
         self.assertEqual(pay_non_dealer, 500)
         self.assertEqual(pay_dealer, 1000)
@@ -572,6 +578,7 @@ class TestGpmjCore(unittest.TestCase):
         win_hand.set_property(state_flag, None, True, gpmjcore.Winds.SOUTH, gpmjcore.Winds.EAST)
         win_hand.hand_value = 1
         win_hand.hand_point = 30
+        win_hand.hand_value += win_hand.get_state_value()
         pay_non_dealer, pay_dealer = win_hand.calc_score()
         self.assertEqual(pay_non_dealer, 2000)
         self.assertEqual(pay_dealer, 0)

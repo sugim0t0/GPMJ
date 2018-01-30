@@ -272,7 +272,7 @@ class Game():
             else:
                 self.round_wind = gpmjcore.Winds.EAST
         for player_info in self.players_info:
-            player_info.seat_wind = (player_info.seat_wind + 1) % gpmjcore.Winds.NUM_OF_WINDS
+            player_info.seat_wind = (player_info.seat_wind + 3) % gpmjcore.Winds.NUM_OF_WINDS
         return True
 
     def setup_round(self):
@@ -318,6 +318,7 @@ class Game():
                     else:
                         w_h.hand_value = 0
                         self.basic_hand_jc.judge_chain(w_h)
+                        w_h.hand_value += w_h.get_state_value()
                         if w_h.hand_value == 0:
                             continue
                         if (win_hand is None) or (win_hand.hand_value < w_h.hand_value):
@@ -573,6 +574,9 @@ class Game():
         print("")
         print("")
 
+    def print_round_info(self):
+        print(str(gpmjcore.Winds(self.round_wind)) + "-" + str(self.round_number) + "(" + str(self.round_continue_count) + ")")
+
     def print_players_score(self):
         for player_info in self.players_info:
             print(player_info.name + "(" + str(gpmjcore.Winds(player_info.seat_wind)) + ")" + ":" + str(player_info.score))
@@ -585,12 +589,12 @@ class PlayerInfo():
         self.score = 25000
         self.start_seat_wind = seat_wind
         self.seat_wind = seat_wind
-        self.reset_round(True)
+        self.reset_round()
         self.next_player = None
         self.ev_game_queue = queue.Queue()   # Game -> Player
         self.ev_player_queue = queue.Queue() # Game <- Player
 
-    def reset_round(self, b_continued):
+    def reset_round(self):
         self.hand = gpmjcore.Hand()
         self.b_ready = False
         self.b_first_pick = True
@@ -599,8 +603,6 @@ class PlayerInfo():
         self.b_one_shot = False
         self.b_stolen = False
         self.discards = []
-        if not b_continued:
-            self.seat_wind = (self.seat_wind + 3) % gpmjcore.Winds.NUM_OF_WINDS
 
     def make_state_flag(self, b_discarded, b_dead_wall_draw, b_robbing_a_quad, b_last):
         state_flag = 0x0

@@ -69,13 +69,14 @@ Date           Version   Description
 06 Jan. 2018   0.40      Add get_num_of_pure_tiles() and convert_overall_index_into_suit_index()
 08 Jan. 2018   0.41      Divide print_tiles() into print_pure_tiles() and print_exposed_tiles()
 14 Jan. 2018   0.42      Add num_of_dora as WinHand object member
+28 Jan. 2018   0.43      Rename __add_state_value() to get_state_value()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.42"
-__date__    = "14 Jan. 2018"
+__version__ = "0.43"
+__date__    = "28 Jan. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1184,7 +1185,6 @@ class WinHand():
         '''
         calc_score() MUST be called after calc_points()
         '''
-        self.__add_state_value()
         if self.hand_value == 0:
             return (0, 0)
         value = self.hand_value + self.num_of_dora
@@ -1226,24 +1226,26 @@ class WinHand():
                     payment_non_dealer += 100 - (payment_non_dealer % 100)
                 return (payment_non_dealer, payment_dealer)
 
-    def __add_state_value(self):
+    def get_state_value(self):
+        state_value = 0
         if self.state_flag & StateFlag.LIMIT_STATE:
-            self.hand_value += 13
+            state_value += 13
         else:
             if self.state_flag & StateFlag.DECLARE_READY:
-                self.hand_value += 1
+                state_value += 1
             elif self.state_flag & StateFlag.DECLARE_DOUBLE_READY:
-                self.hand_value += 2
+                state_value += 2
             if self.state_flag & StateFlag.SELF_PICK:
-                self.hand_value += 1
+                state_value += 1
             if self.state_flag & StateFlag.ONE_SHOT:
-                self.hand_value += 1
+                state_value += 1
             if self.state_flag & \
                (StateFlag.LAST_TILE_FROM_THE_WALL | \
                 StateFlag.LAST_DISCARD | \
                 StateFlag.DEAD_WALL_DRAW | \
                 StateFlag.ROBBING_A_QUAD):
-                self.hand_value += 1
+                state_value += 1
+        return state_value
 
 
 class Tile():

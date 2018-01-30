@@ -25,36 +25,6 @@ class TestGpmjGame(unittest.TestCase):
         self.game.doras = doras
         self.game.underneath_doras = underneath_doras
 
-    def test_reset_round_0(self):
-        self.setup_game()
-        player_info_east = self.game.set_player("Tanaka")
-        player_info_south = self.game.set_player("Suzuki")
-        player_info_west = self.game.set_player("Watanabe")
-        player_info_north = self.game.set_player("Sasaki")
-        player_info_east.reset_round(True)
-        player_info_south.reset_round(True)
-        player_info_west.reset_round(True)
-        player_info_north.reset_round(True)
-        self.assertEqual(player_info_east.seat_wind, gpmjcore.Winds.EAST)
-        self.assertEqual(player_info_south.seat_wind, gpmjcore.Winds.SOUTH)
-        self.assertEqual(player_info_west.seat_wind, gpmjcore.Winds.WEST)
-        self.assertEqual(player_info_north.seat_wind, gpmjcore.Winds.NORTH)
-
-    def test_reset_round_1(self):
-        self.setup_game()
-        player_info_east = self.game.set_player("Tanaka")
-        player_info_south = self.game.set_player("Suzuki")
-        player_info_west = self.game.set_player("Watanabe")
-        player_info_north = self.game.set_player("Sasaki")
-        player_info_east.reset_round(False)
-        player_info_south.reset_round(False)
-        player_info_west.reset_round(False)
-        player_info_north.reset_round(False)
-        self.assertEqual(player_info_east.seat_wind, gpmjcore.Winds.NORTH)
-        self.assertEqual(player_info_south.seat_wind, gpmjcore.Winds.EAST)
-        self.assertEqual(player_info_west.seat_wind, gpmjcore.Winds.SOUTH)
-        self.assertEqual(player_info_north.seat_wind, gpmjcore.Winds.WEST)
-
     def test_make_state_flag_0(self):
         self.setup_game()
         player_info_east = self.game.set_player("Tanaka")
