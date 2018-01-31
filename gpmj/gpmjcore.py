@@ -1417,7 +1417,10 @@ class Hand():
     def print_pure_tiles(self):
         for suit in range(Suits.NUM_OF_SUITS):
             for tile in self.pure_tiles[suit]:
-                print(tile.print_char, end="")
+                if tile.b_red:
+                    print(tile.print_char.lower(), end="")
+                else:
+                    print(tile.print_char, end="")
 
     def print_exposed_tiles(self):
         for meld in self.exposed:
@@ -1426,7 +1429,10 @@ class Hand():
             else:
                 print(" [", end="")
             for tile in meld.tiles:
-                print(tile.print_char, end="")
+                if tile.b_red:
+                    print(tile.print_char.lower(), end="")
+                else:
+                    print(tile.print_char, end="")
             if meld.b_stolen:
                 print(")", end="")
             else:

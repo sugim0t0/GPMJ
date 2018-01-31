@@ -24,6 +24,7 @@ Date           Version   Description
 11 Dec. 2017   0.15      Divide GameCtrl class into gpmjctrl module
 09 Jan. 2018   0.16      Add print_discards()
 14 Jan. 2018   0.17      Add get_winhand()
+31 Jan. 2018   0.18      Fixed bug of red 5 tile creation
 -----------------------------------------------------------
 '''
 
@@ -33,8 +34,8 @@ import queue
 import gpmjcore
 from enum import Enum, IntEnum
 
-__version__ = "0.17"
-__date__    = "14 Jan. 2018"
+__version__ = "0.18"
+__date__    = "31 Jan. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -80,7 +81,7 @@ class Game():
             for number in range(1, 10):
                 for x in range(4):
                     tile = gpmjcore.Tile(suit, number)
-                    if x < self.config.num_of_red5[suit]:
+                    if number == 5 and x < self.config.num_of_red5[suit]:
                         tile.b_red = True
                     self.tiles.append(tile)
         # Winds
@@ -495,6 +496,12 @@ class Game():
                     num_of_dora += 1
         return num_of_dora
 
+    def print_dora_indicators(self):
+        print("[dora(indicator)]")
+        for x in range(self.kong_count + 1):
+            print(self.doras[x].print_char, end="")
+        print("")
+
     def print_wall(self):
         # wall
         print("[wall]")
@@ -639,7 +646,10 @@ class PlayerInfo():
     def print_discards(self):
         print(" - "+self.name+" -")
         for tile in self.discards:
-            print(tile.print_char, end="")
+            if tile.b_red:
+                print(tile.print_char.lower(), end="")
+            else:
+                print(tile.print_char, end="")
         print("")
 
 

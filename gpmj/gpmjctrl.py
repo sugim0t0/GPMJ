@@ -130,6 +130,7 @@ class GameCtrl(threading.Thread):
         b_last = False
         self.game.print_round_info()
         self.game.print_players_score()
+        self.game.print_dora_indicators()
         for player_info in self.game.players_info:
             self.game.deal_starttiles(player_info.hand)
             if player_info.seat_wind == gpmjcore.Winds.EAST:
