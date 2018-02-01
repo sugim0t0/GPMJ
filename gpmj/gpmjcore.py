@@ -70,13 +70,15 @@ Date           Version   Description
 08 Jan. 2018   0.41      Divide print_tiles() into print_pure_tiles() and print_exposed_tiles()
 14 Jan. 2018   0.42      Add num_of_dora as WinHand object member
 28 Jan. 2018   0.43      Rename __add_state_value() to get_state_value()
+01 Feb. 2018   0.44      Add get_meld_added_kong_able() and judge_declare_ready_able()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
+from copy import deepcopy
 
-__version__ = "0.43"
-__date__    = "28 Jan. 2018"
+__version__ = "0.44"
+__date__    = "01 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1577,6 +1579,22 @@ class Hand():
             x += 1
         return b_ready
 
+    def judge_declare_ready_able(self, pickup_tile):
+        for meld in self.exposed:
+            if meld.b_stolen:
+                return False
+        hand_copy = deepcopy(self)
+        hand_copy.append_tile(pickup_tile)
+        for suit in range(Suits.NUM_OF_SUITS):
+            for tile in hand_copy.pure_tiles[suit][:]:
+                hand_copy.remove_tile(tile)
+                hand_copy.update_required()
+                for suit in range(Suits.NUM_OF_SUITS):
+                    if len(hand_copy.required[suit]) > 0:
+                        return True
+                hand_copy.append_tile(tile)
+        return False
+
     def update_required(self):
         required = self.get_required_13orphans()
         if required is not None:
@@ -1816,15 +1834,24 @@ class Hand():
                     break
         return melds
 
-    def get_meld_kong_able(self, discarded_tile):
+    def get_meld_kong_able(self, input_tile):
         meld = Meld()
-        for tile in self.pure_tiles[discarded_tile.suit]:
-            if tile.number == discarded_tile.number:
+        for tile in self.pure_tiles[input_tile.suit]:
+            if tile.number == input_tile.number:
                 meld.add_tile(tile)
                 if len(meld.tiles) == 3:
-                    meld.make_kong(discarded_tile)
+                    meld.make_kong(input_tile)
                     return meld
         return None
+
+    def get_meld_added_kong_able(self, input_tile):
+        for meld in self.exposed:
+            if meld.b_stolen and (not meld.b_sequential) and \
+               meld.tiles[0].suit == input_tile.suit and \
+               meld.tiles[0].number == input_tile.number:
+                return meld
+        else:
+            return None
 
     def steal_tile(self, meld, discarded_tile):
         for tile in meld.tiles:

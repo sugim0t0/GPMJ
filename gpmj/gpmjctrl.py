@@ -136,6 +136,7 @@ class GameCtrl(threading.Thread):
             if player_info.seat_wind == gpmjcore.Winds.EAST:
                 self.turn_player = player_info
         while(True):
+            flag = 0
             tile = self.game.draw_tile()
             if tile is None:
                 return (self.game.round_over(), True)
@@ -147,8 +148,21 @@ class GameCtrl(threading.Thread):
                     return (True, True)
                 else:
                     return (False, False)
+            # check closed kong able
+            meld = self.turn_player.hand.get_meld_kong_able(tile)
+            if meld is not None:
+                flag = (flag | EventFlag.EV_CLOSED_KONG)
+            # check added kong able
+            meld = self.turn_player.hand.get_meld_added_kong_able(tile)
+            if meld is not None:
+                flag = (flag | EventFlag.EV_ADDED_KONG)
+            # check declare ready able
+            if len(self.game.wall) >= 4 and \
+               self.turn_player.hand.judge_declare_ready_able(tile):
+                flag = (flag | EventFlag.EV_DECLARE_READY)
+            flag = (flag | EventFlag.EV_PICKUP_TILE)
             self.turn_player.hand.sort_tiles()
-            ev_game = GameEvent(EventFlag.EV_PICKUP_TILE, tile, None)
+            ev_game = GameEvent(flag, tile, None)
             self.turn_player.ev_game_queue.put(ev_game, False, None)
             while(True):
                 ev_player = self.turn_player.ev_player_queue.get(True, None)

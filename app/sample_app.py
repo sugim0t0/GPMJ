@@ -45,7 +45,7 @@ class ManualPlayer(gpmjplayer.Player):
         return False
 
     def declare_ready_handler(self, tile):
-        return False
+        return None
 
     # Event handler for discarded tile
     def win_discard_handler(self, tile):
