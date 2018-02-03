@@ -42,7 +42,7 @@ class Player():
         return False
 
     def declare_ready_handler(self, tile):
-        return False
+        return None
 
     # Event handler for discarded tile
     def win_discard_handler(self, tile):
@@ -63,14 +63,28 @@ class Player():
         if pickup_tile is not None:
             print(" :"+pickup_tile.print_char, end="")
         self.info.hand.print_exposed_tiles()
-        num_pure_tiles = self.info.hand.get_num_of_pure_tiles()
         print("")
+
+    def print_cmd_pickup_tile(self, pickup_tile):
+        num_pure_tiles = self.info.hand.get_num_of_pure_tiles()
         for i in range(ord("a"), ord("a")+num_pure_tiles):
             print("  "+chr(i)+" ", end="")
         else:
             if pickup_tile is not None:
                 print(" :<SP>", end="")
         print("")
+
+    def print_cmd_win(self):
+        print("a: win")
+        print("x: not win")
+
+    def print_cmd_kong(self):
+        print("a: kong")
+        print("x: not kong")
+
+    def print_cmd_declare_ready(self):
+        print("a: declare ready")
+        print("x: not declare ready")
 
     def get_discard_tile(self, cmd):
         offset = ord(cmd) - ord("a")

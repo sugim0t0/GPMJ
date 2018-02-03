@@ -9,6 +9,7 @@ Date           Version   Description
 ===========================================================
 23 Dec. 2017   0.1       Creation
 03 Jan. 2018   0.2       Discarding all pick up tiles version
+03 Feb. 2018   0.3       Implement each handlers
 -----------------------------------------------------------
 '''
 
@@ -17,8 +18,8 @@ import gpmjgame
 import gpmjplayer
 import gpmjctrl
 
-__version__ = "0.2"
-__date__    = "03 Jan. 2018"
+__version__ = "0.3"
+__date__    = "03 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class ManualPlayer(gpmjplayer.Player):
@@ -28,6 +29,7 @@ class ManualPlayer(gpmjplayer.Player):
 
     def pickup_tile_handler(self, tile):
         self.print_tiles(tile)
+        self.print_cmd_pickup_tile(tile)
         cmd = input(">> ")
         if cmd == " ":
             return tile
@@ -35,22 +37,75 @@ class ManualPlayer(gpmjplayer.Player):
             return self.get_discard_tile(cmd)
 
     def win_selfpick_handler(self, tile):
-        print("Win by selfpick")
-        return True
+        self.print_tiles(tile)
+        self.print_cmd_win()
+        while(True):
+            cmd = input(">> ")
+            if cmd == "a":
+                print("Win by selfpick")
+                return True
+            elif cmd == "x":
+                return False
+            else:
+                print("input a or x")
 
     def closed_kong_handler(self, tile):
-        return False
+        self.print_tiles(tile)
+        self.print_cmd_kong()
+        while(True):
+            cmd = input(">> ")
+            if cmd == "a":
+                print("Closed kong")
+                return True
+            elif cmd == "x":
+                return False
+            else:
+                print("input a or x")
 
     def added_kong_handler(self, tile):
-        return False
+        self.print_tiles(tile)
+        self.print_cmd_kong()
+        while(True):
+            cmd = input(">> ")
+            if cmd == "a":
+                print("Added kong")
+                return True
+            elif cmd == "x":
+                return False
+            else:
+                print("input a or x")
 
     def declare_ready_handler(self, tile):
-        return None
+        self.print_tiles(tile)
+        self.print_cmd_declare_ready()
+        while(True):
+            cmd = input(">> ")
+            if cmd == "a":
+                print("Declare ready")
+                self.print_cmd_pickup_tile(tile)
+                cmd = input(">> ")
+                if cmd == " ":
+                    return tile
+                else:
+                    return self.get_discard_tile(cmd)
+            elif cmd == "x":
+                return None
+            else:
+                print("input a or x")
 
     # Event handler for discarded tile
     def win_discard_handler(self, tile):
-        print("Win by discard")
-        return True
+        self.print_tiles(tile)
+        self.print_cmd_win()
+        while(True):
+            cmd = input(">> ")
+            if cmd == "a":
+                print("Win by discard")
+                return True
+            elif cmd == "x":
+                return False
+            else:
+                print("input a or x")
 
     def chow_handler(self, tile, melds):
         return None

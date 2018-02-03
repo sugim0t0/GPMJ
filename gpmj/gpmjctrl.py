@@ -152,14 +152,16 @@ class GameCtrl(threading.Thread):
             meld = self.turn_player.hand.get_meld_kong_able(tile)
             if meld is not None:
                 flag = (flag | EventFlag.EV_CLOSED_KONG)
-            # check added kong able
-            meld = self.turn_player.hand.get_meld_added_kong_able(tile)
-            if meld is not None:
-                flag = (flag | EventFlag.EV_ADDED_KONG)
-            # check declare ready able
-            if len(self.game.wall) >= 4 and \
-               self.turn_player.hand.judge_declare_ready_able(tile):
-                flag = (flag | EventFlag.EV_DECLARE_READY)
+            if not self.turn_player.b_declared_ready and \
+               not self.turn_player.b_declared_double_ready:
+                # check added kong able
+                meld = self.turn_player.hand.get_meld_added_kong_able(tile)
+                if meld is not None:
+                    flag = (flag | EventFlag.EV_ADDED_KONG)
+                # check declare ready able
+                if len(self.game.wall) >= 4 and \
+                   self.turn_player.hand.judge_declare_ready_able(tile):
+                    flag = (flag | EventFlag.EV_DECLARE_READY)
             flag = (flag | EventFlag.EV_PICKUP_TILE)
             self.turn_player.hand.sort_tiles()
             ev_game = GameEvent(flag, tile, None)
