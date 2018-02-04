@@ -75,16 +75,16 @@ class Player():
         print("")
 
     def print_cmd_win(self):
-        print("a: win")
-        print("x: not win")
+        print("y: win")
+        print("n: not win")
 
     def print_cmd_kong(self):
-        print("a: kong")
-        print("x: not kong")
+        print("y: kong")
+        print("n: not kong")
 
     def print_cmd_declare_ready(self):
-        print("a: declare ready")
-        print("x: not declare ready")
+        print("y: declare ready")
+        print("n: not declare ready")
 
     def get_discard_tile(self, cmd):
         offset = ord(cmd) - ord("a")

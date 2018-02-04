@@ -71,14 +71,16 @@ Date           Version   Description
 14 Jan. 2018   0.42      Add num_of_dora as WinHand object member
 28 Jan. 2018   0.43      Rename __add_state_value() to get_state_value()
 01 Feb. 2018   0.44      Add get_meld_added_kong_able() and judge_declare_ready_able()
+05 Feb. 2018   0.45      Rename get_meld_added_kong_able() to get_melds_added_kong_able()
+                         and modified to be able to get multiple melds
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 from copy import deepcopy
 
-__version__ = "0.44"
-__date__    = "01 Feb. 2018"
+__version__ = "0.45"
+__date__    = "05 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1834,24 +1836,26 @@ class Hand():
                     break
         return melds
 
-    def get_meld_kong_able(self, input_tile):
+    def get_meld_kong_able(self, discarded_tile):
         meld = Meld()
-        for tile in self.pure_tiles[input_tile.suit]:
-            if tile.number == input_tile.number:
+        for tile in self.pure_tiles[discarded_tile.suit]:
+            if tile.number == discarded_tile.number:
                 meld.add_tile(tile)
                 if len(meld.tiles) == 3:
-                    meld.make_kong(input_tile)
+                    meld.make_kong(discarded_tile)
                     return meld
         return None
 
-    def get_meld_added_kong_able(self, input_tile):
+    def get_melds_added_kong_able(self, input_tile):
+        melds = []
+        self.append_tile(input_tile)
         for meld in self.exposed:
-            if meld.b_stolen and (not meld.b_sequential) and \
-               meld.tiles[0].suit == input_tile.suit and \
-               meld.tiles[0].number == input_tile.number:
-                return meld
-        else:
-            return None
+            if meld.b_stolen and (not meld.b_sequential):
+                for tile in self.pure_tiles[meld.tiles[0].suit]:
+                    if tile.number == meld.tiles[0].number:
+                        melds.append(meld)
+        self.remove_tile(input_tile)
+        return melds
 
     def steal_tile(self, meld, discarded_tile):
         for tile in meld.tiles:

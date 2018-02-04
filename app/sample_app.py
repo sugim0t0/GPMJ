@@ -41,71 +41,72 @@ class ManualPlayer(gpmjplayer.Player):
         self.print_cmd_win()
         while(True):
             cmd = input(">> ")
-            if cmd == "a":
+            if cmd == "y":
                 print("Win by selfpick")
                 return True
-            elif cmd == "x":
+            elif cmd == "n":
                 return False
             else:
-                print("input a or x")
+                print("input y or n")
 
     def closed_kong_handler(self, tile):
         self.print_tiles(tile)
         self.print_cmd_kong()
         while(True):
             cmd = input(">> ")
-            if cmd == "a":
+            if cmd == "y":
                 print("Closed kong")
                 return True
-            elif cmd == "x":
+            elif cmd == "n":
                 return False
             else:
-                print("input a or x")
+                print("input y or n")
 
     def added_kong_handler(self, tile):
         self.print_tiles(tile)
         self.print_cmd_kong()
         while(True):
             cmd = input(">> ")
-            if cmd == "a":
+            if cmd == "y":
                 print("Added kong")
                 return True
-            elif cmd == "x":
+            elif cmd == "n":
                 return False
             else:
-                print("input a or x")
+                print("input y or n")
 
     def declare_ready_handler(self, tile):
         self.print_tiles(tile)
         self.print_cmd_declare_ready()
         while(True):
             cmd = input(">> ")
-            if cmd == "a":
+            if cmd == "y":
                 print("Declare ready")
+                self.print_tiles(tile)
                 self.print_cmd_pickup_tile(tile)
                 cmd = input(">> ")
                 if cmd == " ":
                     return tile
                 else:
                     return self.get_discard_tile(cmd)
-            elif cmd == "x":
+            elif cmd == "n":
                 return None
             else:
-                print("input a or x")
+                print("input y or n")
 
     # Event handler for discarded tile
     def win_discard_handler(self, tile):
-        self.print_tiles(tile)
+        self.print_tiles(None)
         self.print_cmd_win()
         while(True):
             cmd = input(">> ")
-            if cmd == "a":
+            if cmd == "y":
                 print("Win by discard")
                 return True
-            elif cmd == "x":
+            elif cmd == "n":
                 return False
             else:
-                print("input a or x")
+                print("input y or n")
 
     def chow_handler(self, tile, melds):
         return None

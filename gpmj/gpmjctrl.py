@@ -137,6 +137,7 @@ class GameCtrl(threading.Thread):
                 self.turn_player = player_info
         while(True):
             flag = 0
+            melds = []
             tile = self.game.draw_tile()
             if tile is None:
                 return (self.game.round_over(), True)
@@ -155,8 +156,8 @@ class GameCtrl(threading.Thread):
             if not self.turn_player.b_declared_ready and \
                not self.turn_player.b_declared_double_ready:
                 # check added kong able
-                meld = self.turn_player.hand.get_meld_added_kong_able(tile)
-                if meld is not None:
+                melds = self.turn_player.hand.get_melds_added_kong_able(tile)
+                if len(melds) > 0:
                     flag = (flag | EventFlag.EV_ADDED_KONG)
                 # check declare ready able
                 if len(self.game.wall) >= 4 and \
@@ -164,7 +165,7 @@ class GameCtrl(threading.Thread):
                     flag = (flag | EventFlag.EV_DECLARE_READY)
             flag = (flag | EventFlag.EV_PICKUP_TILE)
             self.turn_player.hand.sort_tiles()
-            ev_game = GameEvent(flag, tile, None)
+            ev_game = GameEvent(flag, tile, melds)
             self.turn_player.ev_game_queue.put(ev_game, False, None)
             while(True):
                 ev_player = self.turn_player.ev_player_queue.get(True, None)
@@ -189,6 +190,8 @@ class GameCtrl(threading.Thread):
                     self.turn_player.hand.update_required()
                     self.turn_player = self.turn_player.next_player
                     break
+                if ev_player.event_flag == EventFlag.EV_CLOSED_KONG:
+                    kong_tile = ev_player.tile
 
     def __check_win_selfpick(self, tile, b_last, b_dead_wall_draw):
         if tile.number in self.turn_player.hand.required[tile.suit]:
