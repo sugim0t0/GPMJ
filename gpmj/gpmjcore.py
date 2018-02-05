@@ -73,14 +73,15 @@ Date           Version   Description
 01 Feb. 2018   0.44      Add get_meld_added_kong_able() and judge_declare_ready_able()
 05 Feb. 2018   0.45      Rename get_meld_added_kong_able() to get_melds_added_kong_able()
                          and modified to be able to get multiple melds
+06 Feb. 2018   0.46      Add get_melds_closed_kong_able()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 from copy import deepcopy
 
-__version__ = "0.45"
-__date__    = "05 Feb. 2018"
+__version__ = "0.46"
+__date__    = "06 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1845,6 +1846,35 @@ class Hand():
                     meld.make_kong(discarded_tile)
                     return meld
         return None
+
+    def get_melds_closed_kong_able(self, input_tile):
+        melds = []
+        self.append_tile(input_tile)
+        self.sort_tiles()
+        for suit in range(Suits.NUM_OF_SUITS):
+            num_of_same_number = 0
+            current_number = 0
+            for tile in self.pure_tiles[suit]:
+                if num_of_same_number == 0:
+                    current_number = tile.number
+                    num_of_same_number = 1
+                else:
+                    if current_number == tile.number:
+                        num_of_same_number += 1
+                        if num_of_same_number == 4:
+                            meld = Meld()
+                            for _tile in self.pure_tiles[suit]:
+                                if _tile.number == current_number:
+                                    if len(meld.tiles) == 3:
+                                        meld.make_kong(_tile)
+                                        melds.append(meld)
+                                    else:
+                                        meld.add_tile(_tile)
+                    else:
+                        current_number = tile.number
+                        num_of_same_number = 1
+        self.remove_tile(input_tile)
+        return melds
 
     def get_melds_added_kong_able(self, input_tile):
         melds = []

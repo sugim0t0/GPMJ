@@ -11,6 +11,7 @@ Date           Version   Description
 12 Dec. 2017   0.2       Add PlayerCtrl and GameCtrl classes
 14 Dec. 2017   0.3       Add run()@PlayerCtrl
 08 Jan. 2018   0.4       Modified to call update_required()
+06 Feb. 2018   0.5       Add __pickup_tile()
 -----------------------------------------------------------
 '''
 
@@ -20,8 +21,8 @@ import gpmjgame
 import gpmjplayer
 from enum import Enum, IntEnum
 
-__version__ = "0.4"
-__date__    = "08 Jan. 2018"
+__version__ = "0.5"
+__date__    = "06 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class PlayerCtrl(threading.Thread):
@@ -124,10 +125,7 @@ class GameCtrl(threading.Thread):
                 player_info.reset_round()
 
     def __round(self):
-        ev_game = None
-        ev_player = None
         self.game.setup_round()
-        b_last = False
         self.game.print_round_info()
         self.game.print_players_score()
         self.game.print_dora_indicators()
@@ -136,62 +134,74 @@ class GameCtrl(threading.Thread):
             if player_info.seat_wind == gpmjcore.Winds.EAST:
                 self.turn_player = player_info
         while(True):
-            flag = 0
-            melds = []
             tile = self.game.draw_tile()
             if tile is None:
                 return (self.game.round_over(), True)
-            if len(self.game.wall) == 0:
-                b_last = True
-            # check win by selfpick tile
-            if True == self.__check_win_selfpick(tile, b_last, False):
-                if self.turn_player.seat_wind == gpmjcore.Winds.EAST:
-                    return (True, True)
-                else:
-                    return (False, False)
-            # check closed kong able
-            meld = self.turn_player.hand.get_meld_kong_able(tile)
-            if meld is not None:
-                flag = (flag | EventFlag.EV_CLOSED_KONG)
-            if not self.turn_player.b_declared_ready and \
-               not self.turn_player.b_declared_double_ready:
+            (b_round_over, b_continued, b_count_keep) = self.__pickup_tile(tile, False)
+            if b_round_over:
+                return (b_continued, b_count_keep)
+
+    def __pickup_tile(self, tile, b_dead_wall_draw):
+        ev_game = None
+        ev_player = None
+        b_last = False
+        flag = 0
+        melds = []
+        if len(self.game.wall) == 0:
+            b_last = True
+        # check win by selfpick tile
+        if True == self.__check_win_selfpick(tile, b_last, b_dead_wall_draw):
+            if self.turn_player.seat_wind == gpmjcore.Winds.EAST:
+                return (True, True, True)
+            else:
+                return (True, False, False)
+        if not self.turn_player.b_declared_ready and \
+           not self.turn_player.b_declared_double_ready:
+            if len(self.game.wall) >= 1 and self.game.kong_count < 4:
+                # check closed kong able
+                melds = self.turn_player.hand.get_melds_closed_kong_able(tile)
+                if len(melds) > 0:
+                    flag = (flag | EventFlag.EV_CLOSED_KONG)
                 # check added kong able
                 melds = self.turn_player.hand.get_melds_added_kong_able(tile)
                 if len(melds) > 0:
                     flag = (flag | EventFlag.EV_ADDED_KONG)
-                # check declare ready able
-                if len(self.game.wall) >= 4 and \
-                   self.turn_player.hand.judge_declare_ready_able(tile):
-                    flag = (flag | EventFlag.EV_DECLARE_READY)
-            flag = (flag | EventFlag.EV_PICKUP_TILE)
-            self.turn_player.hand.sort_tiles()
-            ev_game = GameEvent(flag, tile, melds)
-            self.turn_player.ev_game_queue.put(ev_game, False, None)
-            while(True):
-                ev_player = self.turn_player.ev_player_queue.get(True, None)
-                self.game.pickup_tile(self.turn_player, tile)
-                if ev_player.event_flag == EventFlag.EV_DISCARD_TILE or \
-                   ev_player.event_flag == EventFlag.EV_DECLARE_READY:
-                    discard_tile = ev_player.tile
-                    if ev_player.event_flag == EventFlag.EV_DECLARE_READY:
-                        self.game.discard_tile(self.turn_player, discard_tile, True)
-                    else:
-                        self.game.discard_tile(self.turn_player, discard_tile, False)
-                    self.turn_player.print_discards()
-                    # check win by discarded tile
-                    next_player = self.turn_player.next_player
-                    for x in range(3):
-                        if True == self.__check_win_discard(next_player, discard_tile, b_last, False):
-                            if next_player.seat_wind == gpmjcore.Winds.EAST:
-                                return (True, True)
-                            else:
-                                return (False, False)
-                        next_player = next_player.next_player
-                    self.turn_player.hand.update_required()
-                    self.turn_player = self.turn_player.next_player
-                    break
-                if ev_player.event_flag == EventFlag.EV_CLOSED_KONG:
-                    kong_tile = ev_player.tile
+            # check declare ready able
+            if len(self.game.wall) >= 4 and \
+               self.turn_player.hand.judge_declare_ready_able(tile):
+                flag = (flag | EventFlag.EV_DECLARE_READY)
+        else:
+            # check closed kong able after declared ready
+        flag = (flag | EventFlag.EV_PICKUP_TILE)
+        self.turn_player.hand.sort_tiles()
+        ev_game = GameEvent(flag, tile, melds)
+        self.turn_player.ev_game_queue.put(ev_game, False, None)
+        while(True):
+            ev_player = self.turn_player.ev_player_queue.get(True, None)
+            self.game.pickup_tile(self.turn_player, tile)
+            if ev_player.event_flag == EventFlag.EV_DISCARD_TILE or \
+               ev_player.event_flag == EventFlag.EV_DECLARE_READY:
+                discard_tile = ev_player.tile
+                if ev_player.event_flag == EventFlag.EV_DECLARE_READY:
+                    self.game.discard_tile(self.turn_player, discard_tile, True)
+                else:
+                    self.game.discard_tile(self.turn_player, discard_tile, False)
+                self.turn_player.print_discards()
+                # check win by discarded tile
+                next_player = self.turn_player.next_player
+                for x in range(3):
+                    if True == self.__check_win_discard(next_player, discard_tile, b_last, False):
+                        if next_player.seat_wind == gpmjcore.Winds.EAST:
+                            return (True, True, True)
+                        else:
+                            return (True, False, False)
+                    next_player = next_player.next_player
+                self.turn_player.hand.update_required()
+                self.turn_player = self.turn_player.next_player
+                break
+            if ev_player.event_flag == EventFlag.EV_CLOSED_KONG:
+                kong_tile = ev_player.tile
+        return (False, False, False)
 
     def __check_win_selfpick(self, tile, b_last, b_dead_wall_draw):
         if tile.number in self.turn_player.hand.required[tile.suit]:
