@@ -459,9 +459,17 @@ class Game():
             self.kong_count += 1
             tile = self.dead_wall.pop()
             self.dead_wall.insert(0, self.wall.pop(0))
+            self.reset_oneshot_firstpick()
             return tile
         else:
             return None
+
+    def reset_oneshot_firstpick(self):
+        for player_info in self.players_info:
+            if player_info.b_one_shot:
+                player_info.b_one_shot = False
+            if player_info.b_first_pick:
+                player_info.b_first_pick = False
 
     def get_num_of_dora(self, hand, b_declared_ready):
         num_of_dora = 0

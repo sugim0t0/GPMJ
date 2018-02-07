@@ -12,6 +12,7 @@ Date           Version   Description
 14 Dec. 2017   0.3       Add run()@PlayerCtrl
 08 Jan. 2018   0.4       Modified to call update_required()
 06 Feb. 2018   0.5       Add __pickup_tile()
+07 Feb. 2018   0.6       Add __do_nothing()
 -----------------------------------------------------------
 '''
 
@@ -21,8 +22,8 @@ import gpmjgame
 import gpmjplayer
 from enum import Enum, IntEnum
 
-__version__ = "0.5"
-__date__    = "06 Feb. 2018"
+__version__ = "0.6"
+__date__    = "07 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class PlayerCtrl(threading.Thread):
@@ -41,17 +42,23 @@ class PlayerCtrl(threading.Thread):
                 if self.player.win_selfpick_handler(ev_game.tile):
                     ev_player = GameEvent(EventFlag.EV_WIN_SELFPICK, ev_game.tile, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
-                    continue
+                else:
+                    __do_nothing()
+                continue
             if ev_game.event_flag & EventFlag.EV_CLOSED_KONG:
                 if self.player.closed_kong_handler(ev_game.tile):
                     ev_player = GameEvent(EventFlag.EV_CLOSED_KONG, ev_game.tile, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
-                    continue
+                else:
+                    __do_nothing()
+                continue
             elif ev_game.event_flag & EventFlag.EV_ADDED_KONG:
                 if self.player.added_kong_handler(ev_game.tile):
                     ev_player = GameEvent(EventFlag.EV_ADDED_KONG, ev_game.tile, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
-                    continue
+                else:
+                    __do_nothing()
+                continue
             if ev_game.event_flag & EventFlag.EV_DECLARE_READY:
                 discard_tile = self.player.declare_ready_handler(ev_game.tile)
                 if discard_tile is not None:
@@ -90,6 +97,10 @@ class PlayerCtrl(threading.Thread):
                 break
             else:
                 break
+
+    def __do_nothing(self):
+        ev_player = GameEvent(EventFlag.EV_DO_NOTHING, None, None)
+        self.player.info.ev_player_queue.put(ev_player, False, None)
 
 
 class GameCtrl(threading.Thread):
@@ -155,23 +166,39 @@ class GameCtrl(threading.Thread):
                 return (True, True, True)
             else:
                 return (True, False, False)
-        if not self.turn_player.b_declared_ready and \
-           not self.turn_player.b_declared_double_ready:
-            if len(self.game.wall) >= 1 and self.game.kong_count < 4:
-                # check closed kong able
-                melds = self.turn_player.hand.get_melds_closed_kong_able(tile)
-                if len(melds) > 0:
-                    flag = (flag | EventFlag.EV_CLOSED_KONG)
-                # check added kong able
-                melds = self.turn_player.hand.get_melds_added_kong_able(tile)
-                if len(melds) > 0:
-                    flag = (flag | EventFlag.EV_ADDED_KONG)
-            # check declare ready able
-            if len(self.game.wall) >= 4 and \
-               self.turn_player.hand.judge_declare_ready_able(tile):
-                flag = (flag | EventFlag.EV_DECLARE_READY)
+        # check closed kong able
+        meld = self.__check_closed_kong(tile)
+        if meld is not None:
+            # T.B.D: check other players win by 13 orphans
+            self.turn_player.hand.declare_kong(meld.tiles[0].suit, meld.tiles[0].number)
+            dead_wall_tile = self.game.call_kong()
+            return self.__pickup_tile(dead_wall_tile, True)
+        # check added kong able
+        added_tile = self.__check_added_kong(tile)
+        if added_tile is not None:
+            # check other players win by robbing a quad
+            next_player = self.turn_player.next_player
+            for x in range(3):
+                if True == self.__check_win_discard(next_player, added_tile, False, True):
+                    if next_player.seat_wind == gpmjcore.Winds.EAST:
+                        return (True, True, True)
+                    else:
+                        return (True, False, False)
+                    next_player = next_player.next_player
+            dead_wall_tile = self.game.call_kong()
+            return self.__pickup_tile(dead_wall_tile, True)
+        # check declare ready able
+        if len(self.game.wall) >= 4 and \
+           self.turn_player.hand.judge_declare_ready_able(tile):
+            flag = (flag | EventFlag.EV_DECLARE_READY)
         else:
             # check closed kong able after declared ready
+            meld = self.__check_closed_kong_after_declared_ready(tile)
+            if meld is not None:
+                # T.B.D: check other players win by 13 orphans
+                self.turn_player.hand.declare_kong(meld.tiles[0].suit, meld.tiles[0].number)
+                dead_wall_tile = self.game.call_kong()
+                return self.__pickup_tile(dead_wall_tile, True)
         flag = (flag | EventFlag.EV_PICKUP_TILE)
         self.turn_player.hand.sort_tiles()
         ev_game = GameEvent(flag, tile, melds)
@@ -196,11 +223,12 @@ class GameCtrl(threading.Thread):
                         else:
                             return (True, False, False)
                     next_player = next_player.next_player
+                # check kong by discarded tile
+                # check pong by discarded tile
+                # check chow by discarded tile
                 self.turn_player.hand.update_required()
                 self.turn_player = self.turn_player.next_player
                 break
-            if ev_player.event_flag == EventFlag.EV_CLOSED_KONG:
-                kong_tile = ev_player.tile
         return (False, False, False)
 
     def __check_win_selfpick(self, tile, b_last, b_dead_wall_draw):
@@ -232,6 +260,43 @@ class GameCtrl(threading.Thread):
                     self.game.win(next_player, True, self.turn_player.seat_wind, score)
                     return True
         return False
+
+    def __check_closed_kong(self, tile):
+        if self.turn_player.b_declared_ready or \
+           self.turn_player.b_declared_double_ready or \
+           len(self.game.wall) == 0 or \
+           self.game.kong_count == 4:
+            return None
+        melds = self.turn_player.hand.get_melds_closed_kong_able(tile)
+        if len(melds) == 0:
+            return None
+        ev_game = GameEvent(EventFlag.EV_CLOSED_KONG, tile, melds)
+        self.turn_player.ev_game_queue.put(ev_game, False, None)
+        ev_player = self.turn_player.ev_player_queue.get(True, None)
+        if not ev_player.event_flag == EventFlag.EV_CLOSED_KONG:
+            return None
+        return ev_player.melds[0]
+
+    def __check_closed_kong_after_declared_ready(self, tile):
+        # T.B.D
+        return None
+
+    def __check_added_kong(self, tile):
+        if self.turn_player.b_declared_ready or \
+           self.turn_player.b_declared_double_ready or \
+           len(self.game.wall) == 0 or \
+           self.game.kong_count == 4:
+            return None
+        melds = self.turn_player.hand.get_melds_added_kong_able(tile)
+        if len(melds) == 0:
+            return None
+        ev_game = GameEvent(EventFlag.EV_ADDED_KONG, tile, melds)
+        self.turn_player.ev_game_queue.put(ev_game, False, None)
+        ev_player = self.turn_player.ev_player_queue.get(True, None)
+        if not ev_player.event_flag == EventFlag.EV_ADDED_KONG:
+            return None
+        return ev_player.tile
+
 
 
 class EventFlag(IntEnum):
