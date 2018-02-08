@@ -46,15 +46,19 @@ class PlayerCtrl(threading.Thread):
                     __do_nothing()
                 continue
             if ev_game.event_flag & EventFlag.EV_CLOSED_KONG:
-                if self.player.closed_kong_handler(ev_game.tile):
-                    ev_player = GameEvent(EventFlag.EV_CLOSED_KONG, ev_game.tile, None)
+                meld = self.player.closed_kong_handler(ev_game.tile, ev_game.melds)
+                if meld is not None:
+                    melds = []
+                    melds.append(meld)
+                    ev_player = GameEvent(EventFlag.EV_CLOSED_KONG, None, melds)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                 else:
                     __do_nothing()
                 continue
             elif ev_game.event_flag & EventFlag.EV_ADDED_KONG:
-                if self.player.added_kong_handler(ev_game.tile):
-                    ev_player = GameEvent(EventFlag.EV_ADDED_KONG, ev_game.tile, None)
+                added_tile = self.player.added_kong_handler(ev_game.tile, ev_game.melds)
+                if added_tile is not None:
+                    ev_player = GameEvent(EventFlag.EV_ADDED_KONG, added_tile, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                 else:
                     __do_nothing()
@@ -170,7 +174,8 @@ class GameCtrl(threading.Thread):
         meld = self.__check_closed_kong(tile)
         if meld is not None:
             # T.B.D: check other players win by 13 orphans
-            self.turn_player.hand.declare_kong(meld.tiles[0].suit, meld.tiles[0].number)
+            self.game.pickup_tile(self.turn_player, tile)
+            self.turn_player.hand.closed_kong(meld.tiles[0].suit, meld.tiles[0].number)
             dead_wall_tile = self.game.call_kong()
             return self.__pickup_tile(dead_wall_tile, True)
         # check added kong able
@@ -185,10 +190,14 @@ class GameCtrl(threading.Thread):
                     else:
                         return (True, False, False)
                     next_player = next_player.next_player
+            self.game.pickup_tile(self.turn_player, tile)
+            self.turn_player.hand.added_kong(added_tile)
             dead_wall_tile = self.game.call_kong()
             return self.__pickup_tile(dead_wall_tile, True)
         # check declare ready able
         if len(self.game.wall) >= 4 and \
+           not self.turn_player.b_declared_ready and \
+           not self.turn_player.b_declared_double_ready and \
            self.turn_player.hand.judge_declare_ready_able(tile):
             flag = (flag | EventFlag.EV_DECLARE_READY)
         else:
@@ -196,7 +205,7 @@ class GameCtrl(threading.Thread):
             meld = self.__check_closed_kong_after_declared_ready(tile)
             if meld is not None:
                 # T.B.D: check other players win by 13 orphans
-                self.turn_player.hand.declare_kong(meld.tiles[0].suit, meld.tiles[0].number)
+                self.turn_player.hand.closed_kong(meld.tiles[0].suit, meld.tiles[0].number)
                 dead_wall_tile = self.game.call_kong()
                 return self.__pickup_tile(dead_wall_tile, True)
         flag = (flag | EventFlag.EV_PICKUP_TILE)
@@ -242,6 +251,7 @@ class GameCtrl(threading.Thread):
                 if ev_player.event_flag == EventFlag.EV_WIN_SELFPICK:
                     score = self.game.get_hand_score(win_hand)
                     win_hand.print_win_hand()
+                    self.__print_score(score, False)
                     self.game.win(self.turn_player, False, gpmjcore.Winds.INVALID, score)
                     return True
         return False
@@ -257,6 +267,7 @@ class GameCtrl(threading.Thread):
                 if ev_player.event_flag == EventFlag.EV_WIN_DISCARD:
                     score = self.game.get_hand_score(win_hand)
                     win_hand.print_win_hand()
+                    self.__print_score(score, True)
                     self.game.win(next_player, True, self.turn_player.seat_wind, score)
                     return True
         return False
@@ -296,6 +307,15 @@ class GameCtrl(threading.Thread):
         if not ev_player.event_flag == EventFlag.EV_ADDED_KONG:
             return None
         return ev_player.tile
+
+    def __print_score(self, score, b_discarded):
+        if b_discarded:
+            print(str(score[0]))
+        else:
+            if score[1] == 0:
+                print(str(score[0]) + "all")
+            else:
+                print(str(score[0]) + " - " + str(score[1]))
 
 
 

@@ -49,29 +49,29 @@ class ManualPlayer(gpmjplayer.Player):
             else:
                 print("input y or n")
 
-    def closed_kong_handler(self, tile):
+    def closed_kong_handler(self, tile, melds):
         self.print_tiles(tile)
         self.print_cmd_kong()
         while(True):
             cmd = input(">> ")
             if cmd == "y":
                 print("Closed kong")
-                return True
+                return meld
             elif cmd == "n":
-                return False
+                return None
             else:
                 print("input y or n")
 
-    def added_kong_handler(self, tile):
+    def added_kong_handler(self, tile, melds):
         self.print_tiles(tile)
         self.print_cmd_kong()
         while(True):
             cmd = input(">> ")
             if cmd == "y":
                 print("Added kong")
-                return True
+                return added_tile
             elif cmd == "n":
-                return False
+                return None
             else:
                 print("input y or n")
 

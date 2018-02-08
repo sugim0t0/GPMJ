@@ -74,14 +74,15 @@ Date           Version   Description
 05 Feb. 2018   0.45      Rename get_meld_added_kong_able() to get_melds_added_kong_able()
                          and modified to be able to get multiple melds
 06 Feb. 2018   0.46      Add get_melds_closed_kong_able()
+07 Feb. 2018   0.47      Rename declare_kong() to closed_kong() and add added_kong()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 from copy import deepcopy
 
-__version__ = "0.46"
-__date__    = "06 Feb. 2018"
+__version__ = "0.47"
+__date__    = "07 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1897,7 +1898,7 @@ class Hand():
         self.exposed.append(meld)
         return True
 
-    def declare_kong(self, suit, number):
+    def closed_kong(self, suit, number):
         self.sort_tiles()
         cnt = 0
         for tile in self.pure_tiles[suit]:
@@ -1928,6 +1929,15 @@ class Hand():
         else:
             return False
         return True
+
+    def added_kong(self, tile):
+        for meld in self.exposed:
+            if meld.b_sequential == False and meld.b_stolen == True and \
+               meld.tiles[0].suit == tile.suit and meld.tiles[0].number == tile.number:
+                meld.make_kong(tile)
+                return True
+        else:
+            return False
 
     def build_pure_meld_eye_tree(self, meld, eye, last_tile):
         b_success = False
