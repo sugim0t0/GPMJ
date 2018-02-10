@@ -40,7 +40,7 @@ class PlayerCtrl(threading.Thread):
             # Events from pick up tile
             if ev_game.event_flag & EventFlag.EV_WIN_SELFPICK:
                 if self.player.win_selfpick_handler(ev_game.tile):
-                    ev_player = GameEvent(EventFlag.EV_WIN_SELFPICK, ev_game.tile, None)
+                    ev_player = GameEvent(EventFlag.EV_WIN_SELFPICK, ev_game.tile, None, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                 else:
                     __do_nothing()
@@ -50,51 +50,55 @@ class PlayerCtrl(threading.Thread):
                 if meld is not None:
                     melds = []
                     melds.append(meld)
-                    ev_player = GameEvent(EventFlag.EV_CLOSED_KONG, None, melds)
+                    ev_player = GameEvent(EventFlag.EV_CLOSED_KONG, ev_game.tile, None, melds)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                 else:
                     __do_nothing()
                 continue
             elif ev_game.event_flag & EventFlag.EV_ADDED_KONG:
-                added_tile = self.player.added_kong_handler(ev_game.tile, ev_game.melds)
+                added_tile = self.player.added_kong_handler(ev_game.tile, ev_game.tiles)
                 if added_tile is not None:
-                    ev_player = GameEvent(EventFlag.EV_ADDED_KONG, added_tile, None)
+                    ev_player = GameEvent(EventFlag.EV_ADDED_KONG, added_tile, None, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                 else:
                     __do_nothing()
                 continue
             if ev_game.event_flag & EventFlag.EV_DECLARE_READY:
-                discard_tile = self.player.declare_ready_handler(ev_game.tile)
+                discard_tile = self.player.declare_ready_handler(ev_game.tile, ev_game.tiles)
                 if discard_tile is not None:
-                    ev_player = GameEvent(EventFlag.EV_DECLARE_READY, discard_tile, None)
+                    ev_player = GameEvent(EventFlag.EV_DECLARE_READY, discard_tile, None, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                     continue
             if ev_game.event_flag & EventFlag.EV_PICKUP_TILE:
                 discard_tile = self.player.pickup_tile_handler(ev_game.tile)
-                ev_player = GameEvent(EventFlag.EV_DISCARD_TILE, discard_tile, None)
+                ev_player = GameEvent(EventFlag.EV_DISCARD_TILE, discard_tile, None, None)
                 self.player.info.ev_player_queue.put(ev_player, False, None)
                 continue
             # Events from discarded tile
             if ev_game.event_flag & EventFlag.EV_WIN_DISCARD:
                 if self.player.win_discard_handler(ev_game.tile):
-                    ev_player = GameEvent(EventFlag.EV_WIN_DISCARD, ev_game.tile, None)
+                    ev_player = GameEvent(EventFlag.EV_WIN_DISCARD, None, None, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                     continue
             if ev_game.event_flag == EventFlag.EV_STOLEN_KONG:
                 if self.player.stolen_kong_handler(ev_game.tile):
-                    ev_player = GameEvent(EventFlag.EV_STOLEN_KONG, ev_game.tile, None)
+                    ev_player = GameEvent(EventFlag.EV_STOLEN_KONG, None, None, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                     continue
             if ev_game.event_flag == EventFlag.EV_PONG:
                 meld = self.player.pong_handler(ev_game.tile, ev_game.melds)
                 if meld is not None:
-                    ev_player = GameEvent(EventFlag.EV_PONG, None, meld)
+                    melds = []
+                    melds.append(meld)
+                    ev_player = GameEvent(EventFlag.EV_PONG, None, None, melds)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                     continue
             if ev_game.event_flag == EventFlag.EV_CHOW:
                 meld = self.player.chow_handler(ev_game.tile, ev_game.melds)
                 if meld is not None:
-                    ev_player = GameEvent(EventFlag.EV_CHOW, None, meld)
+                    melds = []
+                    melds.append(meld)
+                    ev_player = GameEvent(EventFlag.EV_CHOW, None, None, melds)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                     continue
             if ev_game.event_flag == EventFlag.EV_GAME_OVER:
@@ -103,7 +107,7 @@ class PlayerCtrl(threading.Thread):
                 break
 
     def __do_nothing(self):
-        ev_player = GameEvent(EventFlag.EV_DO_NOTHING, None, None)
+        ev_player = GameEvent(EventFlag.EV_DO_NOTHING, None, None, None)
         self.player.info.ev_player_queue.put(ev_player, False, None)
 
 
@@ -131,7 +135,7 @@ class GameCtrl(threading.Thread):
             (b_continued, b_count_keep) = self.__round()
             if not self.game.goto_next_round(b_continued, b_count_keep):
                 # GAME OVER
-                ev_game = GameEvent(EventFlag.EV_GAME_OVER, None, None)
+                ev_game = GameEvent(EventFlag.EV_GAME_OVER, None, None, None)
                 for player_info in self.game.players_info:
                     player_info.ev_game_queue.put(ev_game, False, None)
                 break
@@ -161,7 +165,7 @@ class GameCtrl(threading.Thread):
         ev_player = None
         b_last = False
         flag = 0
-        melds = []
+        tiles = None
         if len(self.game.wall) == 0:
             b_last = True
         # check win by selfpick tile
@@ -197,9 +201,10 @@ class GameCtrl(threading.Thread):
         # check declare ready able
         if len(self.game.wall) >= 4 and \
            not self.turn_player.b_declared_ready and \
-           not self.turn_player.b_declared_double_ready and \
-           self.turn_player.hand.judge_declare_ready_able(tile):
-            flag = (flag | EventFlag.EV_DECLARE_READY)
+           not self.turn_player.b_declared_double_ready:
+            tiles = self.turn_player.hand.get_tiles_declare_ready_able(tile)
+            if len(tiles) > 0:
+                flag = (flag | EventFlag.EV_DECLARE_READY)
         else:
             # check closed kong able after declared ready
             meld = self.__check_closed_kong_after_declared_ready(tile)
@@ -210,7 +215,7 @@ class GameCtrl(threading.Thread):
                 return self.__pickup_tile(dead_wall_tile, True)
         flag = (flag | EventFlag.EV_PICKUP_TILE)
         self.turn_player.hand.sort_tiles()
-        ev_game = GameEvent(flag, tile, melds)
+        ev_game = GameEvent(flag, tile, tiles, None)
         self.turn_player.ev_game_queue.put(ev_game, False, None)
         while(True):
             ev_player = self.turn_player.ev_player_queue.get(True, None)
@@ -245,7 +250,7 @@ class GameCtrl(threading.Thread):
             state_flag = self.turn_player.make_state_flag(False, b_dead_wall_draw, False, b_last)
             win_hand = self.game.get_winhand(self.turn_player.hand, state_flag, tile, False, self.turn_player.seat_wind)
             if win_hand is not None:
-                ev_game = GameEvent(EventFlag.EV_WIN_SELFPICK, tile, None)
+                ev_game = GameEvent(EventFlag.EV_WIN_SELFPICK, tile, None, None)
                 self.turn_player.ev_game_queue.put(ev_game, False, None)
                 ev_player = self.turn_player.ev_player_queue.get(True, None)
                 if ev_player.event_flag == EventFlag.EV_WIN_SELFPICK:
@@ -261,7 +266,7 @@ class GameCtrl(threading.Thread):
             state_flag = next_player.make_state_flag(True, False, b_robbing_a_quad, b_last)
             win_hand = self.game.get_winhand(next_player.hand, state_flag, tile, True, next_player.seat_wind)
             if win_hand is not None:
-                ev_game = GameEvent(EventFlag.EV_WIN_DISCARD, tile, None)
+                ev_game = GameEvent(EventFlag.EV_WIN_DISCARD, tile, None, None)
                 next_player.ev_game_queue.put(ev_game, False, None)
                 ev_player = next_player.ev_player_queue.get(True, None)
                 if ev_player.event_flag == EventFlag.EV_WIN_DISCARD:
@@ -281,7 +286,7 @@ class GameCtrl(threading.Thread):
         melds = self.turn_player.hand.get_melds_closed_kong_able(tile)
         if len(melds) == 0:
             return None
-        ev_game = GameEvent(EventFlag.EV_CLOSED_KONG, tile, melds)
+        ev_game = GameEvent(EventFlag.EV_CLOSED_KONG, tile, None, melds)
         self.turn_player.ev_game_queue.put(ev_game, False, None)
         ev_player = self.turn_player.ev_player_queue.get(True, None)
         if not ev_player.event_flag == EventFlag.EV_CLOSED_KONG:
@@ -293,15 +298,16 @@ class GameCtrl(threading.Thread):
         return None
 
     def __check_added_kong(self, tile):
+        tiles = []
         if self.turn_player.b_declared_ready or \
            self.turn_player.b_declared_double_ready or \
            len(self.game.wall) == 0 or \
            self.game.kong_count == 4:
             return None
-        melds = self.turn_player.hand.get_melds_added_kong_able(tile)
-        if len(melds) == 0:
+        tiles = self.turn_player.hand.get_tiles_added_kong_able(tile)
+        if len(tiles) == 0:
             return None
-        ev_game = GameEvent(EventFlag.EV_ADDED_KONG, tile, melds)
+        ev_game = GameEvent(EventFlag.EV_ADDED_KONG, tile, tiles, None)
         self.turn_player.ev_game_queue.put(ev_game, False, None)
         ev_player = self.turn_player.ev_player_queue.get(True, None)
         if not ev_player.event_flag == EventFlag.EV_ADDED_KONG:
@@ -341,8 +347,9 @@ class EventFlag(IntEnum):
 
 class GameEvent():
 
-    def __init__(self, event_flag, tile, melds):
+    def __init__(self, event_flag, tile, tiles, melds):
         self.event_flag = event_flag
         self.tile = tile
+        self.tiles = tiles
         self.melds = melds
 

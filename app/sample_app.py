@@ -51,48 +51,33 @@ class ManualPlayer(gpmjplayer.Player):
 
     def closed_kong_handler(self, tile, melds):
         self.print_tiles(tile)
-        self.print_cmd_kong()
+        self.print_cmd_closed_kong(melds)
         while(True):
             cmd = input(">> ")
-            if cmd == "y":
-                print("Closed kong")
-                return meld
-            elif cmd == "n":
+            if cmd == "n":
                 return None
             else:
-                print("input y or n")
+                return self.get_closed_kong_meld(cmd, melds)
 
-    def added_kong_handler(self, tile, melds):
+    def added_kong_handler(self, tile, tiles):
         self.print_tiles(tile)
-        self.print_cmd_kong()
+        self.print_cmd_added_kong(tiles)
         while(True):
             cmd = input(">> ")
-            if cmd == "y":
-                print("Added kong")
-                return added_tile
-            elif cmd == "n":
+            if cmd == "n":
                 return None
             else:
-                print("input y or n")
+                return self.get_added_kong_tile(cmd, tiles)
 
-    def declare_ready_handler(self, tile):
+    def declare_ready_handler(self, tile, tiles):
         self.print_tiles(tile)
-        self.print_cmd_declare_ready()
+        self.print_cmd_declare_ready(tiles)
         while(True):
             cmd = input(">> ")
-            if cmd == "y":
-                print("Declare ready")
-                self.print_tiles(tile)
-                self.print_cmd_pickup_tile(tile)
-                cmd = input(">> ")
-                if cmd == " ":
-                    return tile
-                else:
-                    return self.get_discard_tile(cmd)
-            elif cmd == "n":
+            if cmd == "n":
                 return None
             else:
-                print("input y or n")
+                return self.get_discard_tile_declare_ready(cmd, tiles)
 
     # Event handler for discarded tile
     def win_discard_handler(self, tile):
@@ -116,6 +101,74 @@ class ManualPlayer(gpmjplayer.Player):
 
     def stolen_kong_handler(self, tile):
         return False
+
+    # Tools for manual player
+    def print_tiles(self, pickup_tile):
+        self.info.hand.print_pure_tiles()
+        if pickup_tile is not None:
+            print(" :"+pickup_tile.print_char, end="")
+        self.info.hand.print_exposed_tiles()
+        print("")
+
+    def print_cmd_pickup_tile(self, pickup_tile):
+        num_pure_tiles = self.info.hand.get_num_of_pure_tiles()
+        for i in range(ord("a"), ord("a")+num_pure_tiles):
+            print("  "+chr(i)+" ", end="")
+        else:
+            if pickup_tile is not None:
+                print(" :<SP>", end="")
+        print("")
+
+    def print_cmd_win(self):
+        print("y: win")
+        print("n: not win")
+
+    def print_cmd_closed_kong(self, melds):
+        print("Closed kong?")
+        for i in range(len(melds)):
+            print(chr(ord("a") + i)+": ", end="")
+            melds[i].print_meld()
+            print("")
+        print("n: not kong")
+
+    def print_cmd_added_kong(self, tiles):
+        print("Added kong?")
+        for i in range(len(tiles)):
+            print(chr(ord("a") + i)+": ", end="")
+            if tiles[i].b_red:
+                print(tiles[i].print_char.lower(), end="")
+            else:
+                print(tiles[i].print_char, end="")
+            print("")
+        print("n: not kong")
+
+    def print_cmd_declare_ready(self, tiles):
+        print("Declare ready?")
+        for i in range(len(tiles)):
+            print(chr(ord("a") + i)+": ", end="")
+            if tiles[i].b_red:
+                print(tiles[i].print_char.lower(), end="")
+            else:
+                print(tiles[i].print_char, end="")
+            print("")
+        print("n: not declare ready")
+
+    def get_discard_tile(self, cmd):
+        offset = ord(cmd) - ord("a")
+        (suit, index) = self.info.hand.convert_overall_index_into_suit_index(offset)
+        return self.info.hand.pure_tiles[suit][index]
+
+    def get_closed_kong_meld(self, cmd, melds):
+        offset = ord(cmd) - ord("a")
+        return melds[offset]
+
+    def get_added_kong_tile(self, cmd, tiles):
+        offset = ord(cmd) - ord("a")
+        return tiles[offset]
+
+    def get_discard_tile_declare_ready(self, cmd, tiles):
+        offset = ord(cmd) - ord("a")
+        return tiles[offset]
 
 
 # main

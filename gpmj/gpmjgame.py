@@ -337,6 +337,7 @@ class Game():
                     if not win_hand.hand_flag & gpmjcore.HandFlag.LIMIT_HAND:
                         win_hand.hand_value = 0
                         self.seven_pairs_hand_jc.judge_chain(win_hand)
+                        win_hand.hand_value += win_hand.get_state_value()
                         win_hand.calc_points()
         # set number of doras
         if win_hand is not None:

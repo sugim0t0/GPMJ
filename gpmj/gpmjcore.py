@@ -75,14 +75,14 @@ Date           Version   Description
                          and modified to be able to get multiple melds
 06 Feb. 2018   0.46      Add get_melds_closed_kong_able()
 07 Feb. 2018   0.47      Rename declare_kong() to closed_kong() and add added_kong()
+10 Feb. 2018   0.48      Rename get_melds_added_kong_able() to get_tiles_added_kong_able()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
-from copy import deepcopy
 
-__version__ = "0.47"
-__date__    = "07 Feb. 2018"
+__version__ = "0.48"
+__date__    = "10 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1376,6 +1376,21 @@ class Meld():
             return True
         return False
 
+    def print_meld(self):
+        if meld.b_stolen:
+            print("(", end="")
+        elif len(meld.tiles) == 4:
+            print("[", end="")
+        for tile in meld.tiles:
+            if tile.b_red:
+                print(tile.print_char.lower(), end="")
+            else:
+                print(tile.print_char, end="")
+        if meld.b_stolen:
+            print(")", end="")
+        elif len(meld.tiles) == 4:
+            print("]", end="")
+
 
 class Hand():
 
@@ -1430,19 +1445,7 @@ class Hand():
 
     def print_exposed_tiles(self):
         for meld in self.exposed:
-            if meld.b_stolen:
-                print(" (", end="")
-            else:
-                print(" [", end="")
-            for tile in meld.tiles:
-                if tile.b_red:
-                    print(tile.print_char.lower(), end="")
-                else:
-                    print(tile.print_char, end="")
-            if meld.b_stolen:
-                print(")", end="")
-            else:
-                print("]", end="")
+            meld.print_meld()
 
     def get_num_of_pure_tiles(self):
         num_of_pure_tiles = 0
@@ -1583,21 +1586,25 @@ class Hand():
             x += 1
         return b_ready
 
-    def judge_declare_ready_able(self, pickup_tile):
+    def get_tiles_declare_ready_able(self, pickup_tile):
+        tiles = []
         for meld in self.exposed:
             if meld.b_stolen:
-                return False
-        hand_copy = deepcopy(self)
-        hand_copy.append_tile(pickup_tile)
+                return tiles
+        self.append_tile(pickup_tile)
         for suit in range(Suits.NUM_OF_SUITS):
-            for tile in hand_copy.pure_tiles[suit][:]:
-                hand_copy.remove_tile(tile)
-                hand_copy.update_required()
+            for tile in self.pure_tiles[suit][:]:
+                self.remove_tile(tile)
+                self.update_required()
                 for suit in range(Suits.NUM_OF_SUITS):
-                    if len(hand_copy.required[suit]) > 0:
-                        return True
-                hand_copy.append_tile(tile)
-        return False
+                    if len(self.required[suit]) > 0:
+                        if not tile in tiles:
+                            tiles.append(tile)
+                            break
+                self.append_tile(tile)
+                self.required = [set(), set(), set(), set(), set()]
+        self.remove_tile(pickup_tile)
+        return tiles
 
     def update_required(self):
         required = self.get_required_13orphans()
@@ -1867,7 +1874,6 @@ class Hand():
                             for _tile in self.pure_tiles[suit]:
                                 if _tile.number == current_number:
                                     if len(meld.tiles) == 3:
-                                        meld.make_kong(_tile)
                                         melds.append(meld)
                                     else:
                                         meld.add_tile(_tile)
@@ -1877,16 +1883,16 @@ class Hand():
         self.remove_tile(input_tile)
         return melds
 
-    def get_melds_added_kong_able(self, input_tile):
-        melds = []
+    def get_tiles_added_kong_able(self, input_tile):
+        tiles = []
         self.append_tile(input_tile)
         for meld in self.exposed:
             if meld.b_stolen and (not meld.b_sequential):
                 for tile in self.pure_tiles[meld.tiles[0].suit]:
                     if tile.number == meld.tiles[0].number:
-                        melds.append(meld)
+                        tiles.append(tile)
         self.remove_tile(input_tile)
-        return melds
+        return tiles
 
     def steal_tile(self, meld, discarded_tile):
         for tile in meld.tiles:
