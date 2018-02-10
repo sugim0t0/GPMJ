@@ -671,7 +671,7 @@ class TestGpmjCore(unittest.TestCase):
         result = self.hand.judge_different_9orphans()
         self.assertEqual(result, False)
 
-    def test_declare_kong_exposed(self):
+    def test_added_kong_exposed(self):
         # ([D1][D1][D1]) [D2][D3][D4][D5][D6][D7][D8][D9][D9][D9] + [D1]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
@@ -692,13 +692,13 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][3]
         self.hand.append_tile(last_tile)
-        result = self.hand.declare_kong(gpmjcore.Suits.DOTS, 1)
+        result = self.hand.added_kong(last_tile)
         self.assertEqual(result, True)
         self.assertEqual(len(self.hand.exposed), 1)
         self.assertEqual(self.hand.exposed[0].b_stolen, True)
         self.assertEqual(len(self.hand.exposed[0].tiles), 4)
 
-    def test_declare_kong_hidden(self):
+    def test_closed_kong_hidden(self):
         # [D1][D1][D1][D2][D3][D4][D5][D6][D7][D8][D9][D9][D9] + [D1]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
@@ -715,11 +715,11 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][34])
         last_tile = self.all_tiles[gpmjcore.Suits.DOTS][3]
         self.hand.append_tile(last_tile)
-        result = self.hand.declare_kong(gpmjcore.Suits.DOTS, 2)
+        result = self.hand.closed_kong(gpmjcore.Suits.DOTS, 2)
         self.assertEqual(result, False)
-        result = self.hand.declare_kong(gpmjcore.Suits.DOTS, 9)
+        result = self.hand.closed_kong(gpmjcore.Suits.DOTS, 9)
         self.assertEqual(result, False)
-        result = self.hand.declare_kong(gpmjcore.Suits.DOTS, 1)
+        result = self.hand.closed_kong(gpmjcore.Suits.DOTS, 1)
         self.assertEqual(result, True)
         self.assertEqual(len(self.hand.exposed), 1)
         self.assertEqual(self.hand.exposed[0].b_stolen, False)
@@ -5730,7 +5730,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][17])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][18])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][19])
-        self.hand.declare_kong(gpmjcore.Suits.BAMBOO, 5)
+        self.hand.closed_kong(gpmjcore.Suits.BAMBOO, 5)
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][24])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][25])
@@ -6055,7 +6055,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][3])
-        self.hand.declare_kong(gpmjcore.Suits.DOTS, 1)
+        self.hand.closed_kong(gpmjcore.Suits.DOTS, 1)
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][7])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][15])
@@ -6165,7 +6165,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][1])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][3])
-        self.hand.declare_kong(gpmjcore.Suits.DOTS, 1)
+        self.hand.closed_kong(gpmjcore.Suits.DOTS, 1)
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][2])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][1])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][10])

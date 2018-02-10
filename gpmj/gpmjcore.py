@@ -1377,18 +1377,18 @@ class Meld():
         return False
 
     def print_meld(self):
-        if meld.b_stolen:
+        if self.b_stolen:
             print("(", end="")
-        elif len(meld.tiles) == 4:
+        elif len(self.tiles) == 4:
             print("[", end="")
-        for tile in meld.tiles:
+        for tile in self.tiles:
             if tile.b_red:
                 print(tile.print_char.lower(), end="")
             else:
                 print(tile.print_char, end="")
-        if meld.b_stolen:
+        if self.b_stolen:
             print(")", end="")
-        elif len(meld.tiles) == 4:
+        elif len(self.tiles) == 4:
             print("]", end="")
 
 
@@ -1921,17 +1921,6 @@ class Hand():
                         meld.make_kong(tile)
                         break
             self.exposed.append(meld)
-        elif cnt == 1:
-            for tile in self.pure_tiles[suit][:]:
-                if tile.number == number:
-                    for meld in self.exposed:
-                        if not meld.b_sequential and meld.tiles[0].number == number:
-                            self.pure_tiles[suit].remove(tile)
-                            meld.make_kong(tile)
-                            break
-                    else:
-                        return False
-                    break
         else:
             return False
         return True
@@ -1940,6 +1929,7 @@ class Hand():
         for meld in self.exposed:
             if meld.b_sequential == False and meld.b_stolen == True and \
                meld.tiles[0].suit == tile.suit and meld.tiles[0].number == tile.number:
+                self.pure_tiles[tile.suit].remove(tile)
                 meld.make_kong(tile)
                 return True
         else:
