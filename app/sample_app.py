@@ -57,7 +57,7 @@ class ManualPlayer(gpmjplayer.Player):
             if cmd == "n":
                 return None
             else:
-                return self.get_closed_kong_meld(cmd, melds)
+                return self.get_element_from_cmd(cmd, melds)
 
     def added_kong_handler(self, tile, tiles):
         self.print_tiles(tile)
@@ -67,7 +67,7 @@ class ManualPlayer(gpmjplayer.Player):
             if cmd == "n":
                 return None
             else:
-                return self.get_added_kong_tile(cmd, tiles)
+                return self.get_element_from_cmd(cmd, tiles)
 
     def declare_ready_handler(self, tile, tiles):
         self.print_tiles(tile)
@@ -77,7 +77,7 @@ class ManualPlayer(gpmjplayer.Player):
             if cmd == "n":
                 return None
             else:
-                return self.get_discard_tile_declare_ready(cmd, tiles)
+                return self.get_element_from_cmd(cmd, tiles)
 
     # Event handler for discarded tile
     def win_discard_handler(self, tile):
@@ -94,13 +94,57 @@ class ManualPlayer(gpmjplayer.Player):
                 print("input y or n")
 
     def chow_handler(self, tile, melds):
-        return None
+        self.print_tiles(None)
+        self.print_cmd_chow(tile, melds)
+        while(True):
+            cmd = input(">> ")
+            if cmd == "n":
+                return (None, None)
+            else:
+                meld = self.get_element_from_cmd(cmd, melds)
+                break
+        self.print_tiles(None)
+        self.print_cmd_pickup_tile(None)
+        while(True):
+            cmd = input(">> ")
+            discard_tile = self.get_discard_tile(cmd)
+            if discard_tile in meld.tiles:
+                print("select tile not included stolen meld")
+            else:
+                return (meld, discard_tile)
 
     def pong_handler(self, tile, melds):
-        return None
+        self.print_tiles(None)
+        self.print_cmd_pong(tile, melds)
+        while(True):
+            cmd = input(">> ")
+            if cmd == "n":
+                return (None, None)
+            else:
+                meld = self.get_element_from_cmd(cmd, melds)
+                break
+        self.print_tiles(None)
+        self.print_cmd_pickup_tile(None)
+        while(True):
+            cmd = input(">> ")
+            discard_tile = self.get_discard_tile(cmd)
+            if discard_tile in meld.tiles:
+                print("select tile not included stolen meld")
+            else:
+                return (meld, discard_tile)
 
     def stolen_kong_handler(self, tile):
-        return False
+        self.print_tiles(None)
+        self.print_cmd_stolen_kong(tile)
+        while(True):
+            cmd = input(">> ")
+            if cmd == "y":
+                print("Kong")
+                return True
+            elif cmd == "n":
+                return False
+            else:
+                print("input y or n")
 
     # Tools for manual player
     def print_tiles(self, pickup_tile):
@@ -120,6 +164,7 @@ class ManualPlayer(gpmjplayer.Player):
         print("")
 
     def print_cmd_win(self):
+        print("Win?")
         print("y: win")
         print("n: not win")
 
@@ -135,10 +180,7 @@ class ManualPlayer(gpmjplayer.Player):
         print("Added kong?")
         for i in range(len(tiles)):
             print(chr(ord("a") + i)+": ", end="")
-            if tiles[i].b_red:
-                print(tiles[i].print_char.lower(), end="")
-            else:
-                print(tiles[i].print_char, end="")
+            tiles[i].print_tile()
             print("")
         print("n: not kong")
 
@@ -146,29 +188,45 @@ class ManualPlayer(gpmjplayer.Player):
         print("Declare ready?")
         for i in range(len(tiles)):
             print(chr(ord("a") + i)+": ", end="")
-            if tiles[i].b_red:
-                print(tiles[i].print_char.lower(), end="")
-            else:
-                print(tiles[i].print_char, end="")
+            tiles[i].print_tile()
             print("")
         print("n: not declare ready")
+
+    def print_cmd_stolen_kong(self, tile):
+        print("Kong? ", end="")
+        tile.print_tile()
+        print("")
+        print("y: kong")
+        print("n: not kong")
+
+    def print_cmd_pong(self, tile, melds):
+        print("Pong? ", end="")
+        tile.print_tile()
+        print("")
+        for i in range(len(melds)):
+            print(chr(ord("a") + i)+": ", end="")
+            melds[i].print_meld()
+            print("")
+        print("n: not pong")
+
+    def print_cmd_chow(self, tile, melds):
+        print("Chow? ", end="")
+        tile.print_tile()
+        print("")
+        for i in range(len(melds)):
+            print(chr(ord("a") + i)+": ", end="")
+            melds[i].print_meld()
+            print("")
+        print("n: not chow")
 
     def get_discard_tile(self, cmd):
         offset = ord(cmd) - ord("a")
         (suit, index) = self.info.hand.convert_overall_index_into_suit_index(offset)
         return self.info.hand.pure_tiles[suit][index]
 
-    def get_closed_kong_meld(self, cmd, melds):
+    def get_element_from_cmd(self, cmd, objs):
         offset = ord(cmd) - ord("a")
-        return melds[offset]
-
-    def get_added_kong_tile(self, cmd, tiles):
-        offset = ord(cmd) - ord("a")
-        return tiles[offset]
-
-    def get_discard_tile_declare_ready(self, cmd, tiles):
-        offset = ord(cmd) - ord("a")
-        return tiles[offset]
+        return objs[offset]
 
 
 # main

@@ -508,7 +508,7 @@ class Game():
     def print_dora_indicators(self):
         print("[dora(indicator)]")
         for x in range(self.kong_count + 1):
-            print(self.doras[x].print_char, end="")
+            self.doras[x].print_tile()
         print("")
 
     def print_wall(self):
@@ -520,7 +520,7 @@ class Game():
             return
         elif rest_of_tile == 1:
             print("")
-            print(self.wall[0].print_char)
+            self.wall[0].print_tile()
             return
         remainder = rest_of_tile % 34
         if (remainder % 2) == 0:
@@ -538,7 +538,7 @@ class Game():
             for x in range(space):
                 print("    ", end="")
             for x in range(17 - space):
-                print(self.wall[upper_index].print_char, end="")
+                self.wall[upper_index].print_tile()
                 upper_index -= 2
                 rest_of_tile -= 1
             print("")
@@ -547,7 +547,7 @@ class Game():
             for x in range(space):
                 print("    ", end="")
             for x in range(17 - space):
-                print(self.wall[downer_index].print_char, end="")
+                self.wall[downer_index].print_tile()
                 downer_index -= 2
                 rest_of_tile -= 1
             print("")
@@ -555,13 +555,13 @@ class Game():
         while rest_of_tile > 0:
             # Upper tiles of wall
             for x in range(17):
-                print(self.wall[upper_index].print_char, end="")
+                self.wall[upper_index].print_tile()
                 upper_index -= 2
                 rest_of_tile -= 1
             print("")
             # Downer tiles of wall
             for x in range(17):
-                print(self.wall[downer_index].print_char, end="")
+                self.wall[downer_index].print_tile()
                 downer_index -= 2
                 rest_of_tile -= 1
             print("")
@@ -580,12 +580,12 @@ class Game():
             print("    ", end="")
         # Upper tiles of dead wall
         for x in range(7):
-            print(self.dead_wall[upper_index].print_char, end="")
+            self.dead_wall[upper_index].print_tile()
             upper_index -= 2
         print("")
         # Downer tiles of dead wall
         for x in range(7):
-            print(self.dead_wall[downer_index].print_char, end="")
+            self.dead_wall[downer_index].print_tile()
             downer_index -= 2
         print("")
         print("")
@@ -655,10 +655,7 @@ class PlayerInfo():
     def print_discards(self):
         print(" - "+self.name+" -")
         for tile in self.discards:
-            if tile.b_red:
-                print(tile.print_char.lower(), end="")
-            else:
-                print(tile.print_char, end="")
+            tile.print_tile()
         print("")
 
 

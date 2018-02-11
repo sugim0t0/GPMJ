@@ -41,7 +41,7 @@ class Player():
     def added_kong_handler(self, tile, melds):
         return None
 
-    def declare_ready_handler(self, tiles):
+    def declare_ready_handler(self, tile, tiles):
         return None
 
     # Event handler for discarded tile
@@ -49,10 +49,10 @@ class Player():
         return True
 
     def chow_handler(self, tile, melds):
-        return None
+        return (None, None) # (meld, discard_tile)
 
     def pong_handler(self, tile, melds):
-        return None
+        return (None, None) # (meld, discard_tile)
 
     def stolen_kong_handler(self, tile):
         return False

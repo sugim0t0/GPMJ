@@ -76,13 +76,14 @@ Date           Version   Description
 06 Feb. 2018   0.46      Add get_melds_closed_kong_able()
 07 Feb. 2018   0.47      Rename declare_kong() to closed_kong() and add added_kong()
 10 Feb. 2018   0.48      Rename get_melds_added_kong_able() to get_tiles_added_kong_able()
+11 Feb. 2018   0.49      Add print_tile()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.48"
-__date__    = "10 Feb. 2018"
+__version__ = "0.49"
+__date__    = "11 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1290,6 +1291,12 @@ class Tile():
                 number += 1
         return (self.suit, number)
 
+    def print_tile(self):
+        if self.b_red:
+            print(self.print_char.lower(), end="")
+        else:
+            print(self.print_char, end="")
+
 
 class Eye():
 
@@ -1382,10 +1389,7 @@ class Meld():
         elif len(self.tiles) == 4:
             print("[", end="")
         for tile in self.tiles:
-            if tile.b_red:
-                print(tile.print_char.lower(), end="")
-            else:
-                print(tile.print_char, end="")
+            tile.print_tile()
         if self.b_stolen:
             print(")", end="")
         elif len(self.tiles) == 4:
@@ -1438,10 +1442,7 @@ class Hand():
     def print_pure_tiles(self):
         for suit in range(Suits.NUM_OF_SUITS):
             for tile in self.pure_tiles[suit]:
-                if tile.b_red:
-                    print(tile.print_char.lower(), end="")
-                else:
-                    print(tile.print_char, end="")
+                tile.print_tile()
 
     def print_exposed_tiles(self):
         for meld in self.exposed:
@@ -2097,11 +2098,11 @@ class MeldEyeTreeNode():
             print("    ", end="")
         if self.meld is not None:
             for tile in self.meld.tiles:
-                print(tile.print_char, end="")
+                tile.print_tile()
             print("")
         elif self.eye is not None:
             for tile in self.eye.tiles:
-                print(tile.print_char, end="")
+                tile.print_tile()
             print("")
         for next_node in self.next_nodes:
             next_node.print_tree(depth+1)
