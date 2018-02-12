@@ -736,6 +736,26 @@ class TestGpmjCore(unittest.TestCase):
         result = meld.make_kong(self.all_tiles[gpmjcore.Suits.DOTS][3])
         self.assertEqual(result, True)
 
+    def test_get_winhands_basic_for_debug_2018_02_12(self):
+        # [D5][D5][B6][B7][B8][C9][C9][C9][Es][Es][Es][St][St] + [D5]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][17])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][20])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][24])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][33])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][34])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][0])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][2])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.WINDS][5])
+        last_tile = self.all_tiles[gpmjcore.Suits.DOTS][18]
+        self.hand.append_tile(last_tile)
+        win_hands = self.hand.get_winhands_basic(0, last_tile, True, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        self.assertEqual(len(win_hands), 1)
+
     def test_get_winhands_basic_none(self):
         # [B1][D1][D1][D2][D3][D4][D5][D6][D7][D8][D9][D9][D9] + [D6]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.BAMBOO][0])

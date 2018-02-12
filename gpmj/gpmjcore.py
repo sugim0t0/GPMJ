@@ -77,13 +77,14 @@ Date           Version   Description
 07 Feb. 2018   0.47      Rename declare_kong() to closed_kong() and add added_kong()
 10 Feb. 2018   0.48      Rename get_melds_added_kong_able() to get_tiles_added_kong_able()
 11 Feb. 2018   0.49      Add print_tile()
+12 Feb. 2018   0.50      Fix bug of build_pure_meld_eye_tree()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.49"
-__date__    = "11 Feb. 2018"
+__version__ = "0.50"
+__date__    = "12 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1978,52 +1979,52 @@ class Hand():
                 if next_node is not None:
                     b_success = True
                     meld_eye_tree.append_next_node(next_node)
-                self.append_tile(meld.tiles[0])
-                self.append_tile(meld.tiles[1])
-                self.append_tile(meld.tiles[2])
+                for tile in meld.tiles:
+                    self.append_tile(tile)
                 self.sort_tiles()
         # Sequential meld
-        meld = Meld()
-        meld.add_tile(self.pop_tile(this_suit, 0))
-        prev_number = meld.tiles[0].number
-        for tile in self.pure_tiles[this_suit][:]:
-            if tile.number == prev_number:
-                continue
-            elif tile.number == (prev_number + 1):
-                prev_number += 1
-                meld.add_tile(tile)
-                self.pure_tiles[this_suit].remove(tile)
-                if len(meld.tiles) == 3:
+        if this_suit < Suits.NUM_OF_SIMPLES:
+            meld = Meld()
+            meld.add_tile(self.pop_tile(this_suit, 0))
+            prev_number = meld.tiles[0].number
+            for tile in self.pure_tiles[this_suit][:]:
+                if tile.number == prev_number:
+                    continue
+                elif tile.number == (prev_number + 1):
+                    prev_number += 1
+                    meld.add_tile(tile)
+                    self.pure_tiles[this_suit].remove(tile)
+                    if len(meld.tiles) == 3:
+                        break
+                else:
                     break
-            else:
-                break
-        if len(meld.tiles) == 3:
-            next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
-            if next_node is not None:
-                b_success = True
-                meld_eye_tree.append_next_node(next_node)
-                if last_tile in meld.tiles:
-                    for tile in self.pure_tiles[this_suit][:]:
-                        if tile.number == last_tile.number:
-                            meld.remove_tile(last_tile)
-                            self.append_tile(last_tile)
-                            self.pure_tiles[this_suit].remove(tile)
-                            meld.add_tile(tile)
-                            next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
-                            meld_eye_tree.append_next_node(next_node)
-                            break
-                elif last_tile in self.pure_tiles[this_suit]:
-                    for tile in meld.tiles[:]:
-                        if tile.number == last_tile.number:
-                            meld.remove_tile(tile)
-                            self.append_tile(tile)
-                            self.pure_tiles[this_suit].remove(last_tile)
-                            meld.add_tile(last_tile)
-                            next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
-                            meld_eye_tree.append_next_node(next_node)
-                            break
-        for tile in meld.tiles:
-            self.append_tile(tile)
+            if len(meld.tiles) == 3:
+                next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
+                if next_node is not None:
+                    b_success = True
+                    meld_eye_tree.append_next_node(next_node)
+                    if last_tile in meld.tiles:
+                        for tile in self.pure_tiles[this_suit][:]:
+                            if tile.number == last_tile.number:
+                                meld.remove_tile(last_tile)
+                                self.append_tile(last_tile)
+                                self.pure_tiles[this_suit].remove(tile)
+                                meld.add_tile(tile)
+                                next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
+                                meld_eye_tree.append_next_node(next_node)
+                                break
+                    elif last_tile in self.pure_tiles[this_suit]:
+                        for tile in meld.tiles[:]:
+                            if tile.number == last_tile.number:
+                                meld.remove_tile(tile)
+                                self.append_tile(tile)
+                                self.pure_tiles[this_suit].remove(last_tile)
+                                meld.add_tile(last_tile)
+                                next_node = self.build_pure_meld_eye_tree(meld, None, last_tile)
+                                meld_eye_tree.append_next_node(next_node)
+                                break
+            for tile in meld.tiles:
+                self.append_tile(tile)
         if b_success:
             return meld_eye_tree
         else:
