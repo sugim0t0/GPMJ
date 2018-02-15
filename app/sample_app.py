@@ -36,6 +36,16 @@ class ManualPlayer(gpmjplayer.Player):
         else:
             return self.get_discard_tile(cmd)
 
+    def pickup_tile_after_declared_ready_handler(self, tile):
+        self.print_tiles(tile)
+        self.print_cmd_pickup_tile_after_declared_ready(tile)
+        while(True):
+            cmd = input(">> ")
+            if cmd == " ":
+                return tile
+            else:
+                print("Can't discard except pickup tile")
+
     def win_selfpick_handler(self, tile):
         self.print_tiles(tile)
         self.print_cmd_win()
@@ -161,6 +171,14 @@ class ManualPlayer(gpmjplayer.Player):
         else:
             if pickup_tile is not None:
                 print(" :<SP>", end="")
+        print("")
+
+    def print_cmd_pickup_tile_after_declared_ready(self, pickup_tile):
+        num_pure_tiles = self.info.hand.get_num_of_pure_tiles()
+        for i in range(num_pure_tiles):
+            print("    ", end="")
+        else:
+            print(" :<SP>", end="")
         print("")
 
     def print_cmd_win(self):
