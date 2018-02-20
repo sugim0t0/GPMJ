@@ -736,6 +736,30 @@ class TestGpmjCore(unittest.TestCase):
         result = meld.make_kong(self.all_tiles[gpmjcore.Suits.DOTS][3])
         self.assertEqual(result, True)
 
+    def test_get_winhands_basic_for_debug_2018_02_20(self):
+        # ([Gr][Gr][Gr]) [C1][C2][C2][C2][C3][C4][C5][C7][C8][C9] + [C1]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        meld = gpmjcore.Meld()
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][6])
+        self.hand.steal_tile(meld, self.all_tiles[gpmjcore.Suits.DRAGONS][6])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][6])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][24])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        last_tile = self.all_tiles[gpmjcore.Suits.CHARACTERS][0]
+        self.hand.append_tile(last_tile)
+        win_hands = self.hand.get_winhands_basic(0, last_tile, False, gpmjcore.Winds.EAST, gpmjcore.Winds.EAST)
+        self.assertEqual(len(win_hands), 1)
+
     def test_get_winhands_basic_for_debug_2018_02_12(self):
         # [D5][D5][B6][B7][B8][C9][C9][C9][Es][Es][Es][St][St] + [D5]
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DOTS][16])
@@ -5742,6 +5766,28 @@ class TestGpmjCore(unittest.TestCase):
         self.assertEqual(melds[0].tiles[0].number, 1)
         self.assertEqual(melds[0].tiles[1].number, 2)
         self.assertEqual(melds[0].tiles[2].number, 3)
+
+    def test_basic_wait_C1C3C6_for_debug_2018_02_20(self):
+        # ([Gr][Gr][Gr]) [C1][C2][C2][C2][C3][C4][C5][C7][C8][C9]
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        meld = gpmjcore.Meld()
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][5])
+        meld.add_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][6])
+        self.hand.steal_tile(meld, self.all_tiles[gpmjcore.Suits.DRAGONS][6])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][1])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][4])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][5])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][6])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][8])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][12])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][16])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][24])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][28])
+        self.hand.append_tile(self.all_tiles[gpmjcore.Suits.CHARACTERS][32])
+        self.required = self.hand.get_required_basic()
+        self.assertEqual(self.required, [set(),set(),{1,3,6},set(),set()])
 
     def test_basic_wait_none_0(self):
         # ([B5][B5][B5][B5]) [B4][B6][B7][B7][B7][B8][B8][B9][B9][B9]

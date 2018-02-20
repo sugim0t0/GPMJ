@@ -78,13 +78,14 @@ Date           Version   Description
 10 Feb. 2018   0.48      Rename get_melds_added_kong_able() to get_tiles_added_kong_able()
 11 Feb. 2018   0.49      Add print_tile()
 12 Feb. 2018   0.50      Fix bug of build_pure_meld_eye_tree()
+20 Feb. 2018   0.51      Fix bug of __remove_required_all_used()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.50"
-__date__    = "12 Feb. 2018"
+__version__ = "0.51"
+__date__    = "20 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1484,9 +1485,10 @@ class Hand():
                     if tile.number == number:
                         num_of_used += 1
                 for meld in self.exposed:
-                    for tile in meld.tiles:
-                        if tile.number == number:
-                            num_of_used += 1
+                    if meld.tiles[0].suit == suit:
+                        for tile in meld.tiles:
+                            if tile.number == number:
+                                num_of_used += 1
                 if num_of_used == 4:
                     required[suit] = required[suit] - {number}
             num_of_required += len(required[suit])
