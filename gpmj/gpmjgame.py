@@ -25,6 +25,7 @@ Date           Version   Description
 09 Jan. 2018   0.16      Add print_discards()
 14 Jan. 2018   0.17      Add get_winhand()
 31 Jan. 2018   0.18      Fixed bug of red 5 tile creation
+24 Feb. 2018   0.19      Add judge_furiten()
 -----------------------------------------------------------
 '''
 
@@ -34,8 +35,8 @@ import queue
 import gpmjcore
 from enum import Enum, IntEnum
 
-__version__ = "0.18"
-__date__    = "31 Jan. 2018"
+__version__ = "0.19"
+__date__    = "24 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -618,6 +619,7 @@ class PlayerInfo():
         self.b_declared_double_ready = False
         self.b_one_shot = False
         self.b_stolen = False
+        self.b_furiten = False
         self.discards = []
 
     def make_state_flag(self, b_discarded, b_dead_wall_draw, b_robbing_a_quad, b_last):
@@ -650,6 +652,15 @@ class PlayerInfo():
         elif b_robbing_a_quad:
             state_flag |= gpmjcore.StateFlag.ROBBING_A_QUAD
         return state_flag
+
+    def judge_furiten(self):
+        for suit in range(gpmjcore.Suits.NUM_OF_SUITS):
+            for number in self.hand.required[suit]:
+                for tile in self.discards:
+                    if tile.suit == suit and tile.number == number:
+                        self.b_furiten = True
+        else:
+            self.b_furiten = False
 
     # Tools
     def print_discards(self):

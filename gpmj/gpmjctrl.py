@@ -14,6 +14,7 @@ Date           Version   Description
 06 Feb. 2018   0.5       Add __pickup_tile()
 07 Feb. 2018   0.6       Add __do_nothing()
 11 Feb. 2018   0.7       Add __check_chow() and __check_pong()
+24 Feb. 2018   0.8       Modified to check Furiten
 -----------------------------------------------------------
 '''
 
@@ -23,8 +24,8 @@ import gpmjgame
 import gpmjplayer
 from enum import Enum, IntEnum
 
-__version__ = "0.7"
-__date__    = "11 Feb. 2018"
+__version__ = "0.8"
+__date__    = "24 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class PlayerCtrl(threading.Thread):
@@ -276,6 +277,7 @@ class GameCtrl(threading.Thread):
             if discard_tile is not None:
                 return self.__discard_tile(discard_tile, False, False)
         self.turn_player.hand.update_required()
+        self.turn_player.judge_furiten()
         self.turn_player = self.turn_player.next_player
         return (False, False, False)
 
@@ -296,19 +298,21 @@ class GameCtrl(threading.Thread):
         return False
 
     def __check_win_discard(self, next_player, tile, b_last, b_robbing_a_quad):
-        if tile.number in next_player.hand.required[tile.suit]:
-            state_flag = next_player.make_state_flag(True, False, b_robbing_a_quad, b_last)
-            win_hand = self.game.get_winhand(next_player.hand, state_flag, tile, True, next_player.seat_wind)
-            if win_hand is not None:
-                ev_game = GameEvent(EventFlag.EV_WIN_DISCARD, tile, None, None)
-                next_player.ev_game_queue.put(ev_game, False, None)
-                ev_player = next_player.ev_player_queue.get(True, None)
-                if ev_player.event_flag == EventFlag.EV_WIN_DISCARD:
-                    score = self.game.get_hand_score(win_hand)
-                    win_hand.print_win_hand()
-                    self.__print_score(score, True)
-                    self.game.win(next_player, True, self.turn_player.seat_wind, score)
-                    return True
+        if next_player.b_furiten is not True:
+            if tile.number in next_player.hand.required[tile.suit]:
+                next_player.b_furiten = True
+                state_flag = next_player.make_state_flag(True, False, b_robbing_a_quad, b_last)
+                win_hand = self.game.get_winhand(next_player.hand, state_flag, tile, True, next_player.seat_wind)
+                if win_hand is not None:
+                    ev_game = GameEvent(EventFlag.EV_WIN_DISCARD, tile, None, None)
+                    next_player.ev_game_queue.put(ev_game, False, None)
+                    ev_player = next_player.ev_player_queue.get(True, None)
+                    if ev_player.event_flag == EventFlag.EV_WIN_DISCARD:
+                        score = self.game.get_hand_score(win_hand)
+                        win_hand.print_win_hand()
+                        self.__print_score(score, True)
+                        self.game.win(next_player, True, self.turn_player.seat_wind, score)
+                        return True
         return False
 
     def __check_closed_kong(self, tile):
