@@ -15,6 +15,7 @@ Date           Version   Description
 07 Feb. 2018   0.6       Add __do_nothing()
 11 Feb. 2018   0.7       Add __check_chow() and __check_pong()
 24 Feb. 2018   0.8       Modified to check Furiten
+26 Feb. 2018   0.9       Implement __check_closed_kong_after_declared_ready()
 -----------------------------------------------------------
 '''
 
@@ -24,8 +25,8 @@ import gpmjgame
 import gpmjplayer
 from enum import Enum, IntEnum
 
-__version__ = "0.8"
-__date__    = "24 Feb. 2018"
+__version__ = "0.9"
+__date__    = "26 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class PlayerCtrl(threading.Thread):
@@ -329,8 +330,19 @@ class GameCtrl(threading.Thread):
         return ev_player.melds[0]
 
     def __check_closed_kong_after_declared_ready(self, tile):
-        # T.B.D
-        return None
+        if len(self.game.wall) == 0 or self.game.kong_count == 4:
+            return None
+        meld = self.turn_player.hand.get_meld_closed_kong_able_after_declared_ready(tile)
+        if meld is None:
+            return None
+        melds = []
+        melds.append(meld)
+        ev_game = GameEvent(EventFlag.EV_CLOSED_KONG, tile, None, melds)
+        self.turn_player.ev_game_queue.put(ev_game, False, None)
+        ev_player = self.turn_player.ev_player_queue.get(True, None)
+        if not ev_player.event_flag == EventFlag.EV_CLOSED_KONG:
+            return None
+        return ev_player.melds[0]
 
     def __check_added_kong(self, tile):
         tiles = []

@@ -79,13 +79,14 @@ Date           Version   Description
 11 Feb. 2018   0.49      Add print_tile()
 12 Feb. 2018   0.50      Fix bug of build_pure_meld_eye_tree()
 20 Feb. 2018   0.51      Fix bug of __remove_required_all_used()
+26 Feb. 2018   0.52      Add get_meld_closed_kong_able_after_declared_ready()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.51"
-__date__    = "20 Feb. 2018"
+__version__ = "0.52"
+__date__    = "26 Feb. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1886,6 +1887,29 @@ class Hand():
                         num_of_same_number = 1
         self.remove_tile(input_tile)
         return melds
+
+    def get_meld_closed_kong_able_after_declared_ready(self, input_tile):
+        if input_tile.number in self.required[input_tile.suit]:
+            return None
+        meld = Meld()
+        for tile in self.pure_tiles[input_tile.suit]:
+            if tile.number == input_tile.number:
+                meld.add_tile(tile)
+                if len(meld.tiles) == 3:
+                    break
+        else:
+            if len(meld.tiles) < 3:
+                return None
+        for tile in meld.tiles:
+            self.remove_tile(tile)
+        required_after_kong = self.get_required_basic()
+        for tile in meld.tiles:
+            self.append_tile(tile)
+        for suit in range(Suits.NUM_OF_SUITS):
+            if len(required_after_kong[suit] ^ self.required[suit]) > 0:
+                return None
+        else:
+            return meld
 
     def get_tiles_added_kong_able(self, input_tile):
         tiles = []
