@@ -80,13 +80,14 @@ Date           Version   Description
 12 Feb. 2018   0.50      Fix bug of build_pure_meld_eye_tree()
 20 Feb. 2018   0.51      Fix bug of __remove_required_all_used()
 26 Feb. 2018   0.52      Add get_meld_closed_kong_able_after_declared_ready()
+02 Mar. 2018   0.53      Fix bug of get_meld_closed_kong_able_after_declared_ready()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.52"
-__date__    = "26 Feb. 2018"
+__version__ = "0.53"
+__date__    = "02 Mar. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -1903,6 +1904,8 @@ class Hand():
         for tile in meld.tiles:
             self.remove_tile(tile)
         required_after_kong = self.get_required_basic()
+        if required_after_kong is None:
+            return None
         for tile in meld.tiles:
             self.append_tile(tile)
         for suit in range(Suits.NUM_OF_SUITS):
