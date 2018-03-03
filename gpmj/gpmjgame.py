@@ -26,6 +26,7 @@ Date           Version   Description
 14 Jan. 2018   0.17      Add get_winhand()
 31 Jan. 2018   0.18      Fixed bug of red 5 tile creation
 24 Feb. 2018   0.19      Add judge_furiten()
+04 Mar. 2018   0.20      Fixed bug of judge_furiten()
 -----------------------------------------------------------
 '''
 
@@ -35,8 +36,8 @@ import queue
 import gpmjcore
 from enum import Enum, IntEnum
 
-__version__ = "0.19"
-__date__    = "24 Feb. 2018"
+__version__ = "0.20"
+__date__    = "04 Mar. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
@@ -659,8 +660,10 @@ class PlayerInfo():
                 for tile in self.discards:
                     if tile.suit == suit and tile.number == number:
                         self.b_furiten = True
+                        return
         else:
             self.b_furiten = False
+            return
 
     # Tools
     def print_discards(self):
