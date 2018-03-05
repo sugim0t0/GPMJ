@@ -688,6 +688,7 @@ class GameConfig():
         self.min_score_gameover = 0
         ## ROUND
         self.continue_by_dealer_ready = True
+        self.continue_by_different_9orphans = True
 
     def parse_config(self, cfg_file_path):
         config = configparser.ConfigParser()
@@ -711,6 +712,8 @@ class GameConfig():
         round_section = config['round']
         # Round is continued by dealer's ready
         self.continue_by_dealer_ready = round_section.getboolean('continue_by_dealer_ready')
+        # Round is continued by different 9 orphans
+        self.continue_by_different_9orphans = round_section.getboolean('continue_by_different_9orphans')
         return True
 
 

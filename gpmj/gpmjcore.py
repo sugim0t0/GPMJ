@@ -81,13 +81,14 @@ Date           Version   Description
 20 Feb. 2018   0.51      Fix bug of __remove_required_all_used()
 26 Feb. 2018   0.52      Add get_meld_closed_kong_able_after_declared_ready()
 02 Mar. 2018   0.53      Fix bug of get_meld_closed_kong_able_after_declared_ready()
+05 Mar. 2018   0.54      Change spec of judge_different_9orphans()
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.53"
-__date__    = "02 Mar. 2018"
+__version__ = "0.54"
+__date__    = "05 Mar. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):
@@ -2059,10 +2060,11 @@ class Hand():
         else:
             return None
 
-    def judge_different_9orphans(self):
+    def judge_different_9orphans(self, tile):
         if len(self.exposed) > 0:
             return False
         cnt = 0
+        self.append_tile(tile)
         self.sort_tiles()
         for suit in range(Suits.NUM_OF_SIMPLES):
             prev_number = -1
@@ -2076,6 +2078,7 @@ class Hand():
                 if not tile.number == prev_number:
                     cnt += 1
                     prev_number = tile.number
+        self.remove_tile(tile)
         if cnt >= 9:
             return True
         else:

@@ -683,8 +683,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
         last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][8]
-        self.hand.append_tile(last_tile)
-        result = self.hand.judge_different_9orphans()
+        result = self.hand.judge_different_9orphans(last_tile)
         self.assertEqual(result, True)
 
     def test_judge_different_9orphans_1(self):
@@ -703,8 +702,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
         last_tile = self.all_tiles[gpmjcore.Suits.WINDS][2]
-        self.hand.append_tile(last_tile)
-        result = self.hand.judge_different_9orphans()
+        result = self.hand.judge_different_9orphans(last_tile)
         self.assertEqual(result, False)
 
     def test_judge_different_9orphans_2(self):
@@ -727,8 +725,7 @@ class TestGpmjCore(unittest.TestCase):
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][0])
         self.hand.append_tile(self.all_tiles[gpmjcore.Suits.DRAGONS][4])
         last_tile = self.all_tiles[gpmjcore.Suits.DRAGONS][8]
-        self.hand.append_tile(last_tile)
-        result = self.hand.judge_different_9orphans()
+        result = self.hand.judge_different_9orphans(last_tile)
         self.assertEqual(result, False)
 
     def test_added_kong_exposed(self):

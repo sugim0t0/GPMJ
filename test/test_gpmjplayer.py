@@ -51,6 +51,11 @@ class TestGpmjPlayer(unittest.TestCase):
         result = self.player.declare_ready_handler(tile, tiles)
         self.assertIsNone(result)
 
+    def test_different_9orphans_handler(self):
+        tile = gpmjcore.Tile(gpmjcore.Suits.DOTS, 1)
+        result = self.player.different_9orphans_handler(tile)
+        self.assertEqual(result, False)
+
     def test_win_discard_handler(self):
         tile = gpmjcore.Tile(gpmjcore.Suits.DOTS, 1)
         result = self.player.win_discard_handler(tile)

@@ -16,6 +16,7 @@ Date           Version   Description
 11 Feb. 2018   0.7       Add __check_chow() and __check_pong()
 24 Feb. 2018   0.8       Modified to check Furiten
 26 Feb. 2018   0.9       Implement __check_closed_kong_after_declared_ready()
+05 Mar. 2018   0.10      Add __check_different_9orphans()
 -----------------------------------------------------------
 '''
 
@@ -25,8 +26,8 @@ import gpmjgame
 import gpmjplayer
 from enum import Enum, IntEnum
 
-__version__ = "0.9"
-__date__    = "26 Feb. 2018"
+__version__ = "0.10"
+__date__    = "05 Mar. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class PlayerCtrl(threading.Thread):
@@ -62,6 +63,13 @@ class PlayerCtrl(threading.Thread):
                 added_tile = self.player.added_kong_handler(ev_game.tile, ev_game.tiles)
                 if added_tile is not None:
                     ev_player = GameEvent(EventFlag.EV_ADDED_KONG, added_tile, None, None)
+                    self.player.info.ev_player_queue.put(ev_player, False, None)
+                else:
+                    self.__do_nothing()
+                continue
+            if ev_game.event_flag & EventFlag.EV_DIF_9ORPHANS:
+                if self.player.different_9orphans_handler(ev_game.tile):
+                    ev_player = GameEvent(EventFlag.EV_DIF_9ORPHANS, None, None, None)
                     self.player.info.ev_player_queue.put(ev_player, False, None)
                 else:
                     self.__do_nothing()
@@ -187,11 +195,18 @@ class GameCtrl(threading.Thread):
         if len(self.game.wall) == 0:
             b_last = True
         # check win by selfpick tile
-        if True == self.__check_win_selfpick(tile, b_last, b_dead_wall_draw):
+        if self.__check_win_selfpick(tile, b_last, b_dead_wall_draw):
             if self.turn_player.seat_wind == gpmjcore.Winds.EAST:
                 return (True, True, True)
             else:
                 return (True, False, False)
+        # check different 9 orphans
+        if self.turn_player.b_first_pick:
+            if self.__check_different_9orphans(tile):
+                if self.game.config.continue_by_different_9orphans:
+                    return (True, True, True)
+                else:
+                    return (True, False, True)
         if self.turn_player.b_declared_ready or \
            self.turn_player.b_declared_double_ready:
             flag = (flag | EventFlag.EV_DECLARED_READY)
@@ -408,6 +423,15 @@ class GameCtrl(threading.Thread):
         else:
             return None
 
+    def __check_different_9orphans(self, tile):
+        if self.turn_player.hand.judge_different_9orphans(tile):
+            ev_game = GameEvent(EventFlag.EV_DIF_9ORPHANS, tile, None, None)
+            self.turn_player.ev_game_queue.put(ev_game, False, None)
+            ev_player = self.turn_player.ev_player_queue.get(True, None)
+            if ev_player.event_flag == EventFlag.EV_DIF_9ORPHANS:
+                return True
+        return False
+
     def __print_score(self, score, b_discarded):
         if b_discarded:
             print(str(score[0]))
@@ -436,6 +460,7 @@ class EventFlag(IntEnum):
     EV_DECLARED_READY = 0x00000100
     EV_WIN_SELFPICK   = 0x00000200
     EV_WIN_DISCARD    = 0x00000400
+    EV_DIF_9ORPHANS   = 0x00000800
     # Game -> Player events
     EV_GAME_OVER      = 0x10000000
 

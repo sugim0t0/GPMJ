@@ -10,6 +10,7 @@ Date           Version   Description
 23 Dec. 2017   0.1       Creation
 03 Jan. 2018   0.2       Discarding all pick up tiles version
 03 Feb. 2018   0.3       Implement each handlers
+05 Mar. 2018   0.4       Add different_9orphans_handler()
 -----------------------------------------------------------
 '''
 
@@ -18,8 +19,8 @@ import gpmjgame
 import gpmjplayer
 import gpmjctrl
 
-__version__ = "0.3"
-__date__    = "03 Feb. 2018"
+__version__ = "0.4"
+__date__    = "05 Mar. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class ManualPlayer(gpmjplayer.Player):
@@ -88,6 +89,19 @@ class ManualPlayer(gpmjplayer.Player):
                 return None
             else:
                 return self.get_element_from_cmd(cmd, tiles)
+
+    def different_9orphans_handler(self, tile):
+        self.print_tiles(tile)
+        self.print_cmd_different_9orphans()
+        while(True):
+            cmd = input(">> ")
+            if cmd == "y":
+                print("Different 9 orphans")
+                return True
+            elif cmd == "n":
+                return False
+            else:
+                print("input y or n")
 
     # Event handler for discarded tile
     def win_discard_handler(self, tile):
@@ -236,6 +250,11 @@ class ManualPlayer(gpmjplayer.Player):
             melds[i].print_meld()
             print("")
         print("n: not chow")
+
+    def print_cmd_different_9orphans(self):
+        print("Different 9 orphans?")
+        print("y: Different 9 orphans")
+        print("n: not different 9 orphans")
 
     def get_discard_tile(self, cmd):
         offset = ord(cmd) - ord("a")
