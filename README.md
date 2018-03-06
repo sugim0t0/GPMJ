@@ -12,24 +12,52 @@
 &#126979;
 &#126982;
 &#126981;
-&#126980;
+&#126980;  
+GPMJ is General Purpose (Japanese) Mah-Jong library for Python 3.  
+GPMJ includes following modules.  
+1. ./gpmj/gpmjcore.py
+  - Core module
+  - This module provides functions to judge each hand and structures of tile, meld, eye and hand.
+1. ./gpmj/gpmjgame.py
+  - Game module
+  - This module provides functions to process game and to manage game configurations.
+1. ./gpmj/gpmjplayer.py
+  - Player module
+  - This module provides Player template class included each handler fuction.
+  - User should implement each handler function to subclass Player class.
+1. ./gpmj/gpmjctrl.py
+  - Controller module
+  - This module provides controller for player and game.
+***
+## Sample application
+sample_app.py is sample application used GPMJ library.  
+1. ./app/sample_app.py
+  - This application provides simple command line Mah-jong game.
+1. ./app/setup.sh
+  - Shell script for setup sample application.
 
+### Usage
+    $ cd app  
+    $ source setup.sh
+    $ python sample_app.py
+***
 ## Install
-`$ python setup.py install [--user] --record files.txt`
+    $ python setup.py install [--user] --record files.txt
 
 ## Uninstall
-`$ cat files.txt | xargs rm -rf`  
-`$ rm files.txt`
+    $ cat files.txt | xargs rm -rf
+    $ rm files.txt
 
 ## Unit test
-`$ python -m unittest discover test/`
+    $ python -m unittest discover test/
 
 ## Coverage
-`$ cd test/`  
-`$ ln -s ../gpmj/gpmjcore.py gpmjcore.py`  
+    $ cd test/
+    $ ln -s ../gpmj/gpmjcore.py gpmjcore.py
 Edit test_gpmjcore.py  
 Comment out `# from gpmj import gpmjcore`  
 And uncomment `import gpmjcore`  
-`$ coverage run test_gpmjcore.py`  
-`$ coverage html gpmjcore.py`  
-`$ open htmlcov/index.html`  
+
+    $ coverage run test_gpmjcore.py
+    $ coverage html gpmjcore.py
+    $ open htmlcov/index.html

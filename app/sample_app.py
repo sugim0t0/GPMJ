@@ -3,6 +3,8 @@
 ''' GPMJ (General Purpose (Japanese) Mah-Jong library)
     Sample application
 
+    This application provides simple command line Mah-jong game.
+
 Modification History:
 ===========================================================
 Date           Version   Description
@@ -11,6 +13,7 @@ Date           Version   Description
 03 Jan. 2018   0.2       Discarding all pick up tiles version
 03 Feb. 2018   0.3       Implement each handlers
 05 Mar. 2018   0.4       Add different_9orphans_handler()
+06 Mar. 2018   1.0       Version 1.0 released
 -----------------------------------------------------------
 '''
 
@@ -19,8 +22,8 @@ import gpmjgame
 import gpmjplayer
 import gpmjctrl
 
-__version__ = "0.4"
-__date__    = "05 Mar. 2018"
+__version__ = "1.0"
+__date__    = "06 Mar. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class ManualPlayer(gpmjplayer.Player):

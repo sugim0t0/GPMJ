@@ -3,6 +3,8 @@
 ''' GPMJ (General Purpose (Japanese) Mah-Jong library)
     gpmjctrl module
 
+    This module provides controller for player and game.
+
 Modification History:
 ===========================================================
 Date           Version   Description
@@ -17,6 +19,7 @@ Date           Version   Description
 24 Feb. 2018   0.8       Modified to check Furiten
 26 Feb. 2018   0.9       Implement __check_closed_kong_after_declared_ready()
 05 Mar. 2018   0.10      Add __check_different_9orphans()
+06 Mar. 2018   1.0       Version 1.0 released
 -----------------------------------------------------------
 '''
 
@@ -26,8 +29,8 @@ import gpmjgame
 import gpmjplayer
 from enum import Enum, IntEnum
 
-__version__ = "0.10"
-__date__    = "05 Mar. 2018"
+__version__ = "1.0"
+__date__    = "06 Mar. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class PlayerCtrl(threading.Thread):

@@ -2,6 +2,9 @@
 
 ''' GPMJ (General Purpose (Japanese) Mah-Jong library)
     gpmjcore module
+    
+    This module provides functions to judge each hand and
+    structures of tile, meld, eye and hand.
 
 Modification History:
 ===========================================================
@@ -82,13 +85,14 @@ Date           Version   Description
 26 Feb. 2018   0.52      Add get_meld_closed_kong_able_after_declared_ready()
 02 Mar. 2018   0.53      Fix bug of get_meld_closed_kong_able_after_declared_ready()
 05 Mar. 2018   0.54      Change spec of judge_different_9orphans()
+06 Mar. 2018   1.0       Version 1.0 released
 -----------------------------------------------------------
 '''
 
 from enum import Enum, IntEnum
 
-__version__ = "0.54"
-__date__    = "05 Mar. 2018"
+__version__ = "1.0"
+__date__    = "06 Mar. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Suits(IntEnum):

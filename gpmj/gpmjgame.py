@@ -3,6 +3,9 @@
 ''' GPMJ (General Purpose (Japanese) Mah-Jong library)
     gpmjgame module
 
+    This module provides functions to process game and
+    to manage game configurations.
+
 Modification History:
 ===========================================================
 Date           Version   Description
@@ -27,6 +30,7 @@ Date           Version   Description
 31 Jan. 2018   0.18      Fixed bug of red 5 tile creation
 24 Feb. 2018   0.19      Add judge_furiten()
 04 Mar. 2018   0.20      Fixed bug of judge_furiten()
+06 Mar. 2018   1.0       Version 1.0 released
 -----------------------------------------------------------
 '''
 
@@ -36,8 +40,8 @@ import queue
 import gpmjcore
 from enum import Enum, IntEnum
 
-__version__ = "0.20"
-__date__    = "04 Mar. 2018"
+__version__ = "1.0"
+__date__    = "06 Mar. 2018"
 __author__  = "Shun SUGIMOTO <sugimoto.shun@gmail.com>"
 
 class Game():
