@@ -18,14 +18,14 @@ GPMJ includes following modules.
 1. ./gpmj/gpmjcore.py
   - Core module
   - This module provides functions to judge each hand and structures of tile, meld, eye and hand.
-1. ./gpmj/gpmjgame.py
+2. ./gpmj/gpmjgame.py
   - Game module
   - This module provides functions to process game and to manage game configurations.
-1. ./gpmj/gpmjplayer.py
+3. ./gpmj/gpmjplayer.py
   - Player module
   - This module provides Player template class included each handler fuction.
   - User should implement each handler function to subclass Player class.
-1. ./gpmj/gpmjctrl.py
+4. ./gpmj/gpmjctrl.py
   - Controller module
   - This module provides controller for player and game.
 ***
@@ -33,7 +33,7 @@ GPMJ includes following modules.
 sample_app.py is sample application used GPMJ library.  
 1. ./app/sample_app.py
   - This application provides simple command line Mah-jong game.
-1. ./app/setup.sh
+2. ./app/setup.sh
   - Shell script for setup sample application.
 
 ### Usage
