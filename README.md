@@ -31,13 +31,13 @@ GPMJ includes following modules.
 ***
 ## Sample application
 sample_app.py is sample application used GPMJ library.  
-1. ./app/sample_app.py
+1. ./app/cui_app/sample_app.py
   - This application provides simple command line Mah-jong game.
-2. ./app/setup.sh
+2. ./app/cui_app/setup.sh
   - Shell script for setup sample application.
 
 ### Usage
-    $ cd app  
+    $ cd app/cui_app
     $ source setup.sh
     $ python sample_app.py
 ***
