@@ -1,10 +1,11 @@
 #!/bin/sh
 
-ln -s ../../gpmj/gpmjcore.py gpmjcore.py
-ln -s ../../gpmj/gpmjgame.py gpmjgame.py
-ln -s ../../gpmj/gpmjplayer.py gpmjplayer.py
-ln -s ../../gpmj/gpmjctrl.py gpmjctrl.py
-ln -s ../../gpmj/gpmj.cfg gpmj.cfg
+if [ ! -e gpmjcore.py ]; then ln -s ../../gpmj/gpmjcore.py gpmjcore.py; fi
+if [ ! -e gpmjgame.py ]; then ln -s ../../gpmj/gpmjgame.py gpmjgame.py; fi
+if [ ! -e gpmjplayer.py ]; then ln -s ../../gpmj/gpmjplayer.py gpmjplayer.py; fi
+if [ ! -e gpmjctrl.py ]; then ln -s ../../gpmj/gpmjctrl.py gpmjctrl.py; fi
+if [ ! -e gpmj.cfg ]; then ln -s ../../gpmj/gpmj.cfg gpmj.cfg; fi
 
-unzip tiles.zip
+if [ ! -d tiles ]; then unzip tiles.zip; fi
 
+echo setup done
