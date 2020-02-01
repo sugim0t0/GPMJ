@@ -39,25 +39,21 @@ sample_app.py is sample application used GPMJ library.
 ### Usage
     $ cd app/cui_app
     $ source setup.sh
-    $ python sample_app.py
+    $ python3 sample_app.py
 ***
 ## Install
-    $ python setup.py install [--user] --record files.txt
+    $ python3 setup.py install [--user] --record files.txt
 
 ## Uninstall
     $ cat files.txt | xargs rm -rf
     $ rm files.txt
 
 ## Unit test
-    $ python -m unittest discover test/
+    $ python3 -m unittest discover test/
 
 ## Coverage
     $ cd test/
-    $ ln -s ../gpmj/gpmjcore.py gpmjcore.py
-Edit test_gpmjcore.py  
-Comment out `# from gpmj import gpmjcore`  
-And uncomment `import gpmjcore`  
-
-    $ coverage run test_gpmjcore.py
-    $ coverage html gpmjcore.py
-    $ open htmlcov/index.html
+### start
+    $ source coverage.sh start
+### cleanup
+    $ source coverage.sh cleanup

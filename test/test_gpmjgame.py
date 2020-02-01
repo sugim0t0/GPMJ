@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
+import sys
+import pathlib
+current_dir = pathlib.Path(__file__).resolve().parent
+sys.path.append(str(current_dir) + "/../gpmj/")
 import unittest
-# from gpmj import gpmjgame
-# from gpmj import gpmjcore
+#from gpmj import gpmjgame
+#from gpmj import gpmjcore
 import gpmjgame
 import gpmjcore
 
@@ -908,7 +912,7 @@ class TestGpmjGame(unittest.TestCase):
         self.assertIsNone(tile)
 
     def test_parse_config(self):
-        self.game.config.parse_config("./gpmj.cfg")
+        self.game.config.parse_config(str(current_dir) + "/../gpmj/gpmj.cfg")
         self.game.create_tiles()
         self.assertEqual(self.game.config.num_of_red5[0], 1)
         self.assertEqual(self.game.config.num_of_red5[1], 1)

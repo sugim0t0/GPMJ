@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 
+import sys
+import pathlib
+current_dir = pathlib.Path(__file__).resolve().parent
+sys.path.append(str(current_dir) + "/../gpmj/")
 import unittest
-# from gpmj import gpmjplayer
-# from gpmj import gpmjgame
-# from gpmj import gpmjcore
+#from gpmj import gpmjplayer
+#from gpmj import gpmjgame
+#from gpmj import gpmjcore
 import gpmjplayer
 import gpmjgame
 import gpmjcore
